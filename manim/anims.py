@@ -89,6 +89,8 @@ class Preference(VMobject):
         return AnimationGroup(*self.rearrange(ordering))
 
 
+
+
 def column_broadcast(fn):
     def inner(self, *args, indexes=None, **kwargs):
         anims = []
@@ -126,6 +128,35 @@ class VotingTable(VMobject):
     @column_broadcast
     def push_down(col, label):
         return col.push_down(label)
+
+    def create_winner(self):
+        pass
+
+    def change_winner(self):
+        pass
+
+    def create_resulting_ranking(self):
+        # u Arrow je vysledek ne jeden kandidat ale order
+        pass
+
+    def change_resulting_ranking(self):
+        # u Arrow je vysledek ne jeden kandidat ale order
+        pass
+
+    def plurality_system(self):
+        # zahraje animaci co se pusti pri vysvetleni plurality vote. 
+        # treba neco jako nejdriv ctverecek kolem top choice u kazdeho volice 
+        # a pak ctverecek jen kolem pluralitniho a pak se zobrazi winner nebo tak neco
+        pass
+
+    def two_round_system(self):
+        # jako plurality
+        pass
+
+    def nejake_funkce_pro_mysli_si_X_ale_rika_Y(self):
+        pass
+    
+
 
 
 class Polylogo(Scene):
@@ -166,7 +197,7 @@ class Explore(Scene):
         table = VotingTable(["ABC", "BCA", "ACB"])
         self.add(table)
         self.wait(1)
-        self.play(*table.group[0].rearrange("CAB"))
+        self.play(*table.group[0].rearrange("CAB"), *table.group[1].rearrange("CAB"))
         self.wait(1)
         self.play(*table.push_down("A"))
         self.wait(1)
@@ -178,3 +209,9 @@ class Explore(Scene):
         self.wait(1)
         self.play(*table.ungray("A"))
         self.wait(1)
+
+
+        self.play(table.animate.shift(1*RIGHT))
+        table2 = table.copy()
+        self.play(table2.animate.shift(1*DOWN))
+        self.wait(10)
