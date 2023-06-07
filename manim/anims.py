@@ -34,9 +34,9 @@ class Fruit(VMobject):
 FRUITS = {
     f.label: f
     for f in (
-        Fruit("A", Circle(color=GREEN).set_fill(GREEN, 1).scale(0.5)),
-        Fruit("B", Square(color=YELLOW).set_fill(YELLOW, 1).scale(0.5)),
-        Fruit("C", Square(color=RED).set_fill(RED, 1).scale(0.5)),
+        Fruit("A", Circle(color=GREEN).set_fill(GREEN, 1).scale(0.4)),
+        Fruit("B", Square(color=YELLOW).set_fill(YELLOW, 1).scale(0.4)),
+        Fruit("C", Square(color=RED).set_fill(RED, 1).scale(0.4)),
     )
 }
 
@@ -89,8 +89,6 @@ class Preference(VMobject):
         return AnimationGroup(*self.rearrange(ordering))
 
 
-
-
 def column_broadcast(fn):
     def inner(self, *args, indexes=None, **kwargs):
         anims = []
@@ -129,6 +127,9 @@ class VotingTable(VMobject):
     def push_down(col, label):
         return col.push_down(label)
 
+    def __getitem__(self, i):
+        return self.group[i]
+
     def create_winner(self):
         pass
 
@@ -144,8 +145,8 @@ class VotingTable(VMobject):
         pass
 
     def plurality_system(self):
-        # zahraje animaci co se pusti pri vysvetleni plurality vote. 
-        # treba neco jako nejdriv ctverecek kolem top choice u kazdeho volice 
+        # zahraje animaci co se pusti pri vysvetleni plurality vote.
+        # treba neco jako nejdriv ctverecek kolem top choice u kazdeho volice
         # a pak ctverecek jen kolem pluralitniho a pak se zobrazi winner nebo tak neco
         pass
 
@@ -155,8 +156,6 @@ class VotingTable(VMobject):
 
     def nejake_funkce_pro_mysli_si_X_ale_rika_Y(self):
         pass
-    
-
 
 
 class Polylogo(Scene):
@@ -197,7 +196,7 @@ class Explore(Scene):
         table = VotingTable(["ABC", "BCA", "ACB"])
         self.add(table)
         self.wait(1)
-        self.play(*table.group[0].rearrange("CAB"), *table.group[1].rearrange("CAB"))
+        self.play(*table[0].rearrange("CAB"), *table[1].rearrange("CAB"))
         self.wait(1)
         self.play(*table.push_down("A"))
         self.wait(1)
@@ -210,8 +209,9 @@ class Explore(Scene):
         self.play(*table.ungray("A"))
         self.wait(1)
 
-
-        self.play(table.animate.shift(1*RIGHT))
+        self.play(table.animate.shift(1 * RIGHT + 2 * UP))
         table2 = table.copy()
-        self.play(table2.animate.shift(1*DOWN))
+        self.play(table2.animate.shift(4 * DOWN))
+        self.play(*table.push_down("B"))
+        self.play(*table2[0].rearrange("BCA"))
         self.wait(10)
