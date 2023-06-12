@@ -315,33 +315,46 @@ class Polylogo(Scene):
         self.wait()
 
 
-<<<<<<< HEAD
+class Playground(Scene):
+    def construct(self):
+        default()
+        table = VotingTable(["ABC", "BCA", "CAB", "ABC", "BCA", "ABC"])
+        self.add(table)
+        self.wait(1)
+        anims = table.two_round_system()
+        for anim in anims:
+            self.play(anim)
+        self.wait(10)
+
 
 class Debriefing(Scene):
-
     def construct(self):
         default()
         self.next_section(skip_animations=False)
 
-        # But how big of a problem is it, actually? First of all, there are many situations where strategic voting is not really the main concern. For example, when you want to rank movies or entries to a math exposition contest, how well the voting system scales with the number of candidates is probably a bigger issue than strategic voting. 
+        # But how big of a problem is it, actually? First of all, there are many situations where strategic voting is not really the main concern. For example, when you want to rank movies or entries to a math exposition contest, how well the voting system scales with the number of candidates is probably a bigger issue than strategic voting.
         # https://www.3blue1brown.com/blog/some2
-        # https://www.youtube.com/playlist?list=PLnQX-jgAF5pTZXPiD8ciEARRylD9brJXU    
+        # https://www.youtube.com/playlist?list=PLnQX-jgAF5pTZXPiD8ciEARRylD9brJXU
 
         w = 5
         some_left_img = ImageMobject("img/some1-small.png").scale_to_fit_width(w)
-        some_leftleft_img = ImageMobject("img/some1left.png").scale_to_fit_width(w*0.3)
+        some_leftleft_img = ImageMobject("img/some1left.png").scale_to_fit_width(
+            w * 0.3
+        )
         some_right_img = ImageMobject("img/some2-small.png").scale_to_fit_width(w)
         Group(some_left_img, some_right_img).arrange(RIGHT)
         some_left_img.to_edge(UP)
         some_right_img.to_edge(UP)
-        some_leftleft_img.align_to(some_left_img, UL).shift(w*0.065*RIGHT + w*0.06*DOWN)
+        some_leftleft_img.align_to(some_left_img, UL).shift(
+            w * 0.065 * RIGHT + w * 0.06 * DOWN
+        )
 
         self.add(some_left_img, some_leftleft_img, some_right_img)
 
         self.play(
             some_left_img.animate.to_edge(DOWN),
             some_right_img.animate.to_edge(DOWN),
-            run_time = 7
+            run_time=7,
         )
         self.wait()
         self.play(
@@ -357,65 +370,60 @@ class Debriefing(Scene):
         arrow_tex = Tex("Kenneth Arrow")
         arrow_group = Group(arrow_img, arrow_tex).arrange(DOWN)
 
-        quote_tex = Tex(r"Most systems are not going to work badly all of the time. \\ All I proved is that all can work badly at times.")
-        Group(quote_tex, arrow_group).arrange(DOWN, buff = 1)
+        quote_tex = Tex(
+            r"Most systems are not going to work badly all of the time. \\ All I proved is that all can work badly at times."
+        )
+        Group(quote_tex, arrow_group).arrange(DOWN, buff=1)
 
-        self.play(
-            FadeIn(arrow_group)
-        )
-        self.play(
-            Write(quote_tex)
-        )
+        self.play(FadeIn(arrow_group))
+        self.play(Write(quote_tex))
         self.wait()
-        self.play(
-            FadeOut(arrow_group),
-            FadeOut(quote_tex)
-        )
+        self.play(FadeOut(arrow_group), FadeOut(quote_tex))
         self.wait()
 
         # Some systems actually work pretty well most of the time - imagine political elections based on approval voting and try to come up with a plausible scenario where a lot of people would vote strategically - it is actually not so easy!
 
         # TODO
 
-        # Some time back, a small group of voting theorists ranked the voting systems on how good they are for political elections and approval voting actually ended up on the top. 
+        # Some time back, a small group of voting theorists ranked the voting systems on how good they are for political elections and approval voting actually ended up on the top.
         self.next_section(skip_animations=False)
-        
+
         voting_data = [
             [Tex("Position"), Tex("Method"), Tex("Approval votes")],
-            [Tex("1"), Tex("Approval voting"), Tex("15")], 
-            [Tex("2"), Tex(r"Alternative vote\\ (Instant runoff)"), Tex("10")], 
-            [Tex("3"), Tex("Copeland's method"), Tex("9")], 
-            [Tex("4"), Tex("Kemeny-Young method"), Tex("8")], 
-            [Tex("5"), Tex("Two-round system"), Tex("6")], 
-            [Tex("5"), Tex("Coombs' method"), Tex("6")], 
-            [Tex("7"), Tex("Minimax"), Tex("5")], 
-            [Tex("7"), Tex("Majority judgement"), Tex("5")], 
-            [Tex("9"), Tex("Borda count"), Tex("4")], 
-            [Tex("10"), Tex("Black's method"), Tex("3")], 
-            [Tex("11"), Tex("Range voting"), Tex("2")], 
-            [Tex("11"), Tex("Nanson's method"), Tex("2")], 
-            [Tex("13"), Tex("Leximin method"), Tex("1")], 
-            [Tex("13"), Tex("Smith's method"), Tex("1")], 
-            [Tex("13"), Tex("Uncovered set method"), Tex("1")], 
-            [Tex("16"), Tex("Fishburn's method"), Tex("0")], 
-            [Tex("16"), Tex("Untrapped set"), Tex("0")], 
-            [Tex("16"), Tex("Plurality voting"), Tex("0")], 
+            [Tex("1"), Tex("Approval voting"), Tex("15")],
+            [Tex("2"), Tex(r"Alternative vote\\ (Instant runoff)"), Tex("10")],
+            [Tex("3"), Tex("Copeland's method"), Tex("9")],
+            [Tex("4"), Tex("Kemeny-Young method"), Tex("8")],
+            [Tex("5"), Tex("Two-round system"), Tex("6")],
+            [Tex("5"), Tex("Coombs' method"), Tex("6")],
+            [Tex("7"), Tex("Minimax"), Tex("5")],
+            [Tex("7"), Tex("Majority judgement"), Tex("5")],
+            [Tex("9"), Tex("Borda count"), Tex("4")],
+            [Tex("10"), Tex("Black's method"), Tex("3")],
+            [Tex("11"), Tex("Range voting"), Tex("2")],
+            [Tex("11"), Tex("Nanson's method"), Tex("2")],
+            [Tex("13"), Tex("Leximin method"), Tex("1")],
+            [Tex("13"), Tex("Smith's method"), Tex("1")],
+            [Tex("13"), Tex("Uncovered set method"), Tex("1")],
+            [Tex("16"), Tex("Fishburn's method"), Tex("0")],
+            [Tex("16"), Tex("Untrapped set"), Tex("0")],
+            [Tex("16"), Tex("Plurality voting"), Tex("0")],
         ]
 
-        voting_group = Group(*[o for l in voting_data for o in l]).scale(1).arrange_in_grid(cols = 3).to_edge(UP)
+        voting_group = (
+            Group(*[o for l in voting_data for o in l])
+            .scale(1)
+            .arrange_in_grid(cols=3)
+            .to_edge(UP)
+        )
 
         self.play(FadeIn(*[element for row in voting_data for element in row[:2]]))
         self.wait()
 
-        self.play(
-            Circumscribe(
-                Group(*voting_data[1][0:2]),
-                color = RED
-            )
-        )
+        self.play(Circumscribe(Group(*voting_data[1][0:2]), color=RED))
         self.wait()
 
-        # You might be wondering, "Okay, but which voting system did they use to compile this list?" and it was, well, approval voting itself… [reveal the right column of the table - approval votes for each option]. 
+        # You might be wondering, "Okay, but which voting system did they use to compile this list?" and it was, well, approval voting itself… [reveal the right column of the table - approval votes for each option].
 
         obama_img = ImageMobject("img/obama.webp").scale_to_fit_width(8)
         self.play(FadeIn(obama_img))
@@ -426,11 +434,12 @@ class Debriefing(Scene):
         self.play(FadeIn(*[row[2] for row in voting_data]))
         self.wait()
 
-
-        arrow = ImageMobject("img/arrow.png").scale_to_fit_width(1.5).next_to(voting_data[1][0], LEFT, buff = 0.5)
-        self.play(
-            FadeIn(arrow)
+        arrow = (
+            ImageMobject("img/arrow.png")
+            .scale_to_fit_width(1.5)
+            .next_to(voting_data[1][0], LEFT, buff=0.5)
         )
+        self.play(FadeIn(arrow))
         self.wait()
         self.play(
             voting_group.animate.shift(
@@ -453,55 +462,68 @@ class Debriefing(Scene):
         )
         self.wait()
 
-
-        self.play(
-            FadeOut(voting_group),
-            FadeOut(arrow)
-        )
+        self.play(FadeOut(voting_group), FadeOut(arrow))
         self.wait()
 
-
-
-        # In any case, just based on the number of votes for each option, you can really see that there are some good voting systems like approval voting; another very popular one is the alternative vote a.k.a. instant runoff. Then there are some decent ones, like the two-round system, a lot of mediocre ones, and then, at the very bottom with zero approval votes, we see plurality voting, which did you know is used for elections in most English-speaking countries? 
+        # In any case, just based on the number of votes for each option, you can really see that there are some good voting systems like approval voting; another very popular one is the alternative vote a.k.a. instant runoff. Then there are some decent ones, like the two-round system, a lot of mediocre ones, and then, at the very bottom with zero approval votes, we see plurality voting, which did you know is used for elections in most English-speaking countries?
 
         self.next_section(skip_animations=False)
 
-        shame_list = ["Azerbaijan", "Bangladesh", "Belize", "Bhutan", "Botswana", "Burma", "Canada", "Congo", "Cote d'Ivoire", "Eritrea", "Ethiopia", "Gabon", "Gambia", "Ghana", "India", "Iran", "Jamaica", "Kenya", "Kuwait", "Laos", "Liberia", "Malawi", "Malaysia", "Maldives", "Nigeria", "Oman", "Sierra Leone", "Singapore", "Solomon Islands", "Swaziland", "Tanzania", "Uganda", "United Kingdom", "United States", "Yemen"]#, "Zambia"]
+        shame_list = [
+            "Azerbaijan",
+            "Bangladesh",
+            "Belize",
+            "Bhutan",
+            "Botswana",
+            "Burma",
+            "Canada",
+            "Congo",
+            "Cote d'Ivoire",
+            "Eritrea",
+            "Ethiopia",
+            "Gabon",
+            "Gambia",
+            "Ghana",
+            "India",
+            "Iran",
+            "Jamaica",
+            "Kenya",
+            "Kuwait",
+            "Laos",
+            "Liberia",
+            "Malawi",
+            "Malaysia",
+            "Maldives",
+            "Nigeria",
+            "Oman",
+            "Sierra Leone",
+            "Singapore",
+            "Solomon Islands",
+            "Swaziland",
+            "Tanzania",
+            "Uganda",
+            "United Kingdom",
+            "United States",
+            "Yemen",
+        ]  # , "Zambia"]
 
-        shame_table = Group(*[Tex(str).scale(0.7) for str in shame_list]).arrange_in_grid(cols = 5)
-        Group(*shame_table[20:]).shift(1.0*DOWN)
-        Group(*shame_table[:20]).shift(1.5*UP)
-        shame_tex = Tex("Shame.", font_size = 300)
-        
+        shame_table = Group(
+            *[Tex(str).scale(0.7) for str in shame_list]
+        ).arrange_in_grid(cols=5)
+        Group(*shame_table[20:]).shift(1.0 * DOWN)
+        Group(*shame_table[:20]).shift(1.5 * UP)
+        shame_tex = Tex("Shame.", font_size=300)
+
         self.play(
             AnimationGroup(
-                Succession(
-                *[FadeIn(o) for o in shame_table],
-                lag_ratio = 0.2
-            ),
-            AnimationGroup(
-                FadeIn(shame_tex),
-                run_time = 10
-            )
+                Succession(*[FadeIn(o) for o in shame_table], lag_ratio=0.2),
+                AnimationGroup(FadeIn(shame_tex), run_time=10),
             )
         )
         self.wait()
         return
 
-
         self.wait()
-=======
-class Playground(Scene):
-    def construct(self):
-        default()
-        table = VotingTable(["ABC", "BCA", "CAB", "ABC", "BCA", "ABC"])
-        self.add(table)
-        self.wait(1)
-        anims = table.two_round_system()
-        for anim in anims:
-            self.play(anim)
-        self.wait(10)
->>>>>>> b405b6d4c5a9535eab50a82f2507390cf39663bd
 
 
 class Explore(Scene):
@@ -528,5 +550,3 @@ class Explore(Scene):
         self.play(*table.push_down("B"))
         self.play(*table2[0].rearrange("BCA"))
         self.wait(10)
-
-
