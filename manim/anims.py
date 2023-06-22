@@ -547,10 +547,10 @@ class Approval(Scene):
         monkey_img1 = ImageMobject("img/monkeys/avocado1.png").scale(monkey_scale)
         monkey_img2 = ImageMobject("img/monkeys/avocado1.png").scale(monkey_scale)
         monkey_img3 = ImageMobject("img/monkeys/avocado1.png").scale(monkey_scale)
-        fruit_scale = 0.3
-        avocado_img = ImageMobject("img/fruit/avocado.png").scale(fruit_scale)
-        banana_img = ImageMobject("img/fruit/banana.png").scale(fruit_scale)
-        coconut_img = ImageMobject("img/fruit/coconut.png").scale(fruit_scale)
+        fruit_width = 1
+        avocado_img = ImageMobject("img/fruit/avocado.png").scale_to_fit_width(fruit_width)
+        banana_img = ImageMobject("img/fruit/banana.png").scale_to_fit_width(fruit_width)
+        coconut_img = ImageMobject("img/fruit/coconut.png").scale_to_fit_width(fruit_width)
         #self.add(thumbsup_img)    
 
         approval_data = [
