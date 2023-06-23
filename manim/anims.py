@@ -127,16 +127,18 @@ class Preference(VMobject):
     def rearrange(self, ordering):
         self.ordering = ordering
         positions = list(reversed(sorted(obj.get_y() for obj in self.group)))
-        return [
-            self.at(label)[0].animate.set_y(positions[i])
-            for i, label in enumerate(ordering)
-        ]
+        return AnimationGroup(
+            *(
+                self.at(label)[0].animate.set_y(positions[i])
+                for i, label in enumerate(ordering)
+            )
+        )
 
     def push_down(self, label):
         ordering = list(self.ordering)
         ordering.remove(label)
         ordering.append(label)
-        return AnimationGroup(*self.rearrange(ordering))
+        return self.rearrange(ordering)
 
     def highlight(self, *args, **kwargs):
         return self.indicate(*args, **kwargs)
@@ -286,6 +288,7 @@ class VotingTable(VMobject):
         "fadeout",
         "fadein",
         "push_down",
+        "rearrange",
         "indicate",
         "highlight",
     ]
@@ -321,11 +324,15 @@ class VotingTable(VMobject):
         return AnimationGroup(self.results.hide(), FadeOut(self.arrow))
 
     def results_show(self, results):
-        self.arrow = (
+        arrow = (
             MathTex("\Rightarrow")
             .scale(2 * self.scale_factor)
             .next_to(self.group, buff=0.5 * self.scale_factor)
         )
+        if self.arrow is None:
+            self.arrow = arrow
+        else:
+            self.arrow.become(arrow)
         anims = []
         if len(results) > 1 and not isinstance(self.results, VotingOrdering):
             anims.append(self.results.hide())
@@ -578,9 +585,9 @@ class Arrow(Scene):
 
         self.play(
             Succession(
-                AnimationGroup(*table[0].rearrange("ABC")),
-                AnimationGroup(*table[1].rearrange("ABC"), table.results_show("BAC")),
-                AnimationGroup(*table[2].rearrange("ABC")),
+                AnimationGroup(table[0].rearrange("ABC")),
+                AnimationGroup(table[1].rearrange("ABC"), table.results_show("BAC")),
+                AnimationGroup(table[2].rearrange("ABC")),
             )
         )
 
@@ -588,19 +595,19 @@ class Arrow(Scene):
 
         self.play(
             *(
-                AnimationGroup(*table[i].rearrange(example_table_str[i]))
+                AnimationGroup(table[i].rearrange(example_table_str[i]))
                 for i in range(len(example_table_str))
             )
         )
 
         for _ in range(2):
             self.play(
-                *(AnimationGroup(*table[i].rearrange("ABC")) for i in range(5, 9)),
+                *table.rearrange("ABC", indexes=range(5, 9)),
                 table.results_show("ABC"),
             )
             self.wait()
             self.play(
-                *(AnimationGroup(*table[i].rearrange("CAB")) for i in range(5, 9)),
+                *table.rearrange("CBA", indexes=range(5, 9)),
                 table.results_show("CBA"),
             )
             self.wait()
@@ -608,7 +615,7 @@ class Arrow(Scene):
         # Both Arrow and Gibbard-Satterthwaite theorems are good examples showing that while we often like to think that important mathematical theorems are simply-looking statements that turn out to be insanely complicated to prove, it is not always like that.
         # (možná někde problikne statement Fermata nebo P vs NP?)
 
-        self.play(FadeOut(table))
+        self.play(table.results_hide(), FadeOut(table))
         self.wait()
 
         fermat_tex = Tex(
@@ -1111,7 +1118,7 @@ class Explore(Scene):
         table = VotingTable(["ABC", "BCA", "ACB"])
         self.add(table)
         self.wait(1)
-        self.play(*table[0].rearrange("CAB"), *table[1].rearrange("CAB"))
+        self.play(table[0].rearrange("CAB"), table[1].rearrange("CAB"))
         self.wait(1)
         self.play(*table.push_down("A"))
         self.wait(1)
@@ -1128,7 +1135,7 @@ class Explore(Scene):
         table2 = table.copy()
         self.play(table2.animate.shift(4 * DOWN))
         self.play(*table.push_down("B"))
-        self.play(*table2[0].rearrange("BCA"))
+        self.play(table2[0].rearrange("BCA"))
         self.wait(10)
 
 
