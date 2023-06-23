@@ -431,9 +431,9 @@ class Arrow(Scene):
 
         # This is a condition that says that if you look at how the voting system orders any two candidates, for example here it decides that banana is above coconut
 
-        self.play(table.vysledne_poradi.highlight("B"))
+        self.play(table.resulting_ranking.highlight("B"))
         self.wait()
-        self.play(table.vysledne_poradi.highlight("C"))
+        self.play(table.resulting_ranking.highlight("C"))
         self.wait()
 
         # (vyznačí se že outcome je banana lepší než coconut nebo naopak)
@@ -450,7 +450,7 @@ class Arrow(Scene):
             Succession(
                 AnimationGroup(table[0].rearrange("ABC")),
                 AnimationGroup(
-                    table[1].rearrange("ABC"), table.vysledne_poradi.rearrange("BAC")
+                    table[1].rearrange("ABC"), table.resulting_ranking.rearrange("BAC")
                 ),
                 AnimationGroup(table[2].rearrange("ABC")),
             )
@@ -468,12 +468,12 @@ class Arrow(Scene):
         for _ in range(2):
             self.play(
                 *[table[i].rearrange("ABC") for i in range(5, 9)],
-                table.vysledne_poradi.rearrange("ABC")
+                table.resulting_ranking.rearrange("ABC")
             )
             self.wait()
             self.play(
                 *[table[i].rearrange("CAB") for i in range(5, 9)],
-                table.vysledne_poradi.rearrange("CBA")
+                table.resulting_ranking.rearrange("CBA")
             )
             self.wait()
 
