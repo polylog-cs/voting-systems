@@ -64,6 +64,9 @@ class Fruit(VMobject):
     def indicate(self):
         return Indicate(self, color=None)
 
+    def highlight(self):
+        return self.indicate()
+
 
 FRUITS = {
     f.label: f
@@ -91,6 +94,9 @@ def row_broadcast(fn):
 
 
 class Preference(VMobject):
+    # Those get generated automagically by the code below this class definition
+    BROADCAST_METHODS = ["gray", "ungray", "fadeout", "fadein", "indicate", "highlight"]
+
     def __init__(self, ordering, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.group = VGroup()
@@ -118,26 +124,6 @@ class Preference(VMobject):
             l.append(self.group[self._ix(ix)])
         return l
 
-    @row_broadcast
-    def gray(cell):
-        return cell.gray()
-
-    @row_broadcast
-    def ungray(cell):
-        return cell.ungray()
-
-    @row_broadcast
-    def fadeout(cell):
-        return cell.fadeout()
-
-    @row_broadcast
-    def fadein(cell):
-        return cell.fadein()
-
-    @row_broadcast
-    def indicate(cell):
-        return cell.indicate()
-
     def rearrange(self, ordering):
         self.ordering = ordering
         positions = list(reversed(sorted(obj.get_y() for obj in self.group)))
@@ -152,23 +138,38 @@ class Preference(VMobject):
         ordering.append(label)
         return AnimationGroup(*self.rearrange(ordering))
 
-    def highlight(self, label):  # TODO
-        return Wait()
+    def highlight(self, *args, **kwargs):
+        return self.indicate(*args, **kwargs)
 
 
-def column_broadcast(fn):
-    def inner(self, *args, indexes=None, **kwargs):
-        anims = []
-        for ix in self._ixs(indexes):
-            anims.append(fn(self.group[ix], *args, **kwargs))
-        return anims
+for method in Preference.BROADCAST_METHODS:
 
-    return inner
+    def create_broadcast(method):
+        child_method = getattr(Fruit, method)
+
+        def row_broadcast(self, indexes, *args, **kwargs):
+            l = []
+            for f in self.at(indexes):
+                l += [child_method(f, *args, **kwargs)]
+            return AnimationGroup(*l)
+
+        return row_broadcast
+
+    setattr(Preference, method, create_broadcast(method))
 
 
 class VotingTable(VMobject):
     winner = None
     num_of_voters = 9  # TODO
+    # Those get generated automagically by the code below this class definition
+    BROADCAST_METHODS = [
+        "gray",
+        "ungray",
+        "fadeout",
+        "fadein",
+        "push_down",
+        "highlight",
+    ]
 
     def __init__(self, preferences, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -187,26 +188,6 @@ class VotingTable(VMobject):
         if type(ixs) == int:
             ixs = [ixs]
         return ixs
-
-    @column_broadcast
-    def gray(col, label):
-        return col.gray(label)
-
-    @column_broadcast
-    def ungray(col, label):
-        return col.ungray(label)
-
-    @column_broadcast
-    def fadeout(col, label):
-        return col.fadeout(label)
-
-    @column_broadcast
-    def fadein(col, label):
-        return col.fadein(label)
-
-    @column_broadcast
-    def push_down(col, label):
-        return col.push_down(label)
 
     def __getitem__(self, i):
         return self.group[i]
@@ -309,6 +290,22 @@ class VotingTable(VMobject):
         pass
 
 
+for method in VotingTable.BROADCAST_METHODS:
+
+    def create_broadcast(method):
+        child_method = getattr(Preference, method)
+
+        def column_broadcast(self, *args, indexes=None, **kwargs):
+            anims = []
+            for ix in self._ixs(indexes):
+                anims.append(child_method(self.group[ix], *args, **kwargs))
+            return anims
+
+        return column_broadcast
+
+    setattr(VotingTable, method, create_broadcast(method))
+
+
 class Polylogo(Scene):
     def construct(self):
         default()
@@ -365,15 +362,15 @@ class Reasonable(Scene):
         self.play(table.winner_show("A"))
         self.wait()
 
-        self.play(*[table[i].highlight("A") for i in range(5)])
+        self.play(*table.highlight("A", indexes=range(5)))
         self.wait()
 
         # But X is also the bottom choice for almost half of the voters so isn’t Y also a good candidate for the winner? There are in fact some popular voting systems [ See Borda count] that would elect Y in this scenario.
 
-        self.play(*[table[i].highlight("A") for i in range(5, table.num_of_voters)])
+        self.play(*table.highlight("A", indexes=range(5, table.num_of_voters)))
         self.wait()
 
-        self.play(*[table[i].highlight("B") for i in range(table.num_of_voters)])
+        self.play(*table.highlight("B"))
         self.wait()
 
         # So maybe we should think about the theorem one more time and try to prove it with a definition of “reasonable” that permits as many voting systems as possible. That is exactly what Gibbard and Satterthwaite did, this is their theorem in full glory. They found out that these two conditions on the voting system suffice to prove the theorem, and they are also necessary. The proof of this more general theorem is similar to our proof but more tedious, so let’s skip it.
