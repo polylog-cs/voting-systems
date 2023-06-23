@@ -147,7 +147,9 @@ for method in Preference.BROADCAST_METHODS:
     def create_broadcast(method):
         child_method = getattr(Fruit, method)
 
-        def row_broadcast(self, indexes, *args, **kwargs):
+        def row_broadcast(self, indexes=None, *args, **kwargs):
+            if indexes is None:
+                indexes = range(len(self.group))
             l = []
             for f in self.at(indexes):
                 l += [child_method(f, *args, **kwargs)]
@@ -168,6 +170,7 @@ class VotingTable(VMobject):
         "fadeout",
         "fadein",
         "push_down",
+        "indicate",
         "highlight",
     ]
 
@@ -624,11 +627,7 @@ class Approval(Scene):
 
         table = VotingTable(example_table_str).scale(0.5)  # .to_edge(RIGHT, buff = 2)
 
-        self.play(
-            Succession(
-                *[Indicate(table[i]) for i in range(table.num_of_voters)], lag_ratio=0.5
-            )
-        )
+        self.play(AnimationGroup(*table.indicate(), lag_ratio=0.51))
         self.wait()
 
         # to elect the winner.
