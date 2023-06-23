@@ -71,12 +71,12 @@ FRUITS = {
         Fruit("A", Circle(color=GREEN).set_fill(GREEN, 1).scale(0.4)),
         Fruit("B", Square(color=YELLOW).set_fill(YELLOW, 1).scale(0.4)),
         Fruit("C", Square(color=RED).set_fill(RED, 1).scale(0.4)),
+        Fruit("D", Circle(color=BLUE).set_fill(BLUE, 1).scale(0.4)),
     )
 }
 
 
 def get_fruit(label):
-    assert label in list("ABC")  # TODO potrebuju vic nez tri ovoce
     return FRUITS[label].copy()
 
 
