@@ -160,9 +160,125 @@ for method in Preference.BROADCAST_METHODS:
     setattr(Preference, method, create_broadcast(method))
 
 
-class VotingTable(VMobject):
+class VotingResults(VMobject):
+    scale_factor = 1
+    is_hidden = True
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def scale(self, scale_factor, *args, **kwargs):
+        self.scale_factor *= scale_factor
+        return super().scale(scale_factor, *args, **kwargs)
+
+    def hide(self):
+        self.is_hidden = True
+
+    def show(self, results):
+        self.is_hidden = False
+
+
+class VotingWinner(VotingResults):
     winner = None
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def next_to(self, *args, **kwargs):
+        return self.winner.next_to(*args, **kwargs)
+
+    def hide(self):
+        super().hide()
+        self.remove(self.winner)
+        return FadeOut(self.winner)
+
+    def show(self, winner):
+        was_hidden = self.is_hidden
+        super().show(winner)
+        old_winner = self.winner
+        self.winner = get_fruit(winner).scale(self.scale_factor)
+        # self.add(self.winner)
+        if was_hidden:
+            return FadeIn(self.winner)
+        else:
+            self.remove(old_winner)
+            return AnimationGroup(
+                FadeOut(old_winner, shift=UP), FadeIn(self.winner, shift=UP)
+            )
+
+
+class VotingOrdering(VotingResults):
+    ordering = None
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def next_to(self, *args, **kwargs):
+        return self.ordering.next_to(*args, **kwargs)
+
+    def hide(self):
+        super().hide()
+        self.remove(self.ordering)
+        return FadeOut(self.ordering)
+
+    def show(self, ordering):
+        was_hidden = self.is_hidden
+        super().show(ordering)
+        old_ordering = self.ordering
+        fruits = [get_fruit(o).scale(self.scale_factor) for o in ordering]
+        hor_buff = 0.3 * self.scale_factor
+        if was_hidden:
+            numbers = VGroup(
+                *(
+                    Tex(f"{i + 1}.").scale(1.5 * self.scale_factor)
+                    for i, _ in enumerate(fruits)
+                )
+            ).arrange(DOWN, buff=0.5 * self.scale_factor)
+            fruits = VGroup(*(get_fruit(f).scale(self.scale_factor) for f in ordering))
+            for i, fruit in enumerate(fruits):
+                fruit.next_to(numbers[i], buff=hor_buff)
+            self.ordering = VGroup(numbers, fruits)
+            return FadeIn(self.ordering)
+        else:
+            return AnimationGroup(
+                *(
+                    fruit.animate.next_to(
+                        self.ordering[0][ordering.index(fruit.label)],
+                        buff=hor_buff,
+                    )
+                    for fruit in self.ordering[1]
+                )
+            )
+
+    def _ix(self, label_or_index):
+        if type(label_or_index) == int:
+            return label_or_index
+        for i, m in enumerate(self.ordering[1]):
+            if label_or_index == m.label:
+                return i
+        return None
+
+    def at(self, ixs):
+        is_single = type(ixs) == int or type(ixs) == str
+        if is_single:
+            ixs = [ixs]
+        l = []
+        for ix in ixs:
+            ix = self._ix(ix)
+            l.append((self.ordering[0][ix], self.ordering[1][ix]))
+        return l
+
+    def highlight(self, ixs):
+        anims = []
+        for _, f in self.at(ixs):
+            anims.append(f.highlight())
+        return anims
+
+
+class VotingTable(VMobject):
+    results = VotingWinner()
     num_of_voters = 9  # TODO
+    scale_factor = 1
     # Those get generated automagically by the code below this class definition
     BROADCAST_METHODS = [
         "gray",
@@ -181,9 +297,9 @@ class VotingTable(VMobject):
             self.group.add(Preference(preference))
         self.C = len(preferences[0])
         self.group.arrange()
-        self.arrow = MathTex("\Rightarrow").scale(1.5).next_to(self.group, buff=0.5)
-        self.arrow.shown = False
+        self.arrow = None
         self.add(self.group)
+        self.add(self.results)
 
     def _ixs(self, ixs):
         if ixs is None:
@@ -195,32 +311,47 @@ class VotingTable(VMobject):
     def __getitem__(self, i):
         return self.group[i]
 
-    def winner_hide(self):
-        winner = self.winner
-        self.winner = None
-        return FadeOut(winner, self.arrow)
+    def scale(self, scale_factor, *args, **kwargs):
+        self.scale_factor *= scale_factor
+        self.results.scale(scale_factor)
+        return super().scale(scale_factor, *args, **kwargs)
 
-    def winner_show(self, winner):
-        old_winner = self.winner
-        self.winner = get_fruit(winner).next_to(self.arrow, buff=0.5)
-        if old_winner is None:
-            return FadeIn(self.winner, self.arrow)
-        else:
-            return AnimationGroup(
-                FadeOut(old_winner, shift=UP), FadeIn(self.winner, shift=UP)
-            )
+    def results_hide(self):
+        self.remove(self.arrow)
+        return AnimationGroup(self.results.hide(), FadeOut(self.arrow))
 
-    def create_resulting_ranking(self, str):
-        # u Arrow je vysledek ne jeden kandidat ale order
-        pass
+    def results_show(self, results):
+        self.arrow = (
+            MathTex("\Rightarrow")
+            .scale(2 * self.scale_factor)
+            .next_to(self.group, buff=0.5 * self.scale_factor)
+        )
+        anims = []
+        if len(results) > 1 and not isinstance(self.results, VotingOrdering):
+            anims.append(self.results.hide())
+            self.results = VotingOrdering().scale(self.scale_factor)
+        if len(results) == 1 and not isinstance(self.results, VotingWinner):
+            anims.append(self.results.hide())
+            self.results = VotingWinner().scale(self.scale_factor)
+        if self.results.is_hidden:
+            # self.add(self.arrow)
+            anims.append(FadeIn(self.arrow))
 
-    def rearrange_resulting_ranking(self, str):
-        # u Arrow je vysledek ne jeden kandidat ale order
-        pass
+        anims.append(self.results.show(results))
+        self.results.next_to(self.arrow, buff=0.5 * self.scale_factor)
+        return AnimationGroup(*anims)
+
+    winner_show = results_show
+    winner_hide = results_hide
 
     def candidates_by_votes(self):
         votes = [voter.ordering[0] for voter in self.group]
-        return [a[0] for a in Counter(votes).most_common()]
+        ret = [a[0] for a in Counter(votes).most_common()]
+        for candidate in self.group[0].ordering:
+            if candidate not in ret:
+                # got zero votes
+                ret.append(candidate)
+        return ret
 
     def plurality_system(self):
         # zahraje animaci co se pusti pri vysvetleni plurality vote.
@@ -235,7 +366,7 @@ class VotingTable(VMobject):
                 continue
             anims.append(col.at(0)[0].indicate())
         ret.append(AnimationGroup(*anims))
-        ret.append(self.winner_show(winner))
+        ret.append(self.results_show(winner))
         return ret
 
     def two_round_system(self):
@@ -284,7 +415,7 @@ class VotingTable(VMobject):
         restore_anims += self.fadein(top[2:])
         ret.append(AnimationGroup(*anims))
         ret.append(AnimationGroup(*winner_anims))
-        ret.append(self.winner_show(winner))
+        ret.append(self.results_show(winner))
         ret.append(AnimationGroup(*restore_anims))
 
         return ret
@@ -357,7 +488,7 @@ class Reasonable(Scene):
         # reasonable_tex = Tex(r"Reasonable = ")
         table = VotingTable(
             ["ABCD", "ABCD", "ABCD", "ABCD", "ABCD", "BCDA", "BCDA", "BCDA", "BCDA"]
-        )
+        ).shift(2 * LEFT)
 
         self.play(FadeIn(table))
         self.wait()
@@ -414,12 +545,12 @@ class Arrow(Scene):
 
         # That theorem also talks about voting systems, but a little bit more general ones that not only elect the winner but rank all the candidates from best to worst.
 
-        table = VotingTable(example_table_str)
+        table = VotingTable(example_table_str).shift(2 * LEFT)
 
         self.play(FadeIn(table))
         self.wait()
 
-        self.play(table.create_resulting_ranking("CBA"))
+        self.play(table.results_show("CBA"))
         self.wait()
 
         # (animace s tabulkou, outcome se změní z vítěze na order)
@@ -431,11 +562,10 @@ class Arrow(Scene):
 
         # This is a condition that says that if you look at how the voting system orders any two candidates, for example here it decides that banana is above coconut
 
-        self.play(table.resulting_ranking.highlight("B"))
+        self.play(*table.results.highlight("B"))
         self.wait()
-        self.play(table.resulting_ranking.highlight("C"))
+        self.play(*table.results.highlight("C"))
         self.wait()
-
         # (vyznačí se že outcome je banana lepší než coconut nebo naopak)
 
         # this decision should not depend on whatever the voters’ opinion on the avocado is.
@@ -448,32 +578,30 @@ class Arrow(Scene):
 
         self.play(
             Succession(
-                AnimationGroup(table[0].rearrange("ABC")),
-                AnimationGroup(
-                    table[1].rearrange("ABC"), table.resulting_ranking.rearrange("BAC")
-                ),
-                AnimationGroup(table[2].rearrange("ABC")),
+                AnimationGroup(*table[0].rearrange("ABC")),
+                AnimationGroup(*table[1].rearrange("ABC"), table.results_show("BAC")),
+                AnimationGroup(*table[2].rearrange("ABC")),
             )
         )
 
         # The first part of our proof can actually be used to prove a version of Arrow’s theorem, but if you use the textbook definition of a reasonable voting system, the proof again becomes a bit tedious.
 
         self.play(
-            *[
-                table[i].rearrange(example_table_str[i])
+            *(
+                AnimationGroup(*table[i].rearrange(example_table_str[i]))
                 for i in range(len(example_table_str))
-            ]
+            )
         )
 
         for _ in range(2):
             self.play(
-                *[table[i].rearrange("ABC") for i in range(5, 9)],
-                table.resulting_ranking.rearrange("ABC")
+                *(AnimationGroup(*table[i].rearrange("ABC")) for i in range(5, 9)),
+                table.results_show("ABC"),
             )
             self.wait()
             self.play(
-                *[table[i].rearrange("CAB") for i in range(5, 9)],
-                table.resulting_ranking.rearrange("CBA")
+                *(AnimationGroup(*table[i].rearrange("CAB")) for i in range(5, 9)),
+                table.results_show("CBA"),
             )
             self.wait()
 
@@ -637,6 +765,7 @@ class Approval(Scene):
         self.play(FadeOut(table))
         self.wait()
 
+        return
         # Even if I tell you how I would rank these videos, you still don’t know which ones of them I would give a like to.
 
         # for v in videos_group:
@@ -686,7 +815,7 @@ class Approval(Scene):
         self.play(
             FadeOut(arrow),
             *[v[1].animate.set_color(BACKGROUND_COLOR) for v in videos_group],
-            *[FadeOut(o) for o in (set(likes + dislikes) & set(self.mobjects))]
+            *[FadeOut(o) for o in (set(likes + dislikes) & set(self.mobjects))],
         )
         self.play(Group(*[g for g in videos_group]).animate.arrange_in_grid(rows=2))
         self.wait()
@@ -1006,7 +1135,7 @@ class Explore(Scene):
 class Playground(Scene):
     def construct(self):
         default()
-        table = VotingTable(["ABC", "BCA", "CAB", "ABC", "BCA", "ABC"])
+        table = VotingTable(["ABCD", "BDCA", "DCAB", "ABCD", "BDCA", "ABDC"])
         self.add(table)
         self.wait(1)
         anims = table.two_round_system()
