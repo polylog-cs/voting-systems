@@ -22,8 +22,8 @@ gs_group = (
 )
 gs_new_tex = Tex(
     r"{{For any number of voters, any number of candidates, consider any voting system that satisfies: \\ }}"
-    + r"{{1) The system is not a dictatorship of one voter. }}"
-    + r"{{2) At least three candidates are elected by the system in at least one scenario. }}"
+    + r"{{1) The system is not a dictatorship of one voter. \\}}"
+    + r"{{2) At least three candidates are elected by the system in at least one scenario. \\}}"
     + r"There exists at least one scenario where the system incentivizes strategic voting. ",
     color=text_color,
 ).scale(thm_scale)
@@ -772,7 +772,6 @@ class Approval(Scene):
         self.play(FadeOut(table))
         self.wait()
 
-        return
         # Even if I tell you how I would rank these videos, you still don’t know which ones of them I would give a like to.
 
         # for v in videos_group:
