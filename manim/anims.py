@@ -8,6 +8,8 @@ import colorsys
 from collections import Counter
 from utils.util_general import *
 
+
+
 thm_scale = 0.8
 gs_title = Tex("Gibbard-Satterthwaite Theorem:", color=text_color)
 gs_tex = Tex(
@@ -31,6 +33,36 @@ gs_new_tex = Tex(
 
 example_table_str = ["ABC", "ABC", "BCA", "BCA", "BCA", "CAB", "CAB", "CAB", "CAB"]
 
+
+def img_monkey(str, voting = False, width = 2):
+    img_path = ""
+    if str == "A":
+        if voting:
+            img_path = "img/monkeys/avocado2.png"
+        else:
+            img_path = "img/monkeys/avocado1.png" 
+    elif str == "B":
+        if voting:
+            img_path = "img/monkeys/banana2.png"
+        else:
+            img_path = "img/monkeys/banana1.png" 
+    else:
+        if voting:
+            img_path = "img/monkeys/coconut2.png"
+        else:
+            img_path = "img/monkeys/coconut1.png" 
+        
+    return ImageMobject(img_path).scale_to_fit_width(width)
+
+def ordering(str):
+    w = 0.3
+    f1 = FRUITS[str[0]].copy().scale_to_fit_width(w)
+    f2 = FRUITS[str[1]].copy().scale_to_fit_width(w)
+    f3 = FRUITS[str[2]].copy().scale_to_fit_width(w)
+    fruits = Group(f1, f2, f3).arrange(DOWN)
+
+    border = SurroundingRectangle(fruits, corner_radius = 0.3, color = text_color)
+    return Group(fruits, border)
 
 class Fruit(VMobject):
     def __init__(self, label, normal, gray: VMobject = None, *args, **kwargs):
@@ -447,6 +479,10 @@ for method in VotingTable.BROADCAST_METHODS:
     setattr(VotingTable, method, create_broadcast(method))
 
 
+
+
+
+
 class Polylogo(Scene):
     def construct(self):
         default()
@@ -478,6 +514,158 @@ class Polylogo(Scene):
 
         self.play(*[FadeOut(o) for o in self.mobjects])
         self.wait()
+
+
+class Statement(Scene):
+    def construct(self):
+        default()
+        # Unfortunately, the answer is no and because I took my whiteboard with me, I will explain why. I will prove to you the Gibbard-Satterthwaite theorem which says that any reasonable voting system sometimes incentivizes strategic voting. 
+        gs_group.move_to(ORIGIN)
+        self.play(
+            FadeIn(gs_title),
+            )
+        self.wait()
+        self.play(
+            FadeIn(gs_tex),
+            )
+        self.wait()
+        self.play(
+            FadeOut(gs_title),
+            )
+        self.wait()
+        self.play(
+            gs_tex.animate.to_edge(UP, buff = 0.5),
+            )
+        self.wait()
+
+
+        # I think that the most challenging aspect of the theorem is to understand what it is actually saying, so let’s try to slowly unpack this sentence. 
+
+        # First, we need to define what a voting system is. 
+
+        border = SurroundingRectangle(gs_tex[2], color  = RED)
+        self.play(FadeIn(border))
+        self.wait() 
+        
+        # We have already seen two systems: The first one, where everybody votes for their favorite candidate and we pick the one with the most votes, is called the plurality voting. 
+
+        monkeys_img = Group(*[img_monkey(example_table_str[i][0], voting = False, width = 2) for i in range(len(example_table_str))]).arrange_in_grid(rows = 3).to_edge(LEFT, buff = 1)
+        monkeys_voting_img = Group(*[img_monkey(example_table_str[i][0], voting = True, width = 2) for i in range(len(example_table_str))]).arrange_in_grid(rows = 3).move_to(monkeys_img.get_center())
+        monkeys_votingA_img = Group(*[img_monkey("A", voting = True, width = 2) for i in range(len(example_table_str))]).arrange_in_grid(rows = 3).move_to(monkeys_img.get_center())
+
+        plurality_tex = Tex("Plurality voting:").next_to(gs_title, DOWN, buff = 1)
+        arrow = Tex(r"$\rightarrow$").scale(3).next_to(monkeys_img, RIGHT)
+        result = FRUITS["C"].next_to(arrow, RIGHT)
+
+        self.play(
+            FadeIn(monkeys_img)
+        )
+        self.wait()
+        self.play(
+            *[ReplacementTransform(img1, img2) for img1, img2 in zip(monkeys_img, monkeys_voting_img)]
+        )
+        self.wait()
+        
+        self.play(
+            FadeIn(arrow)
+        )
+        self.wait()
+
+        self.play(
+            FadeIn(result)
+        )
+        self.wait()
+
+        self.play(
+            *[ReplacementTransform(img2, img1) for img1, img2 in zip(monkeys_img, monkeys_voting_img)],
+            FadeOut(arrow),
+            FadeOut(result),
+        )
+        self.wait()
+
+        # The other one where the two most popular candidates from the first round compete in the second round run-off is called the two round system. 
+
+        result = FRUITS["B"].next_to(arrow, RIGHT)
+        self.play(
+            *[ReplacementTransform(img1, img2) for img1, img2 in zip(monkeys_img, monkeys_voting_img)]
+        )
+        self.wait()
+        
+        self.play(
+            *[ReplacementTransform(img2, img1) for img1, img2 in list(zip(monkeys_img, monkeys_voting_img))[:2]]
+        )
+        self.wait()
+        
+        self.play(
+            *[ReplacementTransform(img1, img2) for img1, img2 in list(zip(monkeys_img, monkeys_votingA_img))[:2]]
+        )
+        self.wait()
+        
+        self.play(
+            FadeIn(arrow)
+        )
+        self.wait()
+
+        self.play(
+            FadeIn(result)
+        )
+        self.wait()
+
+        self.play(
+            *[ReplacementTransform(img2, img1) for img1, img2 in list(zip(monkeys_img, monkeys_voting_img))[2:]],
+            *[ReplacementTransform(img2, img1) for img1, img2 in list(zip(monkeys_img, monkeys_votingA_img))[:2]],
+            FadeOut(arrow),
+            FadeOut(result),
+        )
+        self.wait()
+
+        # Both of these systems have in common that you can think of each voter as having some ranking of the candidates. We can then imagine that the voter writes this ranking on their ballot, the voting system is simply a function that gets all the ballots as input, and its output is the elected winner. 
+
+        orderings = Group(*[ordering(example_table_str[i]).move_to(monkeys_img[i].get_center()).shift(1*RIGHT + 1*UP) for i in range(len(example_table_str))])
+        self.play(
+            FadeIn(orderings)
+        )
+        self.wait()
+
+        table = VotingTable(example_table_str).next_to(monkeys_img, RIGHT)
+        self.play(
+            FadeIn(table)
+        )
+        self.wait()
+
+        self.play(
+            table.results_show("A")
+        )
+        self.wait()
+
+        self.play(
+            FadeOut(monkeys_img),
+            FadeOut(orderings),
+            table.animate.move_to(ORIGIN)
+        )
+        self.wait()
+
+        # Example: We think of the two-round system as a system where the voters need to vote twice. But if every voter writes down their complete ranking of candidates on the ballot, we don’t need the second round at all. We can simulate the two round process just from the information on the ballots. 
+
+        self.play(
+            *table.two_round_system()
+        )
+        self.wait()
+
+        # [suggestivní animace kde máme tabulku s preferencemi voterů a animace pro oba volební systémy, 
+        # -> obrázek vítěze, možná s korunkou nebo tak něco
+        # ]
+
+        # As a quick aside, how should we deal with ties? Well, we could adjust our definition of a voting system to allow them, but then everything becomes a bit clumsy, so instead let’s say that in our example voting systems we always break ties alphabetically, so avocado over banana over coconut. 
+
+        table2 = VotingTable(["AB", "AB", "AB", "AB", "BA", "BA", "BA", "BA"])
+        self.play(
+            FadeOut(table),
+            FadeIn(table2),
+        )
+        self.wait()
+
+        
 
 
 class Reasonable(Scene):
@@ -1135,16 +1323,4 @@ class Explore(Scene):
         self.play(table2.animate.shift(4 * DOWN))
         self.play(*table.push_down("B"))
         self.play(table2[0].rearrange("BCA"))
-        self.wait(10)
-
-
-class Playground(Scene):
-    def construct(self):
-        default()
-        table = VotingTable(["ABCD", "BDCA", "DCAB", "ABCD", "BDCA", "ABDC"])
-        self.add(table)
-        self.wait(1)
-        anims = table.two_round_system()
-        for anim in anims:
-            self.play(anim)
         self.wait(10)
