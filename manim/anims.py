@@ -76,17 +76,18 @@ gs_new_tex = Tex(
 ).scale(thm_scale)
 
 
-example_table_str = ["ABC", "ABC","ABC","ABC", "BCA", "BCA", "BCA", "CAB", "CAB"]
+example_table_str = ["ABC", "ABC","ABC","ABC", "BCA", "BCA", "CAB", "CAB", "CAB"]
 majority_table_str = [ "BCA", "BAC", "BCA", "BAC", "BCA", "CAB", "CAB", "CAB", "CAB"]
 
 def img_monkey(str, voting = False, width = 2):
 
+    sc = 2
     if voting == "A":
-        votes_for_img = SVGMobject("img/fruit/avocado.svg").scale_to_fit_width(width / 5.0)
+        votes_for_img = SVGMobject("img/fruit/avocado.svg").scale_to_fit_width(width / sc)
     elif voting == "B":
-        votes_for_img = SVGMobject("img/fruit/banana.svg").scale_to_fit_width(width / 5.0)
+        votes_for_img = SVGMobject("img/fruit/banana.svg").scale_to_fit_width(width / sc)
     elif voting == "C":
-        votes_for_img = SVGMobject("img/fruit/coconut.svg").scale_to_fit_width(width / 5.0)
+        votes_for_img = SVGMobject("img/fruit/coconut.svg").scale_to_fit_width(width / sc)
     else:
         votes_for_img = Dot().scale(0.0000001)
 
@@ -541,12 +542,19 @@ for method in VotingTable.BROADCAST_METHODS:
 
 
 
+class Interpol(AnimationGroup):
+    def __init__(self, mobject_old, mobject_new, **kwargs):
+        # Call the parent constructor with the animations
+        super().__init__(FadeOut(mobject_old), FadeIn(mobject_new), **kwargs)
+
+
 class Intro(Scene):
     def construct(self):
         default()
+        self.next_section(skip_animations = False)
 
         background = ImageMobject("img/background-upscaled.png").scale_to_fit_width(config.frame_width)
-        explorer = ImageMobject("img/explorer.png").scale_to_fit_height(5).to_corner(DR).shift(2*RIGHT)
+        explorer = ImageMobject("img/explorer.png").scale_to_fit_height(5).to_corner(DR).shift(2*RIGHT) # TODO pridat polylogo na laptop
         self.add(background, explorer)
 
         # Throughout my expeditions, I've visited many beautiful places, but none struck me as much as this faraway tropical island. 
@@ -560,10 +568,9 @@ class Intro(Scene):
 
         w = 1
         monkeys_img = [
-         img_monkey("A", False, w), img_monkey("A", False, w), img_monkey("A", False, w), img_monkey("A", False, w),
-         img_monkey("B", False, w), img_monkey("B", False, w), img_monkey("B", False, w),
-         img_monkey("C", False, w), img_monkey("C", False, w), 
+         img_monkey(example_table_str[i][0], False, w) for i in range(len(example_table_str))
         ]
+        
         monkeys_img[0].to_corner(DL)
         monkeys_img[1].next_to(monkeys_img[0], RIGHT)
         monkeys_img[2].next_to(monkeys_img[0], UP)
@@ -571,14 +578,21 @@ class Intro(Scene):
 
         monkeys_img[4].to_edge(DOWN).shift(2*LEFT)
         monkeys_img[5].next_to(monkeys_img[4], RIGHT)
-        monkeys_img[6].next_to(monkeys_img[5], RIGHT)
 
-        monkeys_img[7].shift(3*LEFT + 2*UP)
+        monkeys_img[6].shift(4*LEFT + 2*UP)
+        monkeys_img[7].next_to(monkeys_img[6], RIGHT)
         monkeys_img[8].next_to(monkeys_img[7], RIGHT)
 
+        monkeys_voting_img = [
+            [
+                img_monkey(example_table_str[i][0], example_table_str[i][j], w).align_to(monkeys_img[i], DR)
+                for j in range(3)
+            ] for i in range(len(example_table_str))
+        ]
+        
         orderings = [
             ordering("ABC", background = BACKGROUND_COLOR).next_to(monkeys_img[3], RIGHT),
-            ordering("BCA", background = BACKGROUND_COLOR).next_to(monkeys_img[5], UP),
+            ordering("BCA", background = BACKGROUND_COLOR).next_to(monkeys_img[5], RIGHT),
             ordering("CAB", background = BACKGROUND_COLOR).next_to(monkeys_img[8], RIGHT),
         ]
 
@@ -588,69 +602,33 @@ class Intro(Scene):
 
         # “Avocado is the best!”
 
+        ranges = [range(4), range(4, 6), range(6, 9)]
 
-        self.play(
-            Succession(
-            FadeIn(monkeys_img[0]),
-            Wait(),
-            FadeIn(monkeys_img[1]),
-            Wait(),
-            FadeIn(monkeys_img[2]),
-            Wait(),
-            FadeIn(monkeys_img[3]),
-            Wait(),
-            FadeIn(orderings[0]),
-            Wait(),
+        for j in range(3):
+            for i in ranges[j]:
+                self.play(
+                    FadeIn(monkeys_img[i]),
+                )
+                #self.wait()
+
+            self.wait()
+
+            self.play(
+                FadeIn(orderings[j]),
             )
-        )
+            self.wait()
 
-        self.play(
-            *[Wiggle(i) for i in monkeys_img[:4]]
-        )
-        self.wait()
+            self.play(
+                *[Wiggle(monkeys_img[i]) for i in ranges[j]]
+            )
+            self.wait()
 
         # Second group were fond of banana, coconut was their second choice, and avocado was the third. 
 
         # “No, banana is better!”
-
-        self.play(
-            Succession(
-            FadeIn(monkeys_img[4]),
-            Wait(),
-            FadeIn(monkeys_img[5]),
-            Wait(),
-            FadeIn(monkeys_img[6]),
-            Wait(),
-            FadeIn(orderings[1]),
-            Wait(),
-            )
-        )
-        self.play(
-            *[Wiggle(i) for i in monkeys_img[4:7]]
-        )
-        self.wait()
-
-
-
         # Finally, there were two monkeys that loved coconuts, avocado was their second choice and banana the last one. 
 
         # “Team coconut!”
-
-        self.play(
-            Succession(
-            FadeIn(monkeys_img[7]),
-            Wait(),
-            FadeIn(monkeys_img[8]),
-            Wait(),
-            FadeIn(orderings[2]),
-            Wait(),
-            )
-        )
-        self.play(
-            *[Wiggle(i) for i in monkeys_img[7:]]
-        )
-        self.wait()
-
 
         # Silence! If there's disagreement, why not resolve it through a vote?
         # “Yes, why don’t we vote? ”
@@ -659,12 +637,165 @@ class Intro(Scene):
 
         # Charmed by their antics, I decided to help organize a vote. After all, there are just a few of them, so it can’t be that hard, right? 
 
+        # Ok, let’s try something simple: everybody will vote for exactly one fruit. Who votes for avocado? 
+        # 4 votes
+        # Banana? 
+        # 3 votes
+        # coconut? 
+        # 2 votes
+
+        self.next_section(skip_animations = False)
+
+        monkeys_votes_img = [monkeys_voting_img[i][0] for i in range(9)]
+
+        for j in range(3):
+            anims = []
+            for i in ranges[j]:
+                anims.append(Interpol(monkeys_img[i], monkeys_votes_img[i]))
+            self.play(*anims)
+            self.wait()
+
+        # [(bude potřeba upravit předchozí text) ukážou se obrázky všech tří ovocí, opice se rozdělí do tří skupin podle toho, pro které ovoce hlasují.]
+
+                
+        winner_img = [
+            Group(
+                SVGMobject("img/crown.svg").scale_to_fit_width(2.0),
+                SVGMobject("img/fruit/" + name).scale_to_fit_width(2.5),
+            ).arrange(DOWN).move_to(2*RIGHT)
+            for name in ["avocado.svg", "banana.svg", "coconut.svg"]
+        ]
+
+        self.play(
+            FadeIn(winner_img[0])
+        )
+        self.wait()
+        self.play(
+            *[Interpol(i1, i2) for i1, i2 in zip(monkeys_votes_img, monkeys_img)],
+            FadeOut(winner_img[0])
+        )
+        self.wait()
+
+
+        # Ok, avocado won. You are welcome. 
+        # monkeys who voted coconut: “But what about the second round? “ 
+
+        # Ok, I guess a two-round election is fairer because now the coconut fans can also express their opinion on the remaining two fruits. So let’s do a second round: avocado? 4 votes. Banana? 5 votes
+
+        monkeys_votes_img = [monkeys_voting_img[i][0] for i in ranges[0]] + [monkeys_voting_img[i][1] for i in ranges[1]] + [monkeys_voting_img[i][0] for i in ranges[2]]
+
+        self.play(
+            *[Interpol(monkeys_img[i], monkeys_votes_img[i]) for i in ranges[0]],
+        )
+        self.wait()
+        self.play(
+            *[Interpol(monkeys_img[i], monkeys_votes_img[i]) for i in ranges[1]],
+            *[Interpol(monkeys_img[i], monkeys_votes_img[i]) for i in ranges[2]],
+        )
+        self.wait()
+
+        # [(upravit předchozí text) opice co by	ly pod banánem se přesunou pod citrón]
+
+        # Hm, so now it looks like that banana, and not avocado should be the winner! 
+        self.play(
+            FadeIn(winner_img[2])
+        )
+        self.wait()
+        self.play(
+            *[Interpol(monkeys_votes_img[i], monkeys_img[i]) for i in range(9)],
+            FadeOut(winner_img[2])
+        )
+        self.wait()
+
+
+        # But then it got worse. 
+        # [opice dělají šepty-šepty]
+
+        # The monkeys who voted for avocado: “We protest!”
+        # [možná drží banner na kterém je napsáno protest]
+
+        monkeys_votes_img = [monkeys_voting_img[i][1] for i in ranges[0]] + [monkeys_voting_img[i][0] for i in ranges[1]] + [monkeys_voting_img[i][0] for i in ranges[2]]
+
+        self.play(
+            *[Wiggle(monkeys_img[i]) for i in ranges[0]]
+        )
+        self.wait()
+
+        # Why? 
+        # We made a mistake in the first round, can we run the election one more time? Please! 
+        # [sigh] let’s do it one more time. First round. Who is for avocado?
+
+        for it in range(2):
+            self.play(
+                *[Interpol(monkeys_img[i], monkeys_votes_img[i]) for i in ranges[0]],
+                *[Interpol(monkeys_img[i], monkeys_votes_img[i]) for i in ranges[1]],
+            )
+            self.wait()
+            self.play(
+                *[Interpol(monkeys_img[i], monkeys_votes_img[i]) for i in ranges[2]],
+            )
+            self.wait()
+
+            if it == 0:
+                self.play(
+                    *[Interpol(monkeys_votes_img[i], monkeys_img[i]) for i in range(9)],
+                )
+                self.wait()
+
+        # [(upravit předchozí text) opice co by	ly pod banánem se přesunou pod citrón]
+
+        # Hm, so now it looks like that banana, and not avocado should be the winner! 
+        self.play(
+            FadeIn(winner_img[1])
+        )
+        self.wait()
+        self.play(
+            *[Interpol(monkeys_votes_img[i], monkeys_img[i]) for i in range(9)],
+            FadeOut(winner_img[1])
+        )
+        self.wait()
+
+
+
+
+        # 2 votes
+        # banana? 
+        # 3 votes
+        # coconut? 
+        # 4 votes [hehe]
+
+        # Interesting, now banana and coconut go to the second round. Who votes for banana?  
+        # 3 votes coconut? 6 votes
+
+        # [(upravit předchozí text) podobná animace s přesouváním opic. možná nakonci ty dvě opice udělají hahaha]
+
+        # So now it’s even coconut that won. These two monkeys are pretty sly. They really don’t like banana. They also realized that their favorite, avocado, cannot win against banana in the second round. So, they rather voted for coconut because that’s their second choice. 
+
+        rec_four = SurroundingRectangle(Group(*monkeys_img[:4]), color = RED)
+        rec = rec_four.copy()
+        self.play(FadeIn(rec))
+        self.wait()
+
+        rec_other = [SurroundingRectangle(orderings[0][1][i], color = RED) for i in range(3)]
+        self.play(Transform(rec, rec_other[2]))
+        self.wait()
+        self.play(Transform(rec, rec_other[0]))
+        self.wait()
+        self.play(Transform(rec, rec_other[1]))
+        self.wait()
+        self.play(Transform(rec, rec_four))
+        self.wait()
+        self.play(FadeOut(rec))
+        self.wait()
+
+        # Picking the best fruit doesn’t sound so easy anymore! Especially the fact that monkeys can vote strategically and, with that, change the outcome of the election, is really annoying. An election should ideally be a competition of ideas, not a strategic game among voters. Wouldn't it be great to have a voting system that incentivizes all the monkeys to be truthful? But does such a system exist?
+
 
 
 class Polylogo(Scene):
     def construct(self):
         default()
-        authors = Tex(
+        authors = Tex(# napsat autory nakonec jestli nebudou tady
             r"\textbf{Richard Hladík, Filip Hlásek, Václav Rozhoň, Václav Volhejn}",
             color=text_color,
             font_size=40,
@@ -681,18 +812,25 @@ class Polylogo(Scene):
             .move_to(2 * LEFT + 0.95 * UP + 0.49 * RIGHT)
         )
         self.play(
-            Write(authors),
+            #Write(authors),
             Write(channel_name),
         )
         self.play(FadeIn(logo_solarized))
         self.add(channel_name_without_o)
         self.remove(channel_name)
 
+        mirek_logo = ImageMobject("img/olsak.jpg").scale(1.5).shift(2*DOWN + 2*RIGHT)
+        mirek_tex = Tex(r"\raggedleft Based on a short story \\ by Mirek Olšák").next_to(mirek_logo, LEFT)
+
+        self.play(
+            FadeIn(mirek_logo),
+            Write(mirek_tex),
+        )
         self.wait()
+
 
         self.play(*[FadeOut(o) for o in self.mobjects])
         self.wait()
-
 
 class Statement1(Scene):
     def construct(self):
