@@ -9,6 +9,51 @@ from collections import Counter
 from utils.util_general import *
 
 
+def create_bubble(scale = 1.0, color = text_color, length_scale = 1, speaking = False):
+    if speaking == True:
+        return ImageMobject("img/bubble.jpeg").scale_to_fit_width(2)
+    
+    scale = scale / 200.0
+    pos = ORIGIN - np.array([489.071, 195.644, 0.0])*scale
+    ret_objects = []
+
+    c1 = Circle(
+        radius = 28.5689 * scale,
+        color = color
+    ).move_to(np.array([489.071, 195.644, 0.0])*scale).shift(pos + 0.3*UP)
+    print(c1.get_center())
+
+    c2 = Circle(
+        radius = 39.7392 * scale,
+        color = color
+    ).move_to(np.array([409.987, 274.728, 0.0])*scale).shift(pos + 0.15*UP)
+    ret_objects += [c1, c2]
+
+    pnts = [
+        (373.367*RIGHT +  366.776 * UP) * scale + pos,
+        (503.717*RIGHT +  453.873 * UP) * scale + pos,
+        (464.612*RIGHT +  613.847 * UP) * scale + pos,
+        (340.78*RIGHT +  643.472 * UP) * scale + pos,
+        (131.628*RIGHT +  596.072 * UP) * scale + pos,
+        (174.288*RIGHT +  388.106 * UP) * scale + pos,
+    ]
+
+    center = 0*LEFT
+    for i in range(len(pnts)):
+        pnts[i] += (length_scale - 1)*(pnts[i] - pnts[0])[0]*RIGHT
+        center += pnts[i]
+    center /= len(pnts)
+
+    angles = np.array([120, 170, 120, 120, 180, 120])*1.5707963267/90.0
+
+
+    for i in range(len(pnts)):
+        ret_objects.append(
+            ArcBetweenPoints(pnts[i], pnts[(i+1)%len(pnts)], angle = angles[i], color = color)
+        )
+
+    return Group(*ret_objects)#, center
+
 
 thm_scale = 0.8
 gs_title = Tex("Gibbard-Satterthwaite Theorem:", color=text_color)
@@ -32,7 +77,7 @@ gs_new_tex = Tex(
 
 
 example_table_str = ["ABC", "ABC", "BCA", "BCA", "BCA", "CAB", "CAB", "CAB", "CAB"]
-
+majority_table_str = [ "BCA", "BAC", "BCA", "BAC", "BCA", "CAB", "CAB", "CAB", "CAB"]
 
 def img_monkey(str, voting = False, width = 2):
     img_path = ""
@@ -516,7 +561,7 @@ class Polylogo(Scene):
         self.wait()
 
 
-class Statement(Scene):
+class Statement1(Scene):
     def construct(self):
         default()
         # Unfortunately, the answer is no and because I took my whiteboard with me, I will explain why. I will prove to you the Gibbard-Satterthwaite theorem which says that any reasonable voting system sometimes incentivizes strategic voting. 
@@ -662,10 +707,171 @@ class Statement(Scene):
         self.play(
             FadeOut(table),
             FadeIn(table2),
+            FadeOut(border),
+            gs_tex[2].animate.set_color(GREEN),
         )
         self.wait()
 
+class Statement2(Scene):
+    def construct(self):
+        default()
         
+        gs_tex[2].set_color(GREEN),
+        self.add(
+            gs_tex.to_edge(UP, buff = 0.5),
+            )
+        border = SurroundingRectangle(gs_tex[4], color  = RED)
+        self.play(FadeIn(border))
+        self.wait() 
+
+        # Let’s go on, what do we mean by “sometimes incentivizes strategic voting”? Here is an example. Let’s look at this scenario with the plurality voting system and this voter in particular. So far, we did not distinguish between the true preference of the voter and the ranking that the voter actually writes on the ballot, we assumed this is always the same thing. But now let’s imagine that all other voters already cast their ballots and our voter actually sees what is written on them. 
+
+        i_voter = 3
+        table = VotingTable(example_table_str).next_to(gs_tex, DOWN)
+        voter = img_monkey("A").scale(2).next_to(table[i_voter], DOWN, buff = 1)
+
+        self.play(
+            *[FadeIn(table[i]) for i in range(table.num_of_voters) if i != i_voter]
+        )
+        self.wait()
+        self.play(
+            FadeIn(voter)
+        )
+        self.wait()
+
+
+        bubble = create_bubble().next_to(voter, LEFT).shift(1*UP)
+        order = ordering("ABC").move_to(bubble.get_center())
+        self.play(
+            FadeIn(bubble),
+            FadeIn(order)
+        )
+        self.wait()
+
+        sc = 2
+        self.play(
+            order.animate.scale(sc).move_to(table[i_voter].get_center())
+        )
+        self.wait()
+        self.play(
+            order.animate.scale(1.0/sc).move_to(bubble.get_center())
+        )
+        self.wait()
+
+        self.play(
+            table.results_show("A")
+        )
+        self.wait()
+        self.play(
+            table.results_hide()
+        )
+        self.wait()
+        
+        # Now it is time for our voter to decide what ranking to put on the ballot. The voter can of course use their true preference - in this case, the voting system elects Y as the winner. But the voter can also vote strategically and write a different ranking on the ballot. For example, if the voter casts this ballot, the voting system now elects Z as the winner. 
+
+        bubble2 = create_bubble(speaking = True).next_to(voter, RIGHT).shift(1*UP)
+        order2 = ordering("CAB").move_to(bubble2.get_center())
+        self.play(
+            FadeIn(bubble2),
+            FadeIn(order2)
+        )
+        self.wait()
+        self.play(
+            order2.animate.scale(sc).move_to(table[i_voter].get_center())
+        )
+        self.wait()
+        self.play(
+            order2.animate.scale(1.0/sc).move_to(bubble2.get_center())
+        )
+        self.wait()
+
+        self.play(
+            table.results_show("B")
+        )
+        self.wait()
+        self.play(
+            table.results_hide()
+        )
+        self.wait()
+
+        # What’s important, our voter actually prefers Z over Y, so it pays off to submit this dishonest ballot. Whenever this happens, we say that the voter is incentivized to vote strategically. 
+
+        self.play(
+            Circumscribe(order, color = RED)
+        )
+        self.wait()
+
+        self.play(
+            FadeOut(border),
+            gs_tex[4].animate.set_color(GREEN),
+        )
+        self.wait()
+
+        self.play(
+            *[FadeOut(o) for o in self.mobjects if o != gs_tex]
+        )
+        self.wait()
+
+        # So the definition is a bit different than what happened earlier because there, the whole group of monkeys coordinated. Also, the theorem is not saying that in every possible scenario, there is somebody who has this incentive. But, for any reasonable voting system we can find at least one scenario where strategic voting occurs. 
+
+        self.play(
+            Circumscribe(gs_tex, color = RED)
+        )
+        self.wait()
+        self.play(
+            gs_tex[3].animate.set_color(GREEN)
+        )
+        self.wait()
+
+        # And this brings us to the word “reasonable”. The problem is: Think of the dictatorship voting system where the winner is always the top preference of voter number 3. By that I mean that system always outputs the fruit in the highlighted square. This voting system actually satisfies our definition of a voting system. Also, you can check that there is no scenario in which strategic voting helps anybody. 
+        
+    
+        border = SurroundingRectangle(gs_tex[1], color = RED)
+        self.play(
+            FadeIn(border)
+        )
+        self.wait()
+
+        table.move_to(ORIGIN)
+        self.play(
+            FadeIn(table)
+        )
+        self.wait()
+
+        border_fruit = SurroundingRectangle(table[3][0], color = RED)
+        self.play(
+            FadeIn(border_fruit),
+            table.results_show("B")
+        )
+        self.wait()
+        self.play(
+            FadeOut(table),
+            FadeOut(border_fruit)
+        )
+        self.wait()
+
+        # This is why we can prove the theorem only for voting systems that are in some sense reasonable. But how should we define it precisely? For now, let’s choose the following definition: I will say that a voting system is reasonable if, whenever there is a candidate that is the top preference for more than half of the voters, then this candidate should be elected by the voting system. 
+
+        reasonable1_tex = Tex("{{Reasonable system: }}").next_to(gs_tex, DOWN, buff = 1).align_to(gs_tex, LEFT)
+        reasonable_tex = Tex(r"{{\raggedright The candidate which is the first choice for majority\\ is always the winner. }}").scale(0.8).next_to(reasonable1_tex, RIGHT)
+        majority_table = VotingTable(majority_table_str).align_to(reasonable_tex, UP).shift(1*DOWN)
+
+        self.play(FadeIn(reasonable_tex), FadeIn(reasonable1_tex))
+        self.wait()
+        self.play(FadeIn(majority_table))
+        self.wait()
+
+        self.play(
+            *[Indicate(majority_table[i][0]) for i in range(5)]
+        )
+        self.wait()
+        self.play(
+            table.winner_show("A")
+        )
+        self.wait()
+        # Both the plurality voting system and the two-round system satisfy this definition of being reasonable, so the definition makes some sense. We will now prove the theorem and then we will discuss this definition a bit more. 
+
+        self.wait(10)
 
 
 class Reasonable(Scene):

@@ -245,3 +245,46 @@ def clipart_icon(color = BLUE, height = 1, z_index = 100):
     )
 
     return icon
+
+
+def create_bubble(scale = 1.0, color = text_color, length_scale = 1):
+    scale = scale / 200.0
+    pos = ORIGIN - np.array([489.071, 195.644, 0.0])*scale
+    ret_objects = []
+
+    c1 = Circle(
+        radius = 28.5689 * scale,
+        color = color
+    ).move_to(np.array([489.071, 195.644, 0.0])*scale).shift(pos + 0.3*UP)
+    print(c1.get_center())
+
+    c2 = Circle(
+        radius = 39.7392 * scale,
+        color = color
+    ).move_to(np.array([409.987, 274.728, 0.0])*scale).shift(pos + 0.15*UP)
+    ret_objects += [c1, c2]
+
+    pnts = [
+        (373.367*RIGHT +  366.776 * UP) * scale + pos,
+        (503.717*RIGHT +  453.873 * UP) * scale + pos,
+        (464.612*RIGHT +  613.847 * UP) * scale + pos,
+        (340.78*RIGHT +  643.472 * UP) * scale + pos,
+        (131.628*RIGHT +  596.072 * UP) * scale + pos,
+        (174.288*RIGHT +  388.106 * UP) * scale + pos,
+    ]
+
+    center = 0*LEFT
+    for i in range(len(pnts)):
+        pnts[i] += (length_scale - 1)*(pnts[i] - pnts[0])[0]*RIGHT
+        center += pnts[i]
+    center /= len(pnts)
+
+    angles = np.array([120, 170, 120, 120, 180, 120])*1.5707963267/90.0
+
+
+    for i in range(len(pnts)):
+        ret_objects.append(
+            ArcBetweenPoints(pnts[i], pnts[(i+1)%len(pnts)], angle = angles[i], color = color)
+        )
+
+    return ret_objects, center
