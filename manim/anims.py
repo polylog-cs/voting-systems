@@ -76,30 +76,42 @@ gs_new_tex = Tex(
 ).scale(thm_scale)
 
 
-example_table_str = ["ABC", "ABC", "BCA", "BCA", "BCA", "CAB", "CAB", "CAB", "CAB"]
+example_table_str = ["ABC", "ABC","ABC","ABC", "BCA", "BCA", "BCA", "CAB", "CAB"]
 majority_table_str = [ "BCA", "BAC", "BCA", "BAC", "BCA", "CAB", "CAB", "CAB", "CAB"]
 
 def img_monkey(str, voting = False, width = 2):
-    img_path = ""
+
+    if voting == "A":
+        votes_for_img = SVGMobject("img/fruit/avocado.svg").scale_to_fit_width(width / 5.0)
+    elif voting == "B":
+        votes_for_img = SVGMobject("img/fruit/banana.svg").scale_to_fit_width(width / 5.0)
+    elif voting == "C":
+        votes_for_img = SVGMobject("img/fruit/coconut.svg").scale_to_fit_width(width / 5.0)
+    else:
+        votes_for_img = Dot().scale(0.0000001)
+
     if str == "A":
         if voting:
-            img_path = "img/monkeys/avocado2.png"
+            monkey_img = ImageMobject("img/monkeys/avocado2.png").scale_to_fit_width(width)
+            votes_for_img.shift(1*LEFT + 1*UP)
         else:
-            img_path = "img/monkeys/avocado1.png" 
+            monkey_img = ImageMobject("img/monkeys/avocado1.png" ).scale_to_fit_width(width)
     elif str == "B":
         if voting:
-            img_path = "img/monkeys/banana2.png"
+            monkey_img = ImageMobject("img/monkeys/banana2.png").scale_to_fit_width(width)
+            votes_for_img.shift(1*LEFT + 1*UP)
         else:
-            img_path = "img/monkeys/banana1.png" 
+            monkey_img = ImageMobject("img/monkeys/banana1.png" ).scale_to_fit_width(width)
     else:
         if voting:
-            img_path = "img/monkeys/coconut2.png"
+            monkey_img = ImageMobject("img/monkeys/coconut2.png").scale_to_fit_width(width)
+            votes_for_img.shift(1*LEFT + 1*UP)
         else:
-            img_path = "img/monkeys/coconut1.png" 
+            monkey_img = ImageMobject("img/monkeys/coconut1.png" ).scale_to_fit_width(width)
         
-    return ImageMobject(img_path).scale_to_fit_width(width)
+    return Group(monkey_img, votes_for_img)
 
-def ordering(str):
+def ordering(str, background = None):
     w = 0.3
     f1 = FRUITS[str[0]].copy().scale_to_fit_width(w)
     f2 = FRUITS[str[1]].copy().scale_to_fit_width(w)
@@ -107,7 +119,11 @@ def ordering(str):
     fruits = Group(f1, f2, f3).arrange(DOWN)
 
     border = SurroundingRectangle(fruits, corner_radius = 0.3, color = text_color)
-    return Group(fruits, border)
+    if background!=None:
+        border.set_opacity(1.0)
+        border.set_color(background)
+
+    return Group(border, fruits)
 
 class Fruit(VMobject):
     def __init__(self, label, normal, gray: VMobject = None, *args, **kwargs):
@@ -148,10 +164,10 @@ class Fruit(VMobject):
 FRUITS = {
     f.label: f
     for f in (
-        Fruit("A", Circle(color=GREEN).set_fill(GREEN, 1).scale(0.4)),
-        Fruit("B", Square(color=YELLOW).set_fill(YELLOW, 1).scale(0.4)),
-        Fruit("C", Square(color=RED).set_fill(RED, 1).scale(0.4)),
-        Fruit("D", Circle(color=BLUE).set_fill(BLUE, 1).scale(0.4)),
+        Fruit("A", SVGMobject("img/fruit/avocado.svg").scale(0.4)),
+        Fruit("B", SVGMobject("img/fruit/banana.svg").scale(0.4)),
+        Fruit("C", SVGMobject("img/fruit/coconut.svg").scale(0.4)),
+        Fruit("D", Circle(color=BLUE).set_fill(BLUE, 1).scale(0.4)), 
     )
 }
 
@@ -525,6 +541,123 @@ for method in VotingTable.BROADCAST_METHODS:
 
 
 
+class Intro(Scene):
+    def construct(self):
+        default()
+
+        background = ImageMobject("img/background-upscaled.png").scale_to_fit_width(config.frame_width)
+        explorer = ImageMobject("img/explorer.png").scale_to_fit_height(5).to_corner(DR).shift(2*RIGHT)
+        self.add(background, explorer)
+
+        # Throughout my expeditions, I've visited many beautiful places, but none struck me as much as this faraway tropical island. 
+
+        
+        self.play(
+            Group(background, explorer).animate.scale(1.05),
+            run_time = 5
+        )
+        self.wait()
+
+        w = 1
+        monkeys_img = [
+         img_monkey("A", False, w), img_monkey("A", False, w), img_monkey("A", False, w), img_monkey("A", False, w),
+         img_monkey("B", False, w), img_monkey("B", False, w), img_monkey("B", False, w),
+         img_monkey("C", False, w), img_monkey("C", False, w), 
+        ]
+        monkeys_img[0].to_corner(DL)
+        monkeys_img[1].next_to(monkeys_img[0], RIGHT)
+        monkeys_img[2].next_to(monkeys_img[0], UP)
+        monkeys_img[3].next_to(monkeys_img[0], UR)
+
+        monkeys_img[4].to_edge(DOWN).shift(2*LEFT)
+        monkeys_img[5].next_to(monkeys_img[4], RIGHT)
+        monkeys_img[6].next_to(monkeys_img[5], RIGHT)
+
+        monkeys_img[7].shift(3*LEFT + 2*UP)
+        monkeys_img[8].next_to(monkeys_img[7], RIGHT)
+
+        orderings = [
+            ordering("ABC", background = BACKGROUND_COLOR).next_to(monkeys_img[3], RIGHT),
+            ordering("BCA", background = BACKGROUND_COLOR).next_to(monkeys_img[5], UP),
+            ordering("CAB", background = BACKGROUND_COLOR).next_to(monkeys_img[8], RIGHT),
+        ]
+
+        # It was full of monkeys that were constantly arguing about which fruit is the best. I noticed three distinct groups among them, each one with a different opinion on the matter.
+        
+        # There was a group that really liked avocado, banana was their second choice, and they disliked coconuts. 
+
+        # “Avocado is the best!”
+
+
+        self.play(
+            Succession(
+            FadeIn(monkeys_img[0]),
+            Wait(),
+            FadeIn(monkeys_img[1]),
+            Wait(),
+            FadeIn(monkeys_img[2]),
+            Wait(),
+            FadeIn(monkeys_img[3]),
+            Wait(),
+            FadeIn(orderings[0]),
+            Wait(),
+            )
+        )
+
+        self.play(
+            *[Wiggle(i) for i in monkeys_img[:4]]
+        )
+        self.wait()
+
+        # Second group were fond of banana, coconut was their second choice, and avocado was the third. 
+
+        # “No, banana is better!”
+
+        self.play(
+            Succession(
+            FadeIn(monkeys_img[4]),
+            Wait(),
+            FadeIn(monkeys_img[5]),
+            Wait(),
+            FadeIn(monkeys_img[6]),
+            Wait(),
+            FadeIn(orderings[1]),
+            Wait(),
+            )
+        )
+        self.play(
+            *[Wiggle(i) for i in monkeys_img[4:7]]
+        )
+        self.wait()
+
+
+
+        # Finally, there were two monkeys that loved coconuts, avocado was their second choice and banana the last one. 
+
+        # “Team coconut!”
+
+        self.play(
+            Succession(
+            FadeIn(monkeys_img[7]),
+            Wait(),
+            FadeIn(monkeys_img[8]),
+            Wait(),
+            FadeIn(orderings[2]),
+            Wait(),
+            )
+        )
+        self.play(
+            *[Wiggle(i) for i in monkeys_img[7:]]
+        )
+        self.wait()
+
+
+        # Silence! If there's disagreement, why not resolve it through a vote?
+        # “Yes, why don’t we vote? ”
+        # “But how do we do it?”
+        # “Help us, big monkey.”
+
+        # Charmed by their antics, I decided to help organize a vote. After all, there are just a few of them, so it can’t be that hard, right? 
 
 
 
@@ -888,7 +1021,7 @@ class Reasonable(Scene):
 
         # reasonable_tex = Tex(r"Reasonable = ")
         table = VotingTable(
-            ["ABCD", "ABCD", "ABCD", "ABCD", "ABCD", "BCDA", "BCDA", "BCDA", "BCDA"]
+            ["ABC", "ABC", "ABC", "ABC", "ABC", "BCA", "BCA", "BCA", "BCA"]
         ).shift(2 * LEFT)
 
         self.play(FadeIn(table))
@@ -905,7 +1038,9 @@ class Reasonable(Scene):
         self.play(*table.highlight("A", indexes=range(5, table.num_of_voters)))
         self.wait()
 
-        self.play(*table.highlight("B"))
+        self.play(*table.highlight("B", indexes=range(5, table.num_of_voters)))
+        self.wait()
+        self.play(*table.highlight("B", indexes=range(5)))
         self.wait()
 
         # So maybe we should think about the theorem one more time and try to prove it with a definition of “reasonable” that permits as many voting systems as possible. That is exactly what Gibbard and Satterthwaite did, this is their theorem in full glory. They found out that these two conditions on the voting system suffice to prove the theorem, and they are also necessary. The proof of this more general theorem is similar to our proof but more tedious, so let’s skip it.
