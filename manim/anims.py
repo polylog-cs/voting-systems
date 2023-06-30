@@ -1501,7 +1501,9 @@ class Outro(MovingCameraScene):
 
         # a coconut! A few monkeys were quite happy,
 
-        winner_img = img_winners()
+        winner_img = [
+            get_crowned_fruit(label).move_to(5 * RIGHT).scale(3) for label in "ABC"
+        ]
 
         self.play(
             FadeIn(winner_img[1])
@@ -1576,33 +1578,3 @@ class Outro(MovingCameraScene):
         # I had to leave the island pretty quickly then. The rumor has it the monkeys are still out there, arguing. But now about which voting system is the best one…
 
         # [závěrečné poděkování patronům a some, možná midjourney bloopers? možná odkázat na roughgardenovy lecture notes?]
-
-class Explore(Scene):
-    def construct(self):
-        default()
-        fruits = VGroup(*(get_fruit(f) for f in "ABC")).scale(3).arrange()
-        self.add(fruits)
-        self.wait(5)
-
-        # table = VotingTable(["ABC", "BCA", "ACB"])
-        # self.add(table)
-        # self.wait(1)
-        # self.play(table[0].rearrange("CAB"), table[1].rearrange("CAB"))
-        # self.wait(1)
-        # self.play(*table.push_down("A"))
-        # self.wait(1)
-        # self.play(*table.gray("C"))
-        # self.wait(1)
-        # self.play(*table.gray("A"))
-        # self.wait(1)
-        # self.play(*table.ungray("C"))
-        # self.wait(1)
-        # self.play(*table.ungray("A"))
-        # self.wait(1)
-
-        # self.play(table.animate.shift(1 * RIGHT + 2 * UP))
-        # table2 = table.copy()
-        # self.play(table2.animate.shift(4 * DOWN))
-        # self.play(*table.push_down("B"))
-        # self.play(table2[0].rearrange("BCA"))
-        # self.wait(10)

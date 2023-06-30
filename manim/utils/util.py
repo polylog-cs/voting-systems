@@ -150,15 +150,6 @@ def img_monkey(str, voting=False, width=2):
     return Group(monkey_img, votes_for_img)
 
 
-def img_winners():
-    return [
-            Group(
-                SVGMobject("img/crown.svg").scale_to_fit_width(2.0),
-                SVGMobject("img/fruit/" + name).scale_to_fit_width(2.5),
-            ).arrange(DOWN).move_to(2*RIGHT)
-            for name in ["avocado.svg", "banana.svg", "coconut.svg"]
-        ]
-
 def ordering(str, background = None):
     w = 0.4
     f1 = FRUITS[str[0]].copy().scale_to_fit_width(w)
