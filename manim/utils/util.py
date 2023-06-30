@@ -12,52 +12,54 @@ from .util_general import *
 DRAFT = False
 
 
-
-
-def create_bubble(scale = 1.0, color = text_color, length_scale = 1, speaking = False):
+def create_bubble(scale=1.0, color=text_color, length_scale=1, speaking=False):
     if speaking == True:
         return ImageMobject("img/bubble.jpeg").scale_to_fit_width(2)
-    
+
     scale = scale / 200.0
-    pos = ORIGIN - np.array([489.071, 195.644, 0.0])*scale
+    pos = ORIGIN - np.array([489.071, 195.644, 0.0]) * scale
     ret_objects = []
 
-    c1 = Circle(
-        radius = 28.5689 * scale,
-        color = color
-    ).move_to(np.array([489.071, 195.644, 0.0])*scale).shift(pos + 0.3*UP)
+    c1 = (
+        Circle(radius=28.5689 * scale, color=color)
+        .move_to(np.array([489.071, 195.644, 0.0]) * scale)
+        .shift(pos + 0.3 * UP)
+    )
     print(c1.get_center())
 
-    c2 = Circle(
-        radius = 39.7392 * scale,
-        color = color
-    ).move_to(np.array([409.987, 274.728, 0.0])*scale).shift(pos + 0.15*UP)
+    c2 = (
+        Circle(radius=39.7392 * scale, color=color)
+        .move_to(np.array([409.987, 274.728, 0.0]) * scale)
+        .shift(pos + 0.15 * UP)
+    )
     ret_objects += [c1, c2]
 
     pnts = [
-        (373.367*RIGHT +  366.776 * UP) * scale + pos,
-        (503.717*RIGHT +  453.873 * UP) * scale + pos,
-        (464.612*RIGHT +  613.847 * UP) * scale + pos,
-        (340.78*RIGHT +  643.472 * UP) * scale + pos,
-        (131.628*RIGHT +  596.072 * UP) * scale + pos,
-        (174.288*RIGHT +  388.106 * UP) * scale + pos,
+        (373.367 * RIGHT + 366.776 * UP) * scale + pos,
+        (503.717 * RIGHT + 453.873 * UP) * scale + pos,
+        (464.612 * RIGHT + 613.847 * UP) * scale + pos,
+        (340.78 * RIGHT + 643.472 * UP) * scale + pos,
+        (131.628 * RIGHT + 596.072 * UP) * scale + pos,
+        (174.288 * RIGHT + 388.106 * UP) * scale + pos,
     ]
 
-    center = 0*LEFT
+    center = 0 * LEFT
     for i in range(len(pnts)):
-        pnts[i] += (length_scale - 1)*(pnts[i] - pnts[0])[0]*RIGHT
+        pnts[i] += (length_scale - 1) * (pnts[i] - pnts[0])[0] * RIGHT
         center += pnts[i]
     center /= len(pnts)
 
-    angles = np.array([120, 170, 120, 120, 180, 120])*1.5707963267/90.0
-
+    angles = np.array([120, 170, 120, 120, 180, 120]) * 1.5707963267 / 90.0
 
     for i in range(len(pnts)):
         ret_objects.append(
-            ArcBetweenPoints(pnts[i], pnts[(i+1)%len(pnts)], angle = angles[i], color = color)
+            ArcBetweenPoints(
+                pnts[i], pnts[(i + 1) % len(pnts)], angle=angles[i], color=color
+            )
         )
 
-    return Group(*ret_objects)#, center
+    return Group(*ret_objects)  # , center
+
 
 thm_scale = 0.8
 gs_title = Tex("Gibbard-Satterthwaite Theorem:", color=text_color)
@@ -79,11 +81,14 @@ gs_new_tex = Tex(
     color=text_color,
 ).scale(thm_scale)
 
-reasonable1_tex = Tex("{{Reasonable system: }}", color = TEXT_COLOR)
-reasonable2_tex = Tex(r"{{\raggedright The candidate which is the first choice for majority\\ is always the winner. }}", color = TEXT_COLOR).scale(0.8)
+reasonable1_tex = Tex("{{Reasonable system: }}", color=TEXT_COLOR)
+reasonable2_tex = Tex(
+    r"{{\raggedright The candidate which is the first choice for majority\\ is always the winner. }}",
+    color=TEXT_COLOR,
+).scale(0.8)
 reasonable_group = Group(reasonable1_tex, reasonable2_tex).arrange(RIGHT)
 
-example_table_str = ["ABC", "ABC","ABC","ABC", "BCA", "BCA", "CAB", "CAB", "CAB"]
+example_table_str = ["ABC", "ABC", "ABC", "ABC", "BCA", "BCA", "CAB", "CAB", "CAB"]
 
 proof_table_strings = [example_table_str.copy()]
 for i in range(4):
@@ -91,54 +96,74 @@ for i in range(4):
     new_str[i] = "BAC"
     proof_table_strings.append(new_str)
 
-majority_table_str = [ "BCA", "BAC", "BCA", "BAC", "BCA", "CAB", "CAB", "CAB", "CAB"]
+majority_table_str = ["BCA", "BAC", "BCA", "BAC", "BCA", "CAB", "CAB", "CAB", "CAB"]
 
-def img_monkey(str, voting = False, width = 2):
 
+def img_monkey(str, voting=False, width=2):
     sc = 2
     if voting == "A":
-        votes_for_img = SVGMobject("img/fruit/avocado.svg").scale_to_fit_width(width / sc)
+        votes_for_img = SVGMobject("img/fruit/avocado.svg").scale_to_fit_width(
+            width / sc
+        )
     elif voting == "B":
-        votes_for_img = SVGMobject("img/fruit/banana.svg").scale_to_fit_width(width / sc)
+        votes_for_img = SVGMobject("img/fruit/banana.svg").scale_to_fit_width(
+            width / sc
+        )
     elif voting == "C":
-        votes_for_img = SVGMobject("img/fruit/coconut.svg").scale_to_fit_width(width / sc)
+        votes_for_img = SVGMobject("img/fruit/coconut.svg").scale_to_fit_width(
+            width / sc
+        )
     else:
         votes_for_img = Dot().scale(0.0000001)
 
     if str == "A":
         if voting:
-            monkey_img = ImageMobject("img/monkeys/avocado2.png").scale_to_fit_width(width)
-            votes_for_img.shift(1*LEFT + 1*UP)
+            monkey_img = ImageMobject("img/monkeys/avocado2.png").scale_to_fit_width(
+                width
+            )
+            votes_for_img.shift(1 * LEFT + 1 * UP)
         else:
-            monkey_img = ImageMobject("img/monkeys/avocado1.png" ).scale_to_fit_width(width)
+            monkey_img = ImageMobject("img/monkeys/avocado1.png").scale_to_fit_width(
+                width
+            )
     elif str == "B":
         if voting:
-            monkey_img = ImageMobject("img/monkeys/banana2.png").scale_to_fit_width(width)
-            votes_for_img.shift(1*LEFT + 1*UP)
+            monkey_img = ImageMobject("img/monkeys/banana2.png").scale_to_fit_width(
+                width
+            )
+            votes_for_img.shift(1 * LEFT + 1 * UP)
         else:
-            monkey_img = ImageMobject("img/monkeys/banana1.png" ).scale_to_fit_width(width)
+            monkey_img = ImageMobject("img/monkeys/banana1.png").scale_to_fit_width(
+                width
+            )
     else:
         if voting:
-            monkey_img = ImageMobject("img/monkeys/coconut2.png").scale_to_fit_width(width)
-            votes_for_img.shift(1*LEFT + 1*UP)
+            monkey_img = ImageMobject("img/monkeys/coconut2.png").scale_to_fit_width(
+                width
+            )
+            votes_for_img.shift(1 * LEFT + 1 * UP)
         else:
-            monkey_img = ImageMobject("img/monkeys/coconut1.png" ).scale_to_fit_width(width)
-        
+            monkey_img = ImageMobject("img/monkeys/coconut1.png").scale_to_fit_width(
+                width
+            )
+
     return Group(monkey_img, votes_for_img)
 
-def ordering(str, background = None):
+
+def ordering(str, background=None):
     w = 0.3
     f1 = FRUITS[str[0]].copy().scale_to_fit_width(w)
     f2 = FRUITS[str[1]].copy().scale_to_fit_width(w)
     f3 = FRUITS[str[2]].copy().scale_to_fit_width(w)
     fruits = Group(f1, f2, f3).arrange(DOWN)
 
-    border = SurroundingRectangle(fruits, corner_radius = 0.3, color = text_color)
-    if background!=None:
+    border = SurroundingRectangle(fruits, corner_radius=0.3, color=text_color)
+    if background != None:
         border.set_opacity(1.0)
         border.set_color(background)
 
     return Group(border, fruits)
+
 
 class Fruit(VMobject):
     def __init__(self, label, normal, gray: VMobject = None, *args, **kwargs):
@@ -182,8 +207,17 @@ FRUITS = {
         Fruit("A", SVGMobject("img/fruit/avocado.svg").scale(0.4)),
         Fruit("B", SVGMobject("img/fruit/banana.svg").scale(0.4)),
         Fruit("C", SVGMobject("img/fruit/coconut.svg").scale(0.4)),
-        Fruit("D", VGroup(SVGMobject("img/fruit/avocado.svg"), Tex(r"/"), SVGMobject("img/fruit/banana.svg")).arrange(RIGHT).scale(0.4)), 
-        Fruit("?", Tex(r"?").scale(0.4)), 
+        Fruit(
+            "D",
+            VGroup(
+                SVGMobject("img/fruit/avocado.svg"),
+                Tex(r"/"),
+                SVGMobject("img/fruit/banana.svg"),
+            )
+            .arrange(RIGHT)
+            .scale(0.4),
+        ),
+        Fruit("?", Tex(r"?").scale(0.4)),
     )
 }
 
@@ -464,7 +498,6 @@ class VotingTable(VMobject):
         # TODO
         return self.results_show(results)
 
-
     def candidates_by_votes(self):
         votes = [voter.ordering[0] for voter in self.group]
         ret = [a[0] for a in Counter(votes).most_common()]
@@ -561,7 +594,6 @@ for method in VotingTable.BROADCAST_METHODS:
     setattr(VotingTable, method, create_broadcast(method))
 
 
-
 class Interpol(AnimationGroup):
     def __init__(self, mobject_old, mobject_new, **kwargs):
         # Call the parent constructor with the animations
@@ -569,39 +601,49 @@ class Interpol(AnimationGroup):
 
 
 def monkey_images():
-
     w = 1
     monkeys_img = [
-        img_monkey(example_table_str[i][0], False, w) for i in range(len(example_table_str))
+        img_monkey(example_table_str[i][0], False, w)
+        for i in range(len(example_table_str))
     ]
-    
+
     monkeys_img[0].to_corner(DL)
     monkeys_img[1].next_to(monkeys_img[0], RIGHT)
     monkeys_img[2].next_to(monkeys_img[0], UP)
     monkeys_img[3].next_to(monkeys_img[0], UR)
 
-    monkeys_img[4].to_edge(DOWN).shift(2*LEFT)
+    monkeys_img[4].to_edge(DOWN).shift(2 * LEFT)
     monkeys_img[5].next_to(monkeys_img[4], RIGHT)
 
-    monkeys_img[6].shift(4*LEFT + 2*UP)
+    monkeys_img[6].shift(4 * LEFT + 2 * UP)
     monkeys_img[7].next_to(monkeys_img[6], RIGHT)
     monkeys_img[8].next_to(monkeys_img[7], RIGHT)
 
     monkeys_voting_img = [
         [
-            img_monkey(example_table_str[i][0], example_table_str[i][j], w).align_to(monkeys_img[i], DR)
+            img_monkey(example_table_str[i][0], example_table_str[i][j], w).align_to(
+                monkeys_img[i], DR
+            )
             for j in range(3)
-        ] for i in range(len(example_table_str))
+        ]
+        for i in range(len(example_table_str))
     ]
-    
+
     orderings = [
-        ordering("ABC", background = BACKGROUND_COLOR).next_to(monkeys_img[3], RIGHT),
-        ordering("BCA", background = BACKGROUND_COLOR).next_to(monkeys_img[5], RIGHT),
-        ordering("CAB", background = BACKGROUND_COLOR).next_to(monkeys_img[8], RIGHT),
+        ordering("ABC", background=BACKGROUND_COLOR).next_to(monkeys_img[3], RIGHT),
+        ordering("BCA", background=BACKGROUND_COLOR).next_to(monkeys_img[5], RIGHT),
+        ordering("CAB", background=BACKGROUND_COLOR).next_to(monkeys_img[8], RIGHT),
     ]
 
-    explorer = ImageMobject("img/explorer.png").scale_to_fit_height(5).to_corner(DR).shift(2*RIGHT) # TODO pridat polylogo na laptop
+    explorer = (
+        ImageMobject("img/explorer.png")
+        .scale_to_fit_height(5)
+        .to_corner(DR)
+        .shift(2 * RIGHT)
+    )  # TODO pridat polylogo na laptop
 
-    background = ImageMobject("img/background-upscaled.png").scale_to_fit_width(config.frame_width)
+    background = ImageMobject("img/background-upscaled.png").scale_to_fit_width(
+        config.frame_width
+    )
 
     return monkeys_img, monkeys_voting_img, orderings, explorer, background

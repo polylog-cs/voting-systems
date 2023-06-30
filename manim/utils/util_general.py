@@ -31,6 +31,8 @@ def random_pop_file():
 
 def random_whoosh_file():
     return f"audio/whoosh/whoosh_{random.randint(0, 3)}.wav"
+
+
 whoosh_gain = -8
 
 
@@ -49,12 +51,12 @@ def random_rubik_file():
 def random_typewriter_file():
     return f"audio/typewriter/t{random.randint(0, 9)}.wav"
 
+
 def step_sound_file(randomize=True):
     if randomize:
         return random_tick_file()
     else:
         return "audio/tick/tick_0.wav"
-
 
 
 ############### ANIMATIONS
@@ -64,7 +66,6 @@ def arrive_from(obj, dir, buff=0.5):
     pos = obj.get_center()
     obj.align_to(Point().to_edge(dir, buff=0), -dir).shift(buff * dir)
     return obj.animate.move_to(pos)
-
 
 
 ############### SOLARIZED COLORS
