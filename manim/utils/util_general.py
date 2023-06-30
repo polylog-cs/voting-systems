@@ -124,3 +124,15 @@ BACKGROUND_COLOR_DARK = BASE02
 BACKGROUND_COLOR = BACKGROUND_COLOR_LIGHT
 
 config.max_files_cached = 1000
+
+### Utility functions
+
+
+def load_svg(*args, **kwargs):
+    return (
+        SVGMobject(*args, **kwargs)
+        .set_stroke(BLACK, 0, 0)
+        .set_stroke(BLACK, 0, 0, background=True)
+        .set_sheen_direction((0, 0, 0))
+        .set_sheen_factor(0)
+    )

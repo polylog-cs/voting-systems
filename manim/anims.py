@@ -226,7 +226,7 @@ class Polylogo(Scene):
         channel_name_without_o.scale(4).shift(1 * UP)
 
         logo_solarized = (
-            SVGMobject("img/logo-solarized.svg")
+            load_svg("img/logo-solarized.svg")
             .scale(0.55)
             .move_to(2 * LEFT + 0.95 * UP + 0.49 * RIGHT)
         )
@@ -267,14 +267,10 @@ class Statement1(Scene):
         self.play(
             FadeIn(gs_tex),
         )
+        gs_up = gs_group.copy().to_edge(UP, buff=-0.2)
+        gs_up[0].fade(1)
         self.wait()
-        self.play(
-            FadeOut(gs_title),
-        )
-        self.wait()
-        self.play(
-            gs_tex.animate.to_edge(UP, buff=0.5),
-        )
+        self.play(gs_group.animate.become(gs_up))
         self.wait()
 
         # I think that the most challenging aspect of the theorem is to understand what it is actually saying, so let’s try to slowly unpack this sentence.
@@ -288,156 +284,93 @@ class Statement1(Scene):
         # We have already seen two systems: The first one, where everybody votes for their favorite candidate and we pick the one with the most votes, is called the plurality voting.
 
         monkeys_img = (
-            Group(
-                *[
-                    img_monkey(example_table_str[i][0], voting=False, width=2)
-                    for i in range(len(example_table_str))
-                ]
-            )
-            .arrange_in_grid(rows=3)
+            Group(*[img_monkey(pref[0], width=1) for pref in example_table_str])
+            .arrange()
             .to_edge(LEFT, buff=1)
+            .to_edge(DOWN)
         )
-        monkeys_voting_img = (
-            Group(
-                *[
-                    img_monkey(example_table_str[i][0], voting=True, width=2)
-                    for i in range(len(example_table_str))
-                ]
+
+        special_monkey = monkeys_img[0]
+        special_monkey.save_state()
+        special_monkey.move_to(ORIGIN).scale(2)
+
+        self.play(FadeIn(special_monkey))
+        self.wait()
+        ord = Preference(example_table_str[0]).next_to(special_monkey, RIGHT, buff=0.5)
+        self.play(FadeIn(ord))
+        self.wait()
+        self.play(
+            AnimationGroup(
+                FadeOut(ord),
+                special_monkey.animate.scale(0.5).move_to(
+                    special_monkey.saved_state.get_center()
+                ),
+                FadeIn(monkeys_img[1:]),
+                lag_ratio=0.3,
             )
-            .arrange_in_grid(rows=3)
-            .move_to(monkeys_img.get_center())
-        )
-        monkeys_votingA_img = (
-            Group(
-                *[
-                    img_monkey("A", voting=True, width=2)
-                    for i in range(len(example_table_str))
-                ]
-            )
-            .arrange_in_grid(rows=3)
-            .move_to(monkeys_img.get_center())
         )
 
-        plurality_tex = Tex("Plurality voting:").next_to(gs_title, DOWN, buff=1)
-        arrow = Tex(r"$\rightarrow$").scale(3).next_to(monkeys_img, RIGHT)
-        result = FRUITS["C"].next_to(arrow, RIGHT)
+        table = VotingTable(example_table_str).scale(1.5).shift(2 * LEFT)
+        monkey_scale = 0.4
+        for col, monkey in zip(table.group, monkeys_img):
+            col.save_state()
+            col.scale(monkey_scale).next_to(monkey, UP)
 
-        self.play(FadeIn(monkeys_img))
-        self.wait()
-        self.play(
-            *[
-                ReplacementTransform(img1, img2)
-                for img1, img2 in zip(monkeys_img, monkeys_voting_img)
-            ]
-        )
-        self.wait()
-
-        self.play(FadeIn(arrow))
-        self.wait()
-
-        self.play(FadeIn(result))
-        self.wait()
-
-        self.play(
-            *[
-                ReplacementTransform(img2, img1)
-                for img1, img2 in zip(monkeys_img, monkeys_voting_img)
-            ],
-            FadeOut(arrow),
-            FadeOut(result),
-        )
-        self.wait()
-
-        # The other one where the two most popular candidates from the first round compete in the second round run-off is called the two round system.
-
-        result = FRUITS["B"].next_to(arrow, RIGHT)
-        self.play(
-            *[
-                ReplacementTransform(img1, img2)
-                for img1, img2 in zip(monkeys_img, monkeys_voting_img)
-            ]
-        )
-        self.wait()
-
-        self.play(
-            *[
-                ReplacementTransform(img2, img1)
-                for img1, img2 in list(zip(monkeys_img, monkeys_voting_img))[:2]
-            ]
-        )
-        self.wait()
-
-        self.play(
-            *[
-                ReplacementTransform(img1, img2)
-                for img1, img2 in list(zip(monkeys_img, monkeys_votingA_img))[:2]
-            ]
-        )
-        self.wait()
-
-        self.play(FadeIn(arrow))
-        self.wait()
-
-        self.play(FadeIn(result))
-        self.wait()
-
-        self.play(
-            *[
-                ReplacementTransform(img2, img1)
-                for img1, img2 in list(zip(monkeys_img, monkeys_voting_img))[2:]
-            ],
-            *[
-                ReplacementTransform(img2, img1)
-                for img1, img2 in list(zip(monkeys_img, monkeys_votingA_img))[:2]
-            ],
-            FadeOut(arrow),
-            FadeOut(result),
-        )
-        self.wait()
-
-        # Both of these systems have in common that you can think of each voter as having some ranking of the candidates. We can then imagine that the voter writes this ranking on their ballot, the voting system is simply a function that gets all the ballots as input, and its output is the elected winner.
-
-        orderings = Group(
-            *[
-                ordering(example_table_str[i])
-                .move_to(monkeys_img[i].get_center())
-                .shift(1 * RIGHT + 1 * UP)
-                for i in range(len(example_table_str))
-            ]
-        )
-        self.play(FadeIn(orderings))
-        self.wait()
-
-        table = VotingTable(example_table_str).next_to(monkeys_img, RIGHT)
         self.play(FadeIn(table))
         self.wait()
-
-        self.play(table.results_show("A"))
-        self.wait()
-
         self.play(
-            FadeOut(monkeys_img), FadeOut(orderings), table.animate.move_to(ORIGIN)
+            *(
+                col.animate.scale(1 / monkey_scale).move_to(col.saved_state)
+                for col in table.group
+            ),
+            FadeOut(monkeys_img),
         )
         self.wait()
+        input_brace = BraceLabel(table, "input", UP)
+        self.play(FadeIn(input_brace))
+        self.play(table.winner_show("A"))
+        output_brace = BraceLabel(table.results.winner, "output", UP)
+        self.play(FadeIn(output_brace))
+        self.wait()
+        self.play(FadeOut(input_brace), FadeOut(output_brace))
+        self.play(table.results_hide())
+        self.wait(3)
 
-        # Example: We think of the two-round system as a system where the voters need to vote twice. But if every voter writes down their complete ranking of candidates on the ballot, we don’t need the second round at all. We can simulate the two round process just from the information on the ballots.
+        self.play(Succession(*table.two_round_system()))
+        self.wait()
 
-        # self.play(*table.two_round_system())
-        # self.wait()
+        self.play(FadeOut(table), table.results_hide())
 
-        # [suggestivní animace kde máme tabulku s preferencemi voterů a animace pro oba volební systémy,
-        # -> obrázek vítěze, možná s korunkou nebo tak něco
-        # ]
+        lines = (
+            VGroup(
+                *(
+                    VGroup(get_fruit(char), MathTex(r"50\,\%")).arrange()
+                    for char in "AB"
+                )
+            )
+            .arrange(DOWN)
+            .scale(2)
+        ).shift(2.5 * LEFT)
 
-        # As a quick aside, how should we deal with ties? Well, we could adjust our definition of a voting system to allow them, but then everything becomes a bit clumsy, so instead let’s say that in our example voting systems we always break ties alphabetically, so avocado over banana over coconut.
+        self.play(FadeIn(lines))
+        self.wait()
 
-        table2 = VotingTable(["AB", "AB", "AB", "AB", "BA", "BA", "BA", "BA"])
-        self.play(
-            FadeOut(table),
-            FadeIn(table2),
-            FadeOut(border),
-            gs_tex[2].animate.set_color(GREEN),
-        )
+        table = VotingTable(["AB"]).align_to(lines, RIGHT).scale(1.5)
+        self.play(table.winner_show("A"))
+        self.wait()
+
+        comparison = (
+            VGroup(
+                get_fruit("A"),
+                MathTex(">"),
+                get_fruit("B"),
+                MathTex(">"),
+                get_fruit("C"),
+            )
+            .arrange()
+            .to_edge(DOWN, buff=0.5)
+        ).scale(1.5)
+        self.play(FadeIn(comparison))
         self.wait()
 
 
@@ -952,11 +885,11 @@ class Approval(Scene):
         # It turns out that the full story is more complicated; to understand why, let’s look at one popular voting system called approval voting. This is an extremely simple voting system where every voter can give a vote to as many candidates as they want and then you order the candidates by how many votes they got.
 
         nothing = Dot().scale(0.00001)
-        thumbsup_img = SVGMobject("img/icon.svg").scale(0.3)
+        thumbsup_img = load_svg("img/icon.svg").scale(0.3)
         monkey_scale = 0.3
-        monkey_img1 = ImageMobject("img/monkeys/avocado1.png").scale(monkey_scale)
-        monkey_img2 = ImageMobject("img/monkeys/avocado1.png").scale(monkey_scale)
-        monkey_img3 = ImageMobject("img/monkeys/avocado1.png").scale(monkey_scale)
+        monkey_img1 = ImageMobject("img/monkeys/avocado.png").scale(monkey_scale)
+        monkey_img2 = ImageMobject("img/monkeys/avocado.png").scale(monkey_scale)
+        monkey_img3 = ImageMobject("img/monkeys/avocado.png").scale(monkey_scale)
         fruit_width = 1
         avocado_img = ImageMobject("img/fruit/avocado.png").scale_to_fit_width(
             fruit_width

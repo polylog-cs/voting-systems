@@ -68,7 +68,7 @@ gs_tex = Tex(
     color=text_color,
 ).scale(thm_scale)
 gs_group = (
-    Group(gs_title, gs_tex)
+    VGroup(gs_title, gs_tex)
     .arrange_in_grid(cols=1, cell_alignment=LEFT)
     .to_edge(UP, buff=0.5)
     .to_edge(LEFT)
@@ -99,54 +99,17 @@ for i in range(4):
 majority_table_str = ["BCA", "BAC", "BCA", "BAC", "BCA", "CAB", "CAB", "CAB", "CAB"]
 
 
-def img_monkey(str, voting=False, width=2):
+def img_monkey(kind, voting=False, width=2):
     sc = 2
-    if voting == "A":
-        votes_for_img = SVGMobject("img/fruit/avocado.svg").scale_to_fit_width(
-            width / sc
-        )
-    elif voting == "B":
-        votes_for_img = SVGMobject("img/fruit/banana.svg").scale_to_fit_width(
-            width / sc
-        )
-    elif voting == "C":
-        votes_for_img = SVGMobject("img/fruit/coconut.svg").scale_to_fit_width(
-            width / sc
-        )
+    if voting:
+        votes_for_img = get_fruit(voting)  # TODO: replace with a banner
+        votes_for_img.scale_to_fit_width(width / sc).shift(1 * LEFT + 1 * UP)
     else:
         votes_for_img = Dot().scale(0.0000001)
 
-    if str == "A":
-        if voting:
-            monkey_img = ImageMobject("img/monkeys/avocado2.png").scale_to_fit_width(
-                width
-            )
-            votes_for_img.shift(1 * LEFT + 1 * UP)
-        else:
-            monkey_img = ImageMobject("img/monkeys/avocado1.png").scale_to_fit_width(
-                width
-            )
-    elif str == "B":
-        if voting:
-            monkey_img = ImageMobject("img/monkeys/banana2.png").scale_to_fit_width(
-                width
-            )
-            votes_for_img.shift(1 * LEFT + 1 * UP)
-        else:
-            monkey_img = ImageMobject("img/monkeys/banana1.png").scale_to_fit_width(
-                width
-            )
-    else:
-        if voting:
-            monkey_img = ImageMobject("img/monkeys/coconut2.png").scale_to_fit_width(
-                width
-            )
-            votes_for_img.shift(1 * LEFT + 1 * UP)
-        else:
-            monkey_img = ImageMobject("img/monkeys/coconut1.png").scale_to_fit_width(
-                width
-            )
-
+    kinds = {"A": "avocado", "B": "banana", "C": "coconut"}
+    filename = f"img/monkeys/{kinds[kind]}{'_voting' if voting else ''}.png"
+    monkey_img = ImageMobject(filename).scale_to_fit_width(width)
     return Group(monkey_img, votes_for_img)
 
 
@@ -155,44 +118,45 @@ def ordering(str, background = None):
     f1 = FRUITS[str[0]].copy().scale_to_fit_width(w)
     f2 = FRUITS[str[1]].copy().scale_to_fit_width(w)
     f3 = FRUITS[str[2]].copy().scale_to_fit_width(w)
-    fruits = Group(f1, f2, f3).arrange(DOWN)
+    fruits = VGroup(f1, f2, f3).arrange(DOWN)
 
-    border = SurroundingRectangle(fruits, corner_radius=0.3, color=text_color)
+    border = SurroundingRectangle(fruits, corner_radius=0.2, color=text_color)
     if background != None:
         border.set_opacity(1.0)
         border.set_color(background)
 
-    return Group(border, fruits)
+    return VGroup(border, fruits)
 
 
 class Fruit(VMobject):
-    def __init__(self, label, normal, gray: VMobject = None, *args, **kwargs):
+    def __init__(self, label, normal, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.label = label
-        self._normal = normal
-        if gray is None:
-            color = normal.get_color()
-            color.saturation = 0
-            gray = normal.copy().set_color(color)
-        self._gray = gray
-        self._faded = normal.copy().fade(0.9)
-        self.add(self._normal)
+        self.singleton = normal
+        self.add(normal)
 
     def gray(self):
-        self._gray.move_to(self._normal)
-        self._normal.save_state()
-        return self._normal.animate.become(self._gray)
+        self.singleton.save_state()
+        anims = []
+        if self.singleton.submobjects:
+            for subm in self.singleton.submobjects:
+                color = subm.get_color()
+                color.saturation = 0
+                anims.append(subm.animate.set_color(color))
+            return AnimationGroup(*anims)
+        color = self.singleton.get_color()
+        color.saturation = 0
+        return self.singleton.animate.set_color(color)
 
     def ungray(self):
-        return self._normal.animate.restore()
+        return self.singleton.animate.restore()
 
     def fadeout(self):
-        self._faded.move_to(self._normal)
-        self._normal.save_state()
-        return self._normal.animate.become(self._faded)
+        self.save_state()
+        return self.animate.fade(0.9)
 
     def fadein(self):
-        return self._normal.animate.restore()
+        return self.animate.restore()
 
     def indicate(self):
         return Indicate(self, color=None)
@@ -201,25 +165,30 @@ class Fruit(VMobject):
         return self.indicate()
 
 
-FRUITS = {
-    f.label: f
-    for f in (
-        Fruit("A", SVGMobject("img/fruit/avocado.svg").scale(0.4)),
-        Fruit("B", SVGMobject("img/fruit/banana.svg").scale(0.4)),
-        Fruit("C", SVGMobject("img/fruit/coconut.svg").scale(0.4)),
+FRUITS = [
+    Fruit("A", load_svg("img/fruit/avocado.svg")),
+    Fruit("B", load_svg("img/fruit/banana.svg")),
+    Fruit("C", load_svg("img/fruit/coconut.svg")),
+    Fruit(
+        "D",
+        VGroup(
+            load_svg("img/fruit/avocado.svg"),
+            Tex(r"/"),
+            load_svg("img/fruit/banana.svg"),
+        ).arrange(RIGHT),
+    ),
+    Fruit("?", Tex(r"?")),
+]
+
+if DRAFT:
+    FRUITS = [
         Fruit(
-            "D",
-            VGroup(
-                SVGMobject("img/fruit/avocado.svg"),
-                Tex(r"/"),
-                SVGMobject("img/fruit/banana.svg"),
-            )
-            .arrange(RIGHT)
-            .scale(0.4),
-        ),
-        Fruit("?", Tex(r"?").scale(0.4)),
-    )
-}
+            letter, Circle().set_stroke_width(0).set_fill(color, 1).scale((1, 1.28, 0))
+        )
+        for letter, color in (("A", GREEN), ("B", YELLOW), ("C", RED), ("?", GRAY))
+    ]
+
+FRUITS = {f.label: f.scale_to_fit_width(0.35) for f in FRUITS}
 
 
 def get_fruit(label):
@@ -347,8 +316,7 @@ class VotingWinner(VotingResults):
         was_hidden = self.is_hidden
         super().show(winner)
         old_winner = self.winner
-        self.winner = get_fruit(winner).scale(self.scale_factor)
-        # self.add(self.winner)
+        self.winner = get_crowned_fruit(winner).scale(1.5).scale(self.scale_factor)
         if was_hidden:
             return FadeIn(self.winner)
         else:
