@@ -226,6 +226,12 @@ def get_fruit(label):
     return FRUITS[label].copy()
 
 
+def get_crowned_fruit(label):
+    fruit = get_fruit(label)
+    crown = SVGMobject("img/crown.svg").scale_to_fit_width(0.5)
+    return VGroup(crown, fruit).arrange(DOWN, buff=SMALL_BUFF)
+
+
 def row_broadcast(fn):
     def inner(self, indexes, *args, **kwargs):
         l = []
@@ -639,7 +645,7 @@ def monkey_images():
         ImageMobject("img/explorer.png")
         .scale_to_fit_height(5)
         .to_corner(DR)
-        .shift(2 * RIGHT)
+        .shift(2 * LEFT)
     )  # TODO pridat polylogo na laptop
 
     background = ImageMobject("img/background-upscaled.png").scale_to_fit_width(

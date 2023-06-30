@@ -84,13 +84,7 @@ class Intro(Scene):
         # [(bude potřeba upravit předchozí text) ukážou se obrázky všech tří ovocí, opice se rozdělí do tří skupin podle toho, pro které ovoce hlasují.]
 
         winner_img = [
-            Group(
-                SVGMobject("img/crown.svg").scale_to_fit_width(2.0),
-                SVGMobject("img/fruit/" + name).scale_to_fit_width(2.5),
-            )
-            .arrange(DOWN)
-            .move_to(2 * RIGHT)
-            for name in ["avocado.svg", "banana.svg", "coconut.svg"]
+            get_crowned_fruit(label).move_to(5 * RIGHT).scale(3) for label in "ABC"
         ]
 
         self.play(FadeIn(winner_img[0]))
