@@ -426,8 +426,8 @@ class Statement1(Scene):
 
         # Example: We think of the two-round system as a system where the voters need to vote twice. But if every voter writes down their complete ranking of candidates on the ballot, we don’t need the second round at all. We can simulate the two round process just from the information on the ballots.
 
-        self.play(*table.two_round_system())
-        self.wait()
+        # self.play(*table.two_round_system())
+        # self.wait()
 
         # [suggestivní animace kde máme tabulku s preferencemi voterů a animace pro oba volební systémy,
         # -> obrázek vítěze, možná s korunkou nebo tak něco
@@ -1446,11 +1446,10 @@ class Outro(Scene):
 
 class Explore(Scene):
     def construct(self):
-        circle = Circle()
-        square = Square()
-        group = Group(circle, square).scale(2)
-        self.add(group)
-        self.play(group.animate.scale(3))
+        default()
+        fruits = VGroup(*(get_fruit(f) for f in "ABC")).scale(3).arrange()
+        self.add(fruits)
+        self.wait(5)
 
         # table = VotingTable(["ABC", "BCA", "ACB"])
         # self.add(table)
