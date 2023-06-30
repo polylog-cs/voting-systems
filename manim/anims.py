@@ -83,13 +83,7 @@ class Intro(Scene):
         # [(bude potřeba upravit předchozí text) ukážou se obrázky všech tří ovocí, opice se rozdělí do tří skupin podle toho, pro které ovoce hlasují.]
 
                 
-        winner_img = [
-            Group(
-                SVGMobject("img/crown.svg").scale_to_fit_width(2.0),
-                SVGMobject("img/fruit/" + name).scale_to_fit_width(2.5),
-            ).arrange(DOWN).move_to(2*RIGHT)
-            for name in ["avocado.svg", "banana.svg", "coconut.svg"]
-        ]
+        winner_img = img_winners()
 
         self.play(
             FadeIn(winner_img[0])
@@ -386,10 +380,10 @@ class Statement1(Scene):
 
         # Example: We think of the two-round system as a system where the voters need to vote twice. But if every voter writes down their complete ranking of candidates on the ballot, we don’t need the second round at all. We can simulate the two round process just from the information on the ballots. 
 
-        self.play(
-            *table.two_round_system()
-        )
-        self.wait()
+        # self.play(
+        #     *table.two_round_system()
+        # )
+        # self.wait()
 
         # [suggestivní animace kde máme tabulku s preferencemi voterů a animace pro oba volební systémy, 
         # -> obrázek vítěze, možná s korunkou nebo tak něco
@@ -422,7 +416,7 @@ class Statement2(Scene):
 
         i_voter = 3
         table = VotingTable(example_table_str).next_to(gs_tex, DOWN)
-        voter = img_monkey("A").scale(2).next_to(table[i_voter], DOWN, buff = 1)
+        voter = img_monkey("A").scale(1).next_to(table[i_voter], DOWN, buff = 1)
 
         self.play(
             *[FadeIn(table[i]) for i in range(table.num_of_voters) if i != i_voter]
@@ -442,21 +436,17 @@ class Statement2(Scene):
         )
         self.wait()
 
-        sc = 2
+        sc = 1.5
         self.play(
             order.animate.scale(sc).move_to(table[i_voter].get_center())
         )
         self.wait()
         self.play(
-            order.animate.scale(1.0/sc).move_to(bubble.get_center())
-        )
-        self.wait()
-
-        self.play(
             table.results_show("A")
         )
         self.wait()
         self.play(
+            order.animate.scale(1.0/sc).move_to(bubble.get_center()),
             table.results_hide()
         )
         self.wait()
@@ -509,7 +499,8 @@ class Statement2(Scene):
         # So the definition is a bit different than what happened earlier because there, the whole group of monkeys coordinated. Also, the theorem is not saying that in every possible scenario, there is somebody who has this incentive. But, for any reasonable voting system we can find at least one scenario where strategic voting occurs. 
 
         self.play(
-            Circumscribe(gs_tex, color = RED)
+            Circumscribe(gs_tex, color = RED),
+            run_time = 2
         )
         self.wait()
         self.play(
@@ -549,21 +540,19 @@ class Statement2(Scene):
         reasonable_group.next_to(gs_tex, DOWN, buff = 1).align_to(gs_tex, LEFT)
 
 
+        majority_table = VotingTable(majority_table_str).align_to(reasonable_group, UP).shift(1*DOWN)
 
-
-        majority_table = VotingTable(majority_table_str).align_to(reasonable_tex, UP).shift(1*DOWN)
-
-        self.play(FadeIn(reasonable_tex), FadeIn(reasonable1_tex))
+        self.play(FadeIn(reasonable_group))
         self.wait()
         self.play(FadeIn(majority_table))
         self.wait()
 
         self.play(
-            *[Indicate(majority_table[i][0]) for i in range(5)]
+            *[Indicate(majority_table[i].group[0]) for i in range(5)]
         )
         self.wait()
         self.play(
-            table.winner_show("A")
+            table.winner_show("B")
         )
         self.wait()
         # Both the plurality voting system and the two-round system satisfy this definition of being reasonable, so the definition makes some sense. We will now prove the theorem and then we will discuss this definition a bit more. 
@@ -1425,16 +1414,82 @@ class Debriefing(Scene):
         self.wait()
 
 
-class Outro(Scene):
+class Outro(MovingCameraScene):
     def construct(self):
         default()
+        monkeys_img, monkeys_voting_img, orderings, explorer, background = monkey_images()
+        self.add(background, explorer, *monkeys_img)
+
         # [tady se zase může “oddálit tabule”] 
         # So, my dear monkeys, the short answer is that voting is complicated. But, as a practical choice, I would recommend you to use…
+
+        self.camera.frame.save_state()
+        self.play(
+            self.camera.frame.animate.scale(0.3).move_to(explorer.get_center() + 2*UP + 1*LEFT)
+        )
+        self.wait()
 
         # Hold on a second! I have an idea! How about making the vote randomized? 
         # [je vtipná jednoduchá animace pro heuréka moment? ]
 
-        # It will work like this: Every monkey gives me a ballot featuring only their most preferred candidate, then I elect the winner by shuffling all the ballots and choosing a random one. Clearly, strategic voting does not help in this voting system because if your ballot is chosen, you definitely want your most preferred candidate to be on it!  Also, the more monkeys vote for a candidate, the more likely the candidate is to be elected – I think it’s really amazing actually!
+        self.play(
+            Flash(explorer.get_center() + 1.5*UP + 0*RIGHT)
+        )
+        self.wait()
+
+        self.play(
+            self.camera.frame.animate.restore()
+        )
+        self.wait()
+
+        # It will work like this: Every monkey gives me a ballot featuring only their most preferred candidate, then I elect the winner by shuffling all the ballots and choosing a random one. 
+        
+        self.play(
+            *[Interpol(monkeys_img[i], monkeys_voting_img[i][0]) for i in range(len(monkeys_img))]
+        )
+        self.wait()
+        
+        anims = []
+        for i in range(len(monkeys_img)):
+            start = monkeys_voting_img[i][0][1].get_center()
+            end = explorer.get_center()
+            midpoint = (start + end)/2
+            midpoint[1] = max(start[1], end[1])
+            midpoint += 1*UP
+
+            a = 2*end[1] - 4*midpoint[1] + 2*start[1]
+            b = 4*midpoint[1] - 3*start[1] - end[1]
+            c = start[1]
+            print(a,b,c)
+
+            path = ParametricFunction(
+                lambda t: np.array([t*end[0] + (1-t)*start[0], a * t**2 + b * t + c, 0]), t_range = [0, 1]
+            ) 
+
+
+
+            #self.add(path)
+            anims.append(
+                MoveAlongPath(monkeys_voting_img[i][0][1], path)
+            )
+
+            print(start, midpoint, end)
+        
+        self.play(
+            *anims,
+            *[Interpol(monkeys_voting_img[i][0][0], monkeys_img[i]) for i in range(len(monkeys_img))]
+        )
+        self.play(
+            *[FadeOut(monkeys_voting_img[i][0][1]) for i in range(len(monkeys_img))]
+        )
+        self.wait()
+
+        self.play(
+            Wiggle(explorer)
+        )
+        self.wait()
+
+        # Clearly, strategic voting does not help in this voting system because if your ballot is chosen, you definitely want your most preferred candidate to be on it!  Also, the more monkeys vote for a candidate, the more likely the candidate is to be elected – I think it’s really amazing actually!
 
         # opičky podezřívavě: “ok?”
         # (udělá se to)
@@ -1444,6 +1499,19 @@ class Outro(Scene):
         # [napínavá hudba jako bubnování nebo tak něco] 
 
         # a coconut! A few monkeys were quite happy,
+
+        winner_img = img_winners()
+
+        self.play(
+            FadeIn(winner_img[1])
+        )
+        self.wait()
+
+
+        self.play(
+            monkeys_img[4].animate.shift(2*RIGHT).rotate(TAU-0.001),
+            monkeys_img[5].animate.shift(2*RIGHT).rotate(TAU-0.001),
+        )
 
         # “Yay!”
 
@@ -1456,11 +1524,60 @@ class Outro(Scene):
         # "This was supposed to be a random fruit, not coconut!"
         # "stolen elections!"
 
+        indices = [0, 8, 2, 7]
+        for i in indices:
+            self.play(Wiggle(monkeys_img[i]))
+            self.wait() 
+
+        
+
+
+        # anims = []
+        # for it in range(10):
+        #     fruit = random.choice(["A", "C"])
+        #     if fruit == "A":
+        #         start = (4 + random.uniform(-1, 1))*LEFT + (1 + random.uniform(-1, 1))*DOWN
+        #         len = 14+ random.uniform(-1, 1)
+        #         path = ParametricFunction(
+        #             lambda t: np.array([t, -0.5 * t**2, 0]), t_range = [-1, 1]
+        #         )
+        #     else:
+        #         start = (4 + random.uniform(-1, 1))*LEFT + (-2 + random.uniform(-1, 1))*UP
+        #         len = 13+ random.uniform(-1, 1)
+        #         path = ParametricFunction(
+        #             lambda t: np.array([t, -0.5 * t**2, 0]), t_range = [-1, 1.5]
+        #         ) 
+        #     path.scale_to_fit_width(len)#.stretch_to_fit_height(0.3* (end-start))
+        #     path.next_to(Dot().move_to(start), RIGHT)
+        #     self.add(path)
+        #     f = FRUITS[fruit].copy().move_to(-10*LEFT)
+        #     anims.append(
+        #         Succession(
+        #             Wait(it * 0.5),
+        #             AnimationGroup(
+        #                 MoveAlongPath(f, path),
+        #                 rate_func = linear,
+        #                 run_time = 2
+        #             )
+        #         )
+        #     )
+    
+        # self.play(
+        #     *anims,
+        #     AnimationGroup(
+        #         self.camera.frame.animate.scale(0.3).move_to(explorer.get_center() + 2*UP + 1*LEFT),
+        #         run_time = 10        
+        #     )
+        # )
+
         # [oddálí se záběr, vidíme jen ostrov uprostřed oceánu]
 
         # I had to leave the island pretty quickly then. The rumor has it the monkeys are still out there, arguing. But now about which voting system is the best one…
 
-        # [závěrečné poděkování patronům a some, možná midjourney bloopers? možná odkázat na roughgardenovy lecture notes?]
+
+        # TODO add island in postprocessing
+
+        self.wait(5)
 
 class Explore(Scene):
     def construct(self):

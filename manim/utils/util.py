@@ -126,8 +126,18 @@ def img_monkey(str, voting = False, width = 2):
         
     return Group(monkey_img, votes_for_img)
 
+
+def img_winners():
+    return [
+            Group(
+                SVGMobject("img/crown.svg").scale_to_fit_width(2.0),
+                SVGMobject("img/fruit/" + name).scale_to_fit_width(2.5),
+            ).arrange(DOWN).move_to(2*RIGHT)
+            for name in ["avocado.svg", "banana.svg", "coconut.svg"]
+        ]
+
 def ordering(str, background = None):
-    w = 0.3
+    w = 0.4
     f1 = FRUITS[str[0]].copy().scale_to_fit_width(w)
     f2 = FRUITS[str[1]].copy().scale_to_fit_width(w)
     f3 = FRUITS[str[2]].copy().scale_to_fit_width(w)
@@ -459,11 +469,6 @@ class VotingTable(VMobject):
 
     winner_show = results_show
     winner_hide = results_hide
-
-    def results_change(self, results):
-        # TODO
-        return self.results_show(results)
-
 
     def candidates_by_votes(self):
         votes = [voter.ordering[0] for voter in self.group]
