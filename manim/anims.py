@@ -75,8 +75,18 @@ gs_new_tex = Tex(
     color=text_color,
 ).scale(thm_scale)
 
+reasonable1_tex = Tex("{{Reasonable system: }}", color = TEXT_COLOR)
+reasonable2_tex = Tex(r"{{\raggedright The candidate which is the first choice for majority\\ is always the winner. }}", color = TEXT_COLOR).scale(0.8)
+reasonable_group = Group(reasonable1_tex, reasonable2_tex).arrange(RIGHT)
 
 example_table_str = ["ABC", "ABC","ABC","ABC", "BCA", "BCA", "CAB", "CAB", "CAB"]
+
+proof_table_strings = [example_table_str.copy()]
+for i in range(4):
+    new_str = proof_table_strings[-1].copy()
+    new_str[i] = "BAC"
+    proof_table_strings.append(new_str)
+
 majority_table_str = [ "BCA", "BAC", "BCA", "BAC", "BCA", "CAB", "CAB", "CAB", "CAB"]
 
 def img_monkey(str, voting = False, width = 2):
@@ -168,7 +178,8 @@ FRUITS = {
         Fruit("A", SVGMobject("img/fruit/avocado.svg").scale(0.4)),
         Fruit("B", SVGMobject("img/fruit/banana.svg").scale(0.4)),
         Fruit("C", SVGMobject("img/fruit/coconut.svg").scale(0.4)),
-        Fruit("D", Circle(color=BLUE).set_fill(BLUE, 1).scale(0.4)), 
+        Fruit("D", Group(SVGMobject("img/fruit/avocado.svg"), Tex(r"/"), SVGMobject("img/fruit/banana.svg")).arrange(RIGHT).scale(0.4)), 
+        Fruit("?", Tex(r"?").scale(0.4)), 
     )
 }
 
@@ -445,6 +456,11 @@ class VotingTable(VMobject):
     winner_show = results_show
     winner_hide = results_hide
 
+    def results_change(self, results):
+        # TODO
+        return self.results_show(results)
+
+
     def candidates_by_votes(self):
         votes = [voter.ordering[0] for voter in self.group]
         ret = [a[0] for a in Counter(votes).most_common()]
@@ -548,53 +564,62 @@ class Interpol(AnimationGroup):
         super().__init__(FadeOut(mobject_old), FadeIn(mobject_new), **kwargs)
 
 
+def monkey_images():
+
+    w = 1
+    monkeys_img = [
+        img_monkey(example_table_str[i][0], False, w) for i in range(len(example_table_str))
+    ]
+    
+    monkeys_img[0].to_corner(DL)
+    monkeys_img[1].next_to(monkeys_img[0], RIGHT)
+    monkeys_img[2].next_to(monkeys_img[0], UP)
+    monkeys_img[3].next_to(monkeys_img[0], UR)
+
+    monkeys_img[4].to_edge(DOWN).shift(2*LEFT)
+    monkeys_img[5].next_to(monkeys_img[4], RIGHT)
+
+    monkeys_img[6].shift(4*LEFT + 2*UP)
+    monkeys_img[7].next_to(monkeys_img[6], RIGHT)
+    monkeys_img[8].next_to(monkeys_img[7], RIGHT)
+
+    monkeys_voting_img = [
+        [
+            img_monkey(example_table_str[i][0], example_table_str[i][j], w).align_to(monkeys_img[i], DR)
+            for j in range(3)
+        ] for i in range(len(example_table_str))
+    ]
+    
+    orderings = [
+        ordering("ABC", background = BACKGROUND_COLOR).next_to(monkeys_img[3], RIGHT),
+        ordering("BCA", background = BACKGROUND_COLOR).next_to(monkeys_img[5], RIGHT),
+        ordering("CAB", background = BACKGROUND_COLOR).next_to(monkeys_img[8], RIGHT),
+    ]
+
+    explorer = ImageMobject("img/explorer.png").scale_to_fit_height(5).to_corner(DR).shift(2*RIGHT) # TODO pridat polylogo na laptop
+
+    background = ImageMobject("img/background-upscaled.png").scale_to_fit_width(config.frame_width)
+
+    return monkeys_img, monkeys_voting_img, orderings, explorer, background
+
 class Intro(Scene):
     def construct(self):
         default()
         self.next_section(skip_animations = False)
 
-        background = ImageMobject("img/background-upscaled.png").scale_to_fit_width(config.frame_width)
-        explorer = ImageMobject("img/explorer.png").scale_to_fit_height(5).to_corner(DR).shift(2*RIGHT) # TODO pridat polylogo na laptop
+        monkeys_img, monkeys_voting_img, orderings, explorer, background = monkey_images()
+
         self.add(background, explorer)
 
         # Throughout my expeditions, I've visited many beautiful places, but none struck me as much as this faraway tropical island. 
 
         
-        self.play(
-            Group(background, explorer).animate.scale(1.05),
-            run_time = 5
-        )
-        self.wait()
+        # self.play(
+        #     Group(background, explorer).animate.scale(1.05),
+        #     run_time = 5
+        # )
+        # self.wait()
 
-        w = 1
-        monkeys_img = [
-         img_monkey(example_table_str[i][0], False, w) for i in range(len(example_table_str))
-        ]
-        
-        monkeys_img[0].to_corner(DL)
-        monkeys_img[1].next_to(monkeys_img[0], RIGHT)
-        monkeys_img[2].next_to(monkeys_img[0], UP)
-        monkeys_img[3].next_to(monkeys_img[0], UR)
-
-        monkeys_img[4].to_edge(DOWN).shift(2*LEFT)
-        monkeys_img[5].next_to(monkeys_img[4], RIGHT)
-
-        monkeys_img[6].shift(4*LEFT + 2*UP)
-        monkeys_img[7].next_to(monkeys_img[6], RIGHT)
-        monkeys_img[8].next_to(monkeys_img[7], RIGHT)
-
-        monkeys_voting_img = [
-            [
-                img_monkey(example_table_str[i][0], example_table_str[i][j], w).align_to(monkeys_img[i], DR)
-                for j in range(3)
-            ] for i in range(len(example_table_str))
-        ]
-        
-        orderings = [
-            ordering("ABC", background = BACKGROUND_COLOR).next_to(monkeys_img[3], RIGHT),
-            ordering("BCA", background = BACKGROUND_COLOR).next_to(monkeys_img[5], RIGHT),
-            ordering("CAB", background = BACKGROUND_COLOR).next_to(monkeys_img[8], RIGHT),
-        ]
 
         # It was full of monkeys that were constantly arguing about which fruit is the best. I noticed three distinct groups among them, each one with a different opinion on the matter.
         
@@ -789,8 +814,6 @@ class Intro(Scene):
         self.wait()
 
         # Picking the best fruit doesn’t sound so easy anymore! Especially the fact that monkeys can vote strategically and, with that, change the outcome of the election, is really annoying. An election should ideally be a competition of ideas, not a strategic game among voters. Wouldn't it be great to have a voting system that incentivizes all the monkeys to be truthful? But does such a system exist?
-
-
 
 class Polylogo(Scene):
     def construct(self):
@@ -1123,8 +1146,11 @@ class Statement2(Scene):
 
         # This is why we can prove the theorem only for voting systems that are in some sense reasonable. But how should we define it precisely? For now, let’s choose the following definition: I will say that a voting system is reasonable if, whenever there is a candidate that is the top preference for more than half of the voters, then this candidate should be elected by the voting system. 
 
-        reasonable1_tex = Tex("{{Reasonable system: }}").next_to(gs_tex, DOWN, buff = 1).align_to(gs_tex, LEFT)
-        reasonable_tex = Tex(r"{{\raggedright The candidate which is the first choice for majority\\ is always the winner. }}").scale(0.8).next_to(reasonable1_tex, RIGHT)
+        reasonable_group.next_to(gs_tex, DOWN, buff = 1).align_to(gs_tex, LEFT)
+
+
+
+
         majority_table = VotingTable(majority_table_str).align_to(reasonable_tex, UP).shift(1*DOWN)
 
         self.play(FadeIn(reasonable_tex), FadeIn(reasonable1_tex))
@@ -1144,6 +1170,226 @@ class Statement2(Scene):
 
         self.wait(10)
 
+
+class Proof1(Scene):
+    def construct(self):
+        default()
+        # Ok, let’s first try to understand why in our scenario with monkeys it was so hard to choose the best fruit. Why is it that there were always so many monkeys unhappy about the result? Well, if you look at the rankings of the monkeys, you can see that there is some kind of cycle here. Some monkeys prefer avocado over banana over coconut, some prefer banana over coconut over avocado, and some prefer coconut over avocado over banana. 
+
+        table = VotingTable(example_table_str).to_edge(UP)
+        self.play(FadeIn(table))
+        self.wait()
+
+        w = 0.7
+        rad = 1
+        condorcet_group = Group(
+            FRUITS["A"].copy().scale_to_fit_width(w),
+            FRUITS["B"].copy().scale_to_fit_width(w),
+            FRUITS["C"].copy().scale_to_fit_width(w),
+        )
+        vec = UP
+        for i in range(3):
+            condorcet_group[i].shift(rad * vec)
+            vec = rotate_vector(vec, np.radians(120))
+
+        for i in range(3):
+            condorcet_group.add(
+                Arrow(start = condorcet_group[i].get_center(),
+                      end = condorcet_group[(i+1)%3].get_center(),
+                      buff = w / 1.8,
+                      color = text_color,
+                      )
+            )
+
+        vec = rotate_vector(vec, np.radians(60))
+        for i in range(3):
+            str = ["7:2", "6:3", "5:4"]
+            condorcet_group.add(
+                Tex(str[i]).shift(rad * 1.4 * vec)
+            )
+            vec = rotate_vector(vec, np.radians(120))
+
+        condorcet_group.next_to(table, DOWN, buff = 1)
+
+        self.play(FadeIn(condorcet_group[:6]))
+        self.wait()
+
+        # [tabulka s preferencemi, pod ní cyklus]
+        # And here is the crazy thing that’s happening here. If you look at how many monkeys prefer avocado over banana
+        # , it is 5:3. 
+        # (napíše se do condorcetova cyklu)
+        # If you look at how many prefer banana over coconut, it is 6:2. And if you look at how many prefer coconut over avocado, it is again 5:3! So whatever fruit ends up being elected, there is always another candidate that, if you compare it with the winner in a head-to-head election, actually beats the winner. 
+
+        self.play(FadeIn(condorcet_group[6:]))
+        self.wait()
+
+
+        # The fact that this can happen is called Condorcet paradox and I will use the word Condorcet cycle for any such scenario, that is, any scenario with three groups of voters with cyclic preferences where also each group has less than half of all the voters. 
+
+        self.play(condorcet_group.animate.shift(2*LEFT))
+
+        paradox_tex = Tex(r"Condorcet paradox")
+        paradox_arrow = Arrow(start = ORIGIN, end = 1*LEFT)
+        paradox_group = Group(paradox_arrow, paradox_tex).arrange(RIGHT).next_to(condorcet_group, RIGHT)
+
+        cycle_tex = Tex(r"Condorcet cycle")
+        cycle_arrow = Arrow(start = ORIGIN, end = 1*UP)
+        cycle_group = Group(cycle_arrow, cycle_tex).arrange_in_grid(cols = 1, cell_alignment = LEFT).next_to(paradox_group, UP).align_to(paradox_tex, LEFT)
+        
+        self.play(FadeIn(paradox_group))
+        self.wait()
+
+        self.play(FadeIn(cycle_group))
+        self.wait()
+
+        # Ultimately, condorcet paradox is the reason why voting is straightforward with two candidates, but becomes very tricky if you have at least three of them. 
+
+        # TODO animace kde se ztratí kokos a cyklus změní na šipku? 
+
+        self.play(*[FadeOut(o) for o in self.mobjects])
+        self.wait()
+
+
+class Proof2(Scene):
+    def construct(self):
+        default()
+
+        # Remember, our goal is to demonstrate that for any reasonable voting system, there exists a scenario where a certain voter has an incentive to vote strategically. It turns out that any Condorcet cycle is almost, but not quite, such a scenario. 
+
+        tables = Group(*[VotingTable(str) for str in proof_table_strings])
+        table = tables[0].copy()
+
+        self.play(FadeIn(tables[2])) # TODO
+
+        self.play(FadeOut(tables[2]))
+        
+        # Let me explain. Let’s consider an arbitrary reasonable voting system like plurality voting or the two-round system. The system needs to elect a winner in this Condorcet cycle. Without loss of generality, let’s say that it elects the coconut. 
+
+        self.play(FadeIn(table))
+        self.wait()
+        self.play(table.winner_show("C"))
+        self.wait()
+
+        # But now let’s look at this group of voters for whom the coconut is the bottom choice. Intuitively, these voters have the biggest incentive to try some kind of strategic voting because they are most unhappy with the result. 
+
+        border = SurroundingRectangle(Group(*table[:4]), color = RED)
+        self.play(FadeIn(border))
+        self.wait()
+
+        
+        # What if all these voters simultaneously cast a ballot that swaps avocado and banana? 
+        
+        self.play(
+            *[table[i].rearrange("BAC") for i in range(4)]
+        )
+        self.wait()
+        # self.play(FadeOut(border))
+        # self.wait()
+        
+        # In this case, you can see that by the properties of the Condorcet cycle, a majority of voters have the banana as their first choice. But wait a minute, our definition of a reasonable voting system says that in this case, the voting system has to elect the banana as the winner. 
+
+        border2 = SurroundingRectangle(Group(table[0][0], table[5][0]), color = RED)
+
+        self.play(Transform(border, border2))
+        self.wait()
+
+        reasonable_group.to_edge(UP)
+
+        self.play(FadeIn(reasonable_group))
+        self.wait()
+        
+        self.play(table.results_change("B"))
+        self.wait()
+        
+        self.play(FadeOut(reasonable_group))
+        self.wait()
+        
+
+        # So, if all of these voters coordinate and vote strategically, they can achieve a result that they like more than what happens when they tell the truth. This is by the way exactly what the four sly monkeys did at the beginning when we tried to use the two-round system to elect the winner. 
+        # We are already very close to proving the theorem. The only problem is that we want to find a scenario where only one voter has the incentive to vote strategically. Right now, that is not the case. Only if this whole group can coordinate, it pays off. 
+
+        self.play(Indicate(border, color = RED))
+        self.wait()
+
+        self.play(FadeOut(border), FadeOut(table))
+        self.wait()
+
+        # Here is the idea needed to finish the proof. For a minute, forget strategic voting and just think of these two scenarios as inputs to the voting system. We know that the voting system elects the coconut in the first scenario and the avocado in the second one. Now let’s imagine all of these intermediate inputs to the voting system where each time just one monkey flips the avocado with the banana.
+
+
+
+        # We don’t really know who the winner is in these intermediate situations, after all, we are considering an arbitrary voting system in our proof. But because the winner is different at the beginning and at the end, we know that it has to change at some point. 
+
+        for table in tables:
+            table.scale(0.3)
+        tables.arrange(DOWN, buff = 0.5)
+
+        self.play(
+            FadeIn(*tables)
+        )
+        self.wait()
+
+        self.play(
+            tables[0].winner_show("C"),
+            tables[-1].winner_show("B"),
+        )
+        self.wait()
+    
+        self.play(
+            *[t.winner_show("?") for t in tables[1:-2]]
+        )
+        self.wait()
+
+        self.play(
+            Succession(
+            tables[1].winner_show("C"),
+            Wait(),
+            tables[2].winner_show("C"),
+            Wait(),
+            tables[3].winner_show("D"),
+            Wait(),
+            )
+        )
+
+        # So let’s look at the two scenarios where the winner changes for the first time, from the coconut to some other candidate.
+
+        border = SurroundingRectangle(Group(*tables[2:4]), color = RED)
+
+        self.play(
+            FadeIn(border)
+        )
+        self.wait()
+
+        vec = (tables[2].get_center() + tables[3].get_center()) / 2.0
+        sc = 3
+        self.play(
+            Group(tables, border).animate.move_to(-vec * sc).scale(sc)
+        )
+        self.play(FadeOut(border))
+        self.wait()
+
+        
+        # Let’s also focus on this voter. Do you see how to finish the proof? Well, let’s imagine that the top scenario contains the honest preferences of all the voters. If this voter votes honestly, X is the winner. But what if they vote strategically and cast a ballot with ZYX instead of YZX? Well, we know that then the outcome of the voting system changes from X to some other candidate. But look, X is the worst option for our voter, so whatever the change, the voter will prefer it! 
+
+        self.play(
+            *[FadeOut(o) for o in self.mobjects]
+        )
+        self.wait()
+
+        # And this finishes the proof of the Gibbard-Satterthwaite theorem. To summarize, if you come up with any reasonable voting system, I can look at any Condorcet cycle scenario and tweak it a little bit to find a scenario where your voting system gives some voter the incentive to vote strategically. 
+
+        table = VotingTable(example_table_str)
+        self.play(FadeIn(table))
+        self.wait()
+
+        self.play(
+            Succession(
+            table[0].rearrange("BAC"),
+            table[1].rearrange("BAC"),
+            table[2].rearrange("BAC"),
+            )
+        )
+        self.wait()
 
 class Reasonable(Scene):
     def construct(self):
@@ -1197,7 +1443,7 @@ class Reasonable(Scene):
         self.wait()
 
 
-class Arrow(Scene):
+class ArrowThm(Scene):
     def construct(self):
         default()
         # There is one more related theorem I want to mention – Arrow’s theorem.
@@ -1779,27 +2025,70 @@ class Debriefing(Scene):
         self.wait()
 
 
+class Outro(Scene):
+    def construct(self):
+        default()
+        # [tady se zase může “oddálit tabule”] 
+        # So, my dear monkeys, the short answer is that voting is complicated. But, as a practical choice, I would recommend you to use…
+
+        # Hold on a second! I have an idea! How about making the vote randomized? 
+        # [je vtipná jednoduchá animace pro heuréka moment? ]
+
+        # It will work like this: Every monkey gives me a ballot featuring only their most preferred candidate, then I elect the winner by shuffling all the ballots and choosing a random one. Clearly, strategic voting does not help in this voting system because if your ballot is chosen, you definitely want your most preferred candidate to be on it!  Also, the more monkeys vote for a candidate, the more likely the candidate is to be elected – I think it’s really amazing actually!
+
+        # opičky podezřívavě: “ok?”
+        # (udělá se to)
+
+        # … and the winner is 
+
+        # [napínavá hudba jako bubnování nebo tak něco] 
+
+        # a coconut! A few monkeys were quite happy,
+
+        # “Yay!”
+
+        # but the rest of them… 
+
+        # [opičky začnou protestovat nebo házet banány nebo něco jiného, paňáček uteče ze záběru]
+
+        # “Hey, You didn’t shuffle them enough, redo it!”
+        # “No, You shuffled way too much!”
+        # "This was supposed to be a random fruit, not coconut!"
+        # "stolen elections!"
+
+        # [oddálí se záběr, vidíme jen ostrov uprostřed oceánu]
+
+        # I had to leave the island pretty quickly then. The rumor has it the monkeys are still out there, arguing. But now about which voting system is the best one…
+
+        # [závěrečné poděkování patronům a some, možná midjourney bloopers? možná odkázat na roughgardenovy lecture notes?]
+
 class Explore(Scene):
     def construct(self):
-        table = VotingTable(["ABC", "BCA", "ACB"])
-        self.add(table)
-        self.wait(1)
-        self.play(table[0].rearrange("CAB"), table[1].rearrange("CAB"))
-        self.wait(1)
-        self.play(*table.push_down("A"))
-        self.wait(1)
-        self.play(*table.gray("C"))
-        self.wait(1)
-        self.play(*table.gray("A"))
-        self.wait(1)
-        self.play(*table.ungray("C"))
-        self.wait(1)
-        self.play(*table.ungray("A"))
-        self.wait(1)
+        circle = Circle()
+        square = Square()
+        group = Group(circle, square).scale(2)
+        self.add(group)
+        self.play(group.animate.scale(3))
 
-        self.play(table.animate.shift(1 * RIGHT + 2 * UP))
-        table2 = table.copy()
-        self.play(table2.animate.shift(4 * DOWN))
-        self.play(*table.push_down("B"))
-        self.play(table2[0].rearrange("BCA"))
-        self.wait(10)
+        # table = VotingTable(["ABC", "BCA", "ACB"])
+        # self.add(table)
+        # self.wait(1)
+        # self.play(table[0].rearrange("CAB"), table[1].rearrange("CAB"))
+        # self.wait(1)
+        # self.play(*table.push_down("A"))
+        # self.wait(1)
+        # self.play(*table.gray("C"))
+        # self.wait(1)
+        # self.play(*table.gray("A"))
+        # self.wait(1)
+        # self.play(*table.ungray("C"))
+        # self.wait(1)
+        # self.play(*table.ungray("A"))
+        # self.wait(1)
+
+        # self.play(table.animate.shift(1 * RIGHT + 2 * UP))
+        # table2 = table.copy()
+        # self.play(table2.animate.shift(4 * DOWN))
+        # self.play(*table.push_down("B"))
+        # self.play(table2[0].rearrange("BCA"))
+        # self.wait(10)
