@@ -576,7 +576,7 @@ class Interpol(AnimationGroup):
         super().__init__(FadeOut(mobject_old), FadeIn(mobject_new), **kwargs)
 
 
-def monkey_images():
+def intro_images(intro = True):
     w = 1
     monkeys_img = [
         img_monkey(example_table_str[i][0], False, w)
@@ -622,4 +622,6 @@ def monkey_images():
         config.frame_width
     )
 
-    return monkeys_img, monkeys_voting_img, orderings, explorer, background
+    whiteboard = ImageMobject(f"img/whiteboard{'_shame' if not intro else ''}.png").scale_to_fit_width(5).to_corner(DR).shift(1.5*RIGHT + 1.0 * DOWN)
+
+    return monkeys_img, monkeys_voting_img, orderings, explorer, background, whiteboard

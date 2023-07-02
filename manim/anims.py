@@ -1,7 +1,7 @@
 from utils.util import *
 
 
-class Intro(Scene):
+class Intro(MovingCameraScene):
     def construct(self):
         default()
         self.next_section(skip_animations=False)
@@ -12,7 +12,8 @@ class Intro(Scene):
             orderings,
             explorer,
             background,
-        ) = monkey_images()
+            whiteboard,
+        ) = intro_images()
 
         self.add(background, explorer)
 
@@ -148,6 +149,9 @@ class Intro(Scene):
         # We made a mistake in the first round, can we run the election one more time? Please!
         # [sigh] let’s do it one more time. First round. Who is for avocado?
 
+        self.play(*[Wiggle(monkeys_img[i]) for i in ranges[0]])
+        self.wait()
+
         for it in range(2):
             self.play(
                 *[Interpol(monkeys_img[i], monkeys_votes_img[i]) for i in ranges[0]],
@@ -209,6 +213,17 @@ class Intro(Scene):
         self.wait()
 
         # Picking the best fruit doesn’t sound so easy anymore! Especially the fact that monkeys can vote strategically and, with that, change the outcome of the election, is really annoying. An election should ideally be a competition of ideas, not a strategic game among voters. Wouldn't it be great to have a voting system that incentivizes all the monkeys to be truthful? But does such a system exist?
+
+        self.play(
+            arrive_from(whiteboard, RIGHT)
+        )
+        self.wait()
+
+        self.play(
+            self.camera.frame.animate.scale(0.17).move_to(whiteboard.get_center() + 0.5*UP)
+        )
+        self.wait()
+
 
 
 class Polylogo(Scene):
@@ -483,7 +498,7 @@ class Statement2(Scene):
         reasonable_group.next_to(gs_tex, DOWN, buff=1).align_to(gs_tex, LEFT)
 
         majority_table = (
-            VotingTable(majority_table_str).align_to(reasonable_tex, UP).shift(1 * DOWN)
+            VotingTable(majority_table_str).align_to(reasonable_group, UP).shift(1 * DOWN)
         )
 
         majority_table = VotingTable(majority_table_str).align_to(reasonable_group, UP).shift(1*DOWN)
@@ -1355,8 +1370,8 @@ class Outro(MovingCameraScene):
     def construct(self):
         default()
         self.next_section(skip_animations=False)
-        monkeys_img, monkeys_voting_img, orderings, explorer, background = monkey_images()
-        self.add(background, explorer, *monkeys_img)
+        monkeys_img, monkeys_voting_img, orderings, explorer, background, whiteboard = intro_images(False)
+        self.add(background, explorer, whiteboard, *monkeys_img)
 
         # [tady se zase může “oddálit tabule”] 
         # So, my dear monkeys, the short answer is that voting is complicated. But, as a practical choice, I would recommend you to use…
@@ -1433,15 +1448,22 @@ class Outro(MovingCameraScene):
         # )
         self.wait()
 
-        self.play(
-            Wiggle(
-            Group(explorer, *[monkeys_voting_img[i][0][1] for i in range(len(monkeys_img))]), 
-            scale_value = 1,
-            n_wiggles = 15,
-            run_time = 4
+        for _ in range(3):
+            self.play(
+                Wiggle(
+                Group(explorer, *[monkeys_voting_img[i][0][1] for i in range(len(monkeys_img))]), 
+                scale_value = 1,
+                )
             )
-        )
         self.wait()
+
+        self.add_sound(
+            "audio/drum_roll.mp3"
+        )
+        self.wait(4) 
+        self.add_sound(
+            "audio/polylog_success.wav"
+        )
 
         # Clearly, strategic voting does not help in this voting system because if your ballot is chosen, you definitely want your most preferred candidate to be on it!  Also, the more monkeys vote for a candidate, the more likely the candidate is to be elected – I think it’s really amazing actually!
 
@@ -1459,10 +1481,24 @@ class Outro(MovingCameraScene):
         ]
         self.next_section(skip_animations=False)
 
+        # self.play(
+        #     FadeIn(winner_img[1])
+        # )
+        # self.wait()
+
         self.play(
-            FadeIn(winner_img[1])
+            monkeys_voting_img[4][0][1].animate.shift(0.5*LEFT + 1*UP).scale(1.3)
+        )
+        self.play(
+            Flash(monkeys_voting_img[4][0][1].get_center() + 0.2*LEFT, line_length = 2,),
+            AnimationGroup(
+                FadeIn(monkeys_voting_img[4][0][1].copy()),
+                run_time = 0.00001
+            )
         )
         self.wait()
+
+
 
         h = 1
         self.play(
