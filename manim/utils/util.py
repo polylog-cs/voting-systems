@@ -622,14 +622,15 @@ def intro_images(intro=True):
         ordering("CAB", background=BACKGROUND_COLOR).next_to(monkeys_img[8], RIGHT),
     ]
 
+
     explorer = (
-        ImageMobject("img/explorer.png")
+        ImageMobject(f"img/{'explorer' if DRAFT == False else 'explorer_small'}.png")
         .scale_to_fit_height(5)
         .to_corner(DR)
         .shift(2 * LEFT + 0.4 * DOWN)
     )  # TODO pridat polylogo na laptop
 
-    background = ImageMobject("img/background-upscaled.png").scale_to_fit_width(
+    background = ImageMobject(f"img/{'background-upscaled' if DRAFT == True else 'background'}.png").scale_to_fit_width(
         config.frame_width
     )
 
