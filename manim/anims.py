@@ -85,7 +85,8 @@ class Intro(MovingCameraScene):
         # [(bude potřeba upravit předchozí text) ukážou se obrázky všech tří ovocí, opice se rozdělí do tří skupin podle toho, pro které ovoce hlasují.]
 
         winner_img = [
-            get_crowned_fruit(label).move_to(5 * RIGHT).scale(3) for label in "ABC"
+            get_crowned_fruit(label, True).move_to(5 * RIGHT).scale(3)
+            for label in "ABC"
         ]
 
         self.play(FadeIn(winner_img[0]))
@@ -404,43 +405,74 @@ class Statement2(Scene):
 
         i_voter = 3
         table = VotingTable(example_table_str).next_to(gs_tex, DOWN)
-        voter = img_monkey("A").scale(2).next_to(table[i_voter], DOWN, buff=1)
 
+        monkeys_img = (
+            Group(*[img_monkey(pref[0], width=1) for pref in example_table_str])
+            .arrange()
+            .to_edge(LEFT, buff=1)
+            .to_edge(DOWN)
+        )
+        self.play(FadeIn(monkeys_img))
+
+        monkey_scale = 0.7
+        for col, monkey in zip(table.group, monkeys_img):
+            col.save_state()
+            col.scale(monkey_scale).next_to(monkey, UP)
+
+        self.play(FadeIn(table))
+        self.wait()
         self.play(
-            *[FadeIn(table[i]) for i in range(table.num_of_voters) if i != i_voter]
+            *(
+                col.animate.scale(1 / monkey_scale).move_to(col.saved_state)
+                for i, col in enumerate(table.group)
+                if i != i_voter
+            ),
+            FadeOut(monkeys_img[:i_voter]),
+            FadeOut(monkeys_img[i_voter + 1 :]),
         )
         self.wait()
-        self.play(FadeIn(voter))
+
+        voter = monkeys_img[i_voter]
+        voter.generate_target()
+        voter.target.scale(2).next_to(table[i_voter].saved_state, DOWN, buff=1)
+
+        bubble = create_bubble().next_to(voter.target, LEFT).shift(1 * UP)
+        order = table[i_voter].copy()
+        self.add(order)
+        table[i_voter].restore()
+        self.remove(table[i_voter])
+        self.play(
+            MoveToTarget(voter),
+            order.animate.scale(1 / monkey_scale).move_to(bubble.get_center()),
+        )
+        self.play(FadeIn(bubble))
         self.wait()
 
-        bubble = create_bubble().next_to(voter, LEFT).shift(1 * UP)
-        order = ordering("ABC").move_to(bubble.get_center())
-        self.play(FadeIn(bubble), FadeIn(order))
-        self.wait()
-
+        order_copy = order.copy()
         sc = 1.5
-        self.play(order.animate.scale(sc).move_to(table[i_voter].get_center()))
+        self.play(order_copy.animate.move_to(table[i_voter]))
         self.wait()
         self.play(table.results_show("A"))
         self.wait()
-        self.play(
-            order.animate.scale(1.0 / sc).move_to(bubble.get_center()),
-            table.results_hide(),
-        )
-        self.wait()
-
         # Now it is time for our voter to decide what ranking to put on the ballot. The voter can of course use their true preference - in this case, the voting system elects Y as the winner. But the voter can also vote strategically and write a different ranking on the ballot. For example, if the voter casts this ballot, the voting system now elects Z as the winner.
 
         bubble2 = create_bubble(speaking=True).next_to(voter, RIGHT).shift(1 * UP)
-        order2 = ordering("CAB").move_to(bubble2.get_center())
+        order2 = table[i_voter].copy().rearrange("CAB", False).move_to(bubble2)
         self.play(FadeIn(bubble2), FadeIn(order2))
         self.wait()
-        self.play(order2.animate.scale(sc).move_to(table[i_voter].get_center()))
-        self.wait()
-        self.play(order2.animate.scale(1.0 / sc).move_to(bubble2.get_center()))
+        order2_copy = order2.copy()
+        self.play(
+            FadeOut(order_copy),
+            order2_copy.animate.move_to(table[i_voter]),
+            table.results_show("B"),
+        )
         self.wait()
 
-        self.play(table.results_show("B"))
+        self.play(order2_copy.rearrange("ABC"), table.results_show("A"))
+        self.play(order2_copy.rearrange("CAB"), table.results_show("B", DOWN))
+        self.play(order2_copy.rearrange("ABC"), table.results_show("A"))
+
+        self.play(FadeOut(order2_copy))
         self.wait()
         self.play(table.results_hide())
         self.wait()
@@ -479,7 +511,7 @@ class Statement2(Scene):
         border_fruit = SurroundingRectangle(table[3][0], color=RED)
         self.play(FadeIn(border_fruit), table.results_show("B"))
         self.wait()
-        self.play(FadeOut(table), FadeOut(border_fruit))
+        self.play(FadeOut(table), FadeOut(border_fruit), table.results_hide())
         self.wait()
 
         # This is why we can prove the theorem only for voting systems that are in some sense reasonable. But how should we define it precisely? For now, let’s choose the following definition: I will say that a voting system is reasonable if, whenever there is a candidate that is the top preference for more than half of the voters, then this candidate should be elected by the voting system.
@@ -492,20 +524,14 @@ class Statement2(Scene):
             .shift(1 * DOWN)
         )
 
-        majority_table = (
-            VotingTable(majority_table_str)
-            .align_to(reasonable_group, UP)
-            .shift(1 * DOWN)
-        )
-
         self.play(FadeIn(reasonable_group))
         self.wait()
         self.play(FadeIn(majority_table))
         self.wait()
 
-        self.play(*[Indicate(majority_table[i].group[0]) for i in range(5)])
+        self.play(*majority_table.indicate(0, indexes=range(5)))
         self.wait()
-        self.play(table.winner_show("B"))
+        self.play(majority_table.winner_show("B"))
         self.wait()
         # Both the plurality voting system and the two-round system satisfy this definition of being reasonable, so the definition makes some sense. We will now prove the theorem and then we will discuss this definition a bit more.
 
@@ -1474,7 +1500,8 @@ class Outro(MovingCameraScene):
         # a coconut! A few monkeys were quite happy,
 
         winner_img = [
-            get_crowned_fruit(label).move_to(5 * RIGHT).scale(3) for label in "ABC"
+            get_crowned_fruit(label, True).move_to(5 * RIGHT).scale(3)
+            for label in "ABC"
         ]
         self.next_section(skip_animations=False)
 

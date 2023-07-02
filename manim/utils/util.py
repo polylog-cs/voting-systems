@@ -9,7 +9,7 @@ from collections import Counter
 from manim import *
 from .util_general import *
 
-DRAFT = False
+DRAFT = True
 
 
 def create_bubble(scale=1.0, color=text_color, length_scale=1, speaking=False):
@@ -195,14 +195,18 @@ def get_fruit(label):
     return FRUITS[label].copy()
 
 
-def get_crowned_fruit(label):
+def get_crowned_fruit(label, surround=False):
     fruit = get_fruit(label)
     crown = SVGMobject("img/crown.svg").scale_to_fit_width(fruit.width * 0.8)
-    fruit_group = VGroup(crown, fruit).arrange(DOWN, buff=SMALL_BUFF)
-    background = SurroundingRectangle(
-        fruit_group, fill_opacity=0.7, color=BACKGROUND_COLOR, corner_radius=0.3
+    fruit_group = VGroup(crown, fruit, crown.copy().fade(1)).arrange(
+        DOWN, buff=SMALL_BUFF
     )
-    return VGroup(background, fruit_group)
+    if surround:
+        background = SurroundingRectangle(
+            fruit_group[:2], fill_opacity=0.7, color=BACKGROUND_COLOR, corner_radius=0.3
+        )
+        fruit_group = VGroup(background, fruit_group)
+    return fruit_group
 
 
 def row_broadcast(fn):
@@ -246,15 +250,20 @@ class Preference(VMobject):
             l.append(self.group[self._ix(ix)])
         return l
 
-    def rearrange(self, ordering):
+    def rearrange(self, ordering, animate=True):
         self.ordering = ordering
         positions = list(reversed(sorted(obj.get_y() for obj in self.group)))
-        return AnimationGroup(
-            *(
-                self.at(label)[0].animate.set_y(positions[i])
-                for i, label in enumerate(ordering)
+        if animate:
+            return AnimationGroup(
+                *(
+                    self.at(label)[0].animate.set_y(positions[i])
+                    for i, label in enumerate(ordering)
+                )
             )
-        )
+        else:
+            for i, label in enumerate(ordering):
+                self.at(label)[0].set_y(positions[i])
+            return self
 
     def push_down(self, label):
         ordering = list(self.ordering)
@@ -316,7 +325,7 @@ class VotingWinner(VotingResults):
         self.remove(self.winner)
         return FadeOut(self.winner)
 
-    def show(self, winner):
+    def show(self, winner, shift=UP):
         was_hidden = self.is_hidden
         super().show(winner)
         old_winner = self.winner
@@ -326,7 +335,7 @@ class VotingWinner(VotingResults):
         else:
             self.remove(old_winner)
             return AnimationGroup(
-                FadeOut(old_winner, shift=UP), FadeIn(self.winner, shift=UP)
+                FadeOut(old_winner, shift=shift), FadeIn(self.winner, shift=shift)
             )
 
 
@@ -444,7 +453,7 @@ class VotingTable(VMobject):
         self.remove(self.arrow)
         return AnimationGroup(self.results.hide(), FadeOut(self.arrow))
 
-    def results_show(self, results):
+    def results_show(self, results, *args, **kwargs):
         arrow = (
             MathTex("\Rightarrow")
             .scale(2 * self.scale_factor)
@@ -465,7 +474,7 @@ class VotingTable(VMobject):
             # self.add(self.arrow)
             anims.append(FadeIn(self.arrow))
 
-        anims.append(self.results.show(results))
+        anims.append(self.results.show(results, *args, **kwargs))
         self.results.next_to(self.arrow, buff=0.5 * self.scale_factor)
         return AnimationGroup(*anims)
 
