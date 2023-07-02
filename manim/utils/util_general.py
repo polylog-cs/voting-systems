@@ -59,7 +59,6 @@ def step_sound_file(randomize=True):
         return "audio/tick/tick_0.wav"
 
 
-
 ############### ANIMATIONS
 
 
