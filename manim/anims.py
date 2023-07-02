@@ -344,7 +344,7 @@ class Statement1(Scene):
         lines = (
             VGroup(
                 *(
-                    VGroup(get_fruit(char), MathTex(r"50\,\%")).arrange()
+                    VGroup(get_fruit(char), MathTex(r": 50\,\%")).arrange()
                     for char in "AB"
                 )
             )
@@ -356,8 +356,6 @@ class Statement1(Scene):
         self.wait()
 
         table = VotingTable(["AB"]).align_to(lines, RIGHT).scale(1.5)
-        self.play(table.winner_show("A"))
-        self.wait()
 
         comparison = (
             VGroup(
@@ -370,7 +368,12 @@ class Statement1(Scene):
             .arrange()
             .to_edge(DOWN, buff=0.5)
         ).scale(1.5)
+
+
         self.play(FadeIn(comparison))
+        self.wait()
+
+        self.play(table.winner_show("A"))
         self.wait()
 
 
@@ -1351,6 +1354,7 @@ class Debriefing(Scene):
 class Outro(MovingCameraScene):
     def construct(self):
         default()
+        self.next_section(skip_animations=False)
         monkeys_img, monkeys_voting_img, orderings, explorer, background = monkey_images()
         self.add(background, explorer, *monkeys_img)
 
@@ -1359,16 +1363,27 @@ class Outro(MovingCameraScene):
 
         self.camera.frame.save_state()
         self.play(
-            self.camera.frame.animate.scale(0.3).move_to(explorer.get_center() + 2*UP + 1*LEFT)
+            self.camera.frame.animate.scale(0.3).move_to(explorer.get_center() + 1.5*UP)
         )
         self.wait()
 
         # Hold on a second! I have an idea! How about making the vote randomized? 
         # [je vtipná jednoduchá animace pro heuréka moment? ]
 
+        
+        ex2 = explorer.copy()
         self.play(
-            Flash(explorer.get_center() + 1.5*UP + 0*RIGHT)
+            Flash(
+                explorer.get_center() + 1.5*UP + 0*RIGHT,
+                line_length = 2,
+                
+            ),
+            AnimationGroup(
+                FadeIn(ex2),
+                run_time = 0.00001
+            )
         )
+        self.remove(ex2)
         self.wait()
 
         self.play(
@@ -1386,7 +1401,7 @@ class Outro(MovingCameraScene):
         anims = []
         for i in range(len(monkeys_img)):
             start = monkeys_voting_img[i][0][1].get_center()
-            end = explorer.get_center()
+            end = explorer.get_center() + 0.5*RIGHT + 0.2*DOWN
             midpoint = (start + end)/2
             midpoint[1] = max(start[1], end[1])
             midpoint += 1*UP
@@ -1413,13 +1428,18 @@ class Outro(MovingCameraScene):
             *anims,
             *[Interpol(monkeys_voting_img[i][0][0], monkeys_img[i]) for i in range(len(monkeys_img))]
         )
-        self.play(
-            *[FadeOut(monkeys_voting_img[i][0][1]) for i in range(len(monkeys_img))]
-        )
+        # self.play(
+        #     *[FadeOut(monkeys_voting_img[i][0][1]) for i in range(len(monkeys_img))]
+        # )
         self.wait()
 
         self.play(
-            Wiggle(explorer)
+            Wiggle(
+            Group(explorer, *[monkeys_voting_img[i][0][1] for i in range(len(monkeys_img))]), 
+            scale_value = 1,
+            n_wiggles = 15,
+            run_time = 4
+            )
         )
         self.wait()
 
@@ -1437,17 +1457,28 @@ class Outro(MovingCameraScene):
         winner_img = [
             get_crowned_fruit(label).move_to(5 * RIGHT).scale(3) for label in "ABC"
         ]
+        self.next_section(skip_animations=False)
 
         self.play(
             FadeIn(winner_img[1])
         )
         self.wait()
 
+        h = 1
+        self.play(
+            ApplyMethod(monkeys_img[4].shift, UP * h), 
+            ApplyMethod(monkeys_img[5].shift, UP * h), 
+            rate_func=rush_from,  # Slow down as it moves upwards
+            run_time=0.5  # Duration of the up motion
+        )
 
         self.play(
-            monkeys_img[4].animate.shift(2*RIGHT).rotate(TAU-0.001),
-            monkeys_img[5].animate.shift(2*RIGHT).rotate(TAU-0.001),
+            ApplyMethod(monkeys_img[4].shift, DOWN * h), 
+            ApplyMethod(monkeys_img[5].shift, DOWN * h), 
+            rate_func=rush_into,  # Slow down as it moves upwards
+            run_time=0.5  # Duration of the up motion
         )
+        self.wait()
 
         # “Yay!”
 
@@ -1511,3 +1542,4 @@ class Outro(MovingCameraScene):
         # I had to leave the island pretty quickly then. The rumor has it the monkeys are still out there, arguing. But now about which voting system is the best one…
 
         # [závěrečné poděkování patronům a some, možná midjourney bloopers? možná odkázat na roughgardenovy lecture notes?]
+
