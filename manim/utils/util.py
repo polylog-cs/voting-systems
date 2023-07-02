@@ -274,6 +274,23 @@ class Preference(VMobject):
     def highlight(self, *args, **kwargs):
         return self.indicate(*args, **kwargs)
 
+    def become_arrowed(self):
+        scale = 1.5
+        center = self.get_center()
+        anims = []
+        self.arrows = []
+        for obj in self.group:
+            new_pos = center + (obj.get_center() - center) * scale
+            obj.generate_target()
+            obj.target.move_to(new_pos)
+            anims.append(MoveToTarget(obj))
+        for a, b in zip(self.ordering, self.ordering[1:]):
+            a, b = *self.at(a), *self.at(b)
+            arrow = Arrow(start=a.target, end=b.target)
+            self.arrows.append(arrow)
+            anims.append(FadeIn(arrow))
+        return anims
+
 
 for method in Preference.BROADCAST_METHODS:
 
