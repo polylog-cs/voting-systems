@@ -543,7 +543,9 @@ class Proof1(Scene):
         default()
         # Ok, let’s first try to understand why in our scenario with monkeys it was so hard to choose the best fruit. Why is it that there were always so many monkeys unhappy about the result? Well, if you look at the rankings of the monkeys, you can see that there is some kind of cycle here. Some monkeys prefer avocado over banana over coconut, some prefer banana over coconut over avocado, and some prefer coconut over avocado over banana.
 
-        table = VotingTable(example_table_str).to_edge(UP).set_z_index(1000)
+        table = (
+            VotingTable(example_table_str).to_edge(UP).set_z_index(1000).shift(RIGHT)
+        )
         self.play(FadeIn(table))
         self.wait()
 
@@ -558,30 +560,35 @@ class Proof1(Scene):
             vec = rotate_vector(vec, np.radians(120))
 
         arrows = []
+
+        def update_label(arrow):
+            arrow.label.become(MathTex(f"{arrow.a}:{arrow.b}").move_to(arrow.label))
+
         for i in range(3):
-            start = condorcet_group[i]
-            end = condorcet_group[(i + 1) % 3]
+            start = condorcet_group[i].get_center()
+            end = condorcet_group[(i + 1) % 3].get_center()
             arrow = Arrow(
                 start=start,
                 end=end,
+                buff=w * 0.8,
                 color=text_color,
             )
-            dir = end.get_center() - start.get_center()
+            dir = end - start
             dir /= (dir * dir).sum() ** 0.5
             arrow.label = (
-                Tex("0:0")
-                .move_to(arrow)
-                .shift(0.6 * rotate_vector(dir, -np.radians(90)))
+                Dot().move_to(arrow).shift(0.6 * rotate_vector(dir, -np.radians(90)))
             )
+            arrow.a, arrow.b = 0, 0
             condorcet_group.add(arrow, arrow.label)
             arrows.append(arrow)
 
-        vec = rotate_vector(vec, np.radians(60))
+        nums = [(7, 2), (6, 3), (5, 4)]
         for i in range(3):
-            str = ["7:2", "6:3", "5:4"]
-            arrows[i].label.become(Tex(str[i]).move_to(arrows[i].label))
+            arrows[i].a, arrows[i].b = nums[i]
+            update_label(arrows[i])
+            arrows[i].label.fade(1)
 
-        condorcet_group.next_to(table, DOWN, buff=1)
+        condorcet_group.next_to(table, DOWN, buff=1).shift(LEFT)
 
         self.play(FadeIn(condorcet_group))
         self.wait()
@@ -594,47 +601,80 @@ class Proof1(Scene):
 
         # The fact that this can happen is called Condorcet paradox and I will use the word Condorcet cycle for any such scenario, that is, any scenario with three groups of voters with cyclic preferences where also each group has less than half of all the voters.
 
-        self.play(condorcet_group.animate.shift(LEFT))
-
         def wind_around(pref):
             anims = []
             for l in pref.ordering:
                 i = ord(l) - ord("A")
                 anims.append(pref.at(l)[0].animate.become(condorcet_group[i].copy()))
 
-            def arrow_updater(start, end):
+            def arrow_updater(start, end, start_target):
+                done = False
+
                 def updater(arrow):
-                    arrow.become(Arrow(start=start, end=end))
+                    # nonlocal done
+                    # if done:
+                    #    return
+                    # if (start.get_center() == start_target.get_center()).all():
+                    #    done = True
+                    #    update_label(arrow)
+                    arrow.become(
+                        Arrow(
+                            start=start.get_center(), end=end.get_center(), buff=0.8 * w
+                        ).set_z_index(arrow.z_index)
+                    )
 
                 return updater
 
             for arrow, a, b in zip(pref.arrows, pref.ordering, pref.ordering[1:]):
-                arrow.add_updater(arrow_updater(*pref.at(a), *pref.at(b)))
+                i = ord(a) - ord("A")
+                arrow.add_updater(
+                    arrow_updater(*pref.at(a), *pref.at(b), condorcet_group[i])
+                )
 
             return anims
 
         anims = []
-        for o in table.group:
-            o.arrowed = o.copy().set_z_index(2000)
+        for i, o in enumerate(table.group):
+            o.arrowed = o.copy().set_z_index(2000 - i)
 
         self.play(
             *(
                 o.arrowed.animate.scale(1.5)
                 .next_to(
-                    table, LEFT, buff=(3 - ord(o.ordering[0]) + ord("A") + 0.1 * i)
+                    table, LEFT, buff=(4 - ord(o.ordering[0]) + ord("A") - 0.1 * i)
                 )
                 .shift(DOWN)
                 for i, o in enumerate(table.group)
             )
         )
         self.play(*(AnimationGroup(*o.arrowed.become_arrowed()) for o in table.group))
-        self.play(*wind_around(table[0].arrowed))
+        for i, o in enumerate(table.group):
+            for arrow in o.arrowed.arrows:
+                arrow.set_z_index(2000 - i)
         self.play(
             AnimationGroup(
                 lag_ratio=0.5,
                 *(AnimationGroup(*wind_around(o.arrowed)) for o in table.group),
             )
         )
+
+        for mobj in self.mobjects:
+            mobj.clear_updaters()
+
+        for a in range(3):
+            b = (a + 1) % 3
+            c = (b + 1) % 3
+            abc = "ABC"
+            self.play(*table.fadeout(abc[c]))
+            self.play(
+                *table.indicate("#"),
+                condorcet_group[a].indicate(),
+                condorcet_group[b].indicate(),
+                run_time=2,
+            )
+            update_label(arrows[a])
+            self.play(FadeIn(arrows[a].label))
+            self.play(*table.fadein(abc[c]))
 
         paradox_tex = Tex(r"Condorcet paradox")
         paradox_arrow = Arrow(start=ORIGIN, end=1 * LEFT)

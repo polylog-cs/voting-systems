@@ -132,16 +132,19 @@ class Fruit(VMobject):
     def __init__(self, label, normal, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.label = label
-        self.singleton = normal
+        self.singleton: VMobject = normal
         self.add(normal)
+        self.disabled = False
 
     def gray(self):
+        self.disabled = True
         self.singleton.save_state()
         anims = []
         if self.singleton.submobjects:
             for subm in self.singleton.submobjects:
                 color = subm.get_color()
                 color.saturation = 0
+                color.luminance = 0.5 + color.luminance / 2
                 anims.append(subm.animate.set_color(color))
             return AnimationGroup(*anims)
         color = self.singleton.get_color()
@@ -149,13 +152,16 @@ class Fruit(VMobject):
         return self.singleton.animate.set_color(color)
 
     def ungray(self):
+        self.disabled = False
         return self.singleton.animate.restore()
 
     def fadeout(self):
+        self.disabled = True
         self.save_state()
         return self.animate.fade(0.9)
 
     def fadein(self):
+        self.disabled = False
         return self.animate.restore()
 
     def indicate(self):
@@ -239,6 +245,8 @@ class Preference(VMobject):
         for i, m in enumerate(self.group):
             if label_or_index == m.label:
                 return i
+            if label_or_index == "#" and not m.disabled:
+                return i
         return None
 
     def at(self, ixs):
@@ -286,7 +294,9 @@ class Preference(VMobject):
             anims.append(MoveToTarget(obj))
         for a, b in zip(self.ordering, self.ordering[1:]):
             a, b = *self.at(a), *self.at(b)
-            arrow = Arrow(start=a.target, end=b.target)
+            arrow = Arrow(
+                start=a.target.get_center(), end=b.target.get_center(), buff=0.56
+            )
             self.arrows.append(arrow)
             anims.append(FadeIn(arrow))
         return anims
