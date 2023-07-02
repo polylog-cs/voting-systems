@@ -225,7 +225,6 @@ class Intro(MovingCameraScene):
         self.wait()
 
 
-
 class Polylogo(Scene):
     def construct(self):
         default()
@@ -1534,23 +1533,24 @@ class Outro(MovingCameraScene):
 
         
 
+        # TODO risa podivat se jestli zbude cas
 
         # anims = []
         # for it in range(10):
         #     fruit = random.choice(["A", "C"])
         #     if fruit == "A":
         #         start = (4 + random.uniform(-1, 1))*LEFT + (1 + random.uniform(-1, 1))*DOWN
-        #         len = 14+ random.uniform(-1, 1)
+        #         lent = 14+ random.uniform(-1, 1)
         #         path = ParametricFunction(
         #             lambda t: np.array([t, -0.5 * t**2, 0]), t_range = [-1, 1]
         #         )
         #     else:
         #         start = (4 + random.uniform(-1, 1))*LEFT + (-2 + random.uniform(-1, 1))*UP
-        #         len = 13+ random.uniform(-1, 1)
+        #         lent = 13+ random.uniform(-1, 1)
         #         path = ParametricFunction(
         #             lambda t: np.array([t, -0.5 * t**2, 0]), t_range = [-1, 1.5]
         #         ) 
-        #     path.scale_to_fit_width(len)#.stretch_to_fit_height(0.3* (end-start))
+        #     path.scale_to_fit_width(lent)#.stretch_to_fit_height(0.3* (end-start))
         #     path.next_to(Dot().move_to(start), RIGHT)
         #     self.add(path)
         #     f = FRUITS[fruit].copy().move_to(-10*LEFT)
