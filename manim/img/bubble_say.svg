@@ -2,9 +2,9 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="210mm"
-   height="297mm"
-   viewBox="0 0 210 297"
+   width="50.927696mm"
+   height="68.83313mm"
+   viewBox="0 0 50.927696 68.83313"
    version="1.1"
    id="svg3835"
    inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
@@ -24,25 +24,31 @@
      inkscape:document-units="mm"
      showgrid="false"
      inkscape:zoom="0.75187991"
-     inkscape:cx="252.03493"
-     inkscape:cy="426.26488"
+     inkscape:cx="-347.7949"
+     inkscape:cy="71.15498"
      inkscape:window-width="1846"
      inkscape:window-height="1016"
      inkscape:window-x="74"
      inkscape:window-y="27"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer1" />
+     inkscape:current-layer="layer1"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
   <defs
      id="defs3832" />
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     id="layer1">
+     id="layer1"
+     transform="translate(-137.12681,-94.114713)">
     <g
        id="g7097"
-       transform="translate(-241.91032,-3.1506738)">
+       transform="translate(-241.91032,-3.1506738)"
+       style="opacity:1;fill:none;stroke:#000000;stroke-opacity:1">
       <path
-         style="fill:#ffffff;stroke:#000000;stroke-width:0.8;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         style="fill:none;stroke:#000000;stroke-width:0.8;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          id="path4255"
          sodipodi:type="arc"
          sodipodi:cx="408.02881"

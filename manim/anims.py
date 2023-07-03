@@ -5,7 +5,6 @@ class Intro(MovingCameraScene):
     def construct(self):
         default()
         self.next_section(skip_animations=False)
-
         (
             monkeys_img,
             monkeys_voting_img,
@@ -404,7 +403,7 @@ class Statement2(Scene):
         # Let’s go on, what do we mean by “sometimes incentivizes strategic voting”? Here is an example. Let’s look at this scenario with the plurality voting system and this voter in particular. So far, we did not distinguish between the true preference of the voter and the ranking that the voter actually writes on the ballot, we assumed this is always the same thing. But now let’s imagine that all other voters already cast their ballots and our voter actually sees what is written on them.
 
         i_voter = 3
-        table = VotingTable(example_table_str).next_to(gs_tex, DOWN)
+        table = VotingTable(example_table_str).next_to(gs_tex, DOWN).shift(0.7*DOWN)
 
         monkeys_img = (
             Group(*[img_monkey(pref[0], width=1) for pref in example_table_str])
@@ -434,16 +433,20 @@ class Statement2(Scene):
 
         voter = monkeys_img[i_voter]
         voter.generate_target()
-        voter.target.scale(2).next_to(table[i_voter].saved_state, DOWN, buff=1)
+        voter.target.scale(1.8).move_to(ORIGIN).to_edge(DOWN, buff = 0.2)#align_to(voter, DOWN).shift(0.5*DOWN)
 
-        bubble = create_bubble().next_to(voter.target, LEFT).shift(1 * UP)
+        h = 3
+        sht = 1.3*UP
+        bubble = SVGMobject("img/bubble_think.svg").scale_to_fit_height(h).next_to(voter.target, LEFT).shift(sht)
         order = table[i_voter].copy()
         self.add(order)
         table[i_voter].restore()
         self.remove(table[i_voter])
         self.play(
             MoveToTarget(voter),
-            order.animate.scale(1 / monkey_scale).move_to(bubble.get_center()),
+            order.animate.scale(1 / monkey_scale).move_to(
+                bubble.get_center() + bubble.width/10 * LEFT + bubble.height/10*UP
+            ),
         )
         self.play(FadeIn(bubble))
         self.wait()
@@ -452,25 +455,31 @@ class Statement2(Scene):
         sc = 1.5
         self.play(order_copy.animate.move_to(table[i_voter]))
         self.wait()
-        self.play(table.results_show("A"))
+        self.play(table.results_show("C"))
         self.wait()
+
+        self.play(
+            FadeOut(order_copy),
+            table.winner_hide(),
+        )
+        self.wait()
+
         # Now it is time for our voter to decide what ranking to put on the ballot. The voter can of course use their true preference - in this case, the voting system elects Y as the winner. But the voter can also vote strategically and write a different ranking on the ballot. For example, if the voter casts this ballot, the voting system now elects Z as the winner.
 
-        bubble2 = create_bubble(speaking=True).next_to(voter, RIGHT).shift(1 * UP)
-        order2 = table[i_voter].copy().rearrange("CAB", False).move_to(bubble2)
+        bubble2 = SVGMobject("img/bubble_say.svg").scale_to_fit_height(0.9 * h).next_to(voter, RIGHT).shift(sht)
+        order2 = table[i_voter].copy().rearrange("BAC", False).move_to(bubble2)
         self.play(FadeIn(bubble2), FadeIn(order2))
         self.wait()
         order2_copy = order2.copy()
         self.play(
-            FadeOut(order_copy),
             order2_copy.animate.move_to(table[i_voter]),
-            table.results_show("B"),
+            table.results_show("B"), # TODO problikne predchozi winner
         )
         self.wait()
 
-        self.play(order2_copy.rearrange("ABC"), table.results_show("A"))
+        self.play(order2_copy.rearrange("ABC"), table.results_show("C"))
         self.play(order2_copy.rearrange("CAB"), table.results_show("B", DOWN))
-        self.play(order2_copy.rearrange("ABC"), table.results_show("A"))
+        self.play(order2_copy.rearrange("ABC"), table.results_show("C"))
 
         self.play(FadeOut(order2_copy))
         self.wait()
@@ -521,7 +530,7 @@ class Statement2(Scene):
         majority_table = (
             VotingTable(majority_table_str)
             .align_to(reasonable_group, UP)
-            .shift(1 * DOWN)
+            .shift(2 * DOWN)
         )
 
         self.play(FadeIn(reasonable_group))
