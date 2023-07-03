@@ -9,7 +9,7 @@ from collections import Counter
 from manim import *
 from .util_general import *
 
-DRAFT = True
+DRAFT = False
 
 
 def create_bubble(scale=1.0, color=text_color, length_scale=1, speaking=False):
@@ -191,7 +191,13 @@ if DRAFT:
         Fruit(
             letter, Circle().set_stroke_width(0).set_fill(color, 1).scale((1, 1.28, 0))
         )
-        for letter, color in (("A", GREEN), ("B", YELLOW), ("C", RED), ("?", GRAY))
+        for letter, color in (
+            ("A", GREEN),
+            ("B", YELLOW),
+            ("C", RED),
+            ("D", BLUE),
+            ("?", "#333"),
+        )
     ]
 
 FRUITS = {f.label: f.scale_to_fit_width(0.35) for f in FRUITS}
@@ -238,6 +244,7 @@ class Preference(VMobject):
         self.ordering = ordering
         self.group.arrange(DOWN)
         self.add(self.group)
+        self.lying = Text(":^)")  # TODO
 
     def _ix(self, label_or_index):
         if type(label_or_index) == int:
@@ -281,6 +288,15 @@ class Preference(VMobject):
 
     def highlight(self, *args, **kwargs):
         return self.indicate(*args, **kwargs)
+
+    def lying(self, lying):
+        if lying:
+            self.lying.next_to(self.group, UP)
+            self.add(self.lying)
+            return FadeIn(self.lying)
+        else:
+            self.remove(self.lying)
+            return FadeOut(self.laying)
 
     def become_arrowed(self):
         scale = 1.5
@@ -362,7 +378,8 @@ class VotingWinner(VotingResults):
         else:
             self.remove(old_winner)
             return AnimationGroup(
-                FadeOut(old_winner, shift=shift), FadeIn(self.winner, shift=shift)
+                FadeOut(old_winner, shift=shift * self.scale_factor),
+                FadeIn(self.winner, shift=shift * self.scale_factor),
             )
 
 
@@ -435,7 +452,6 @@ class VotingOrdering(VotingResults):
 
 
 class VotingTable(VMobject):
-    results = VotingWinner()
     num_of_voters = 9  # TODO
     scale_factor = 1
     # Those get generated automagically by the code below this class definition
@@ -448,10 +464,12 @@ class VotingTable(VMobject):
         "rearrange",
         "indicate",
         "highlight",
+        "lying",
     ]
 
     def __init__(self, preferences, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.results = VotingWinner()
         self.group = VGroup()
         for preference in preferences:
             self.group.add(Preference(preference))
@@ -649,7 +667,6 @@ def intro_images(intro=True):
         ordering("CAB", background=BACKGROUND_COLOR).next_to(monkeys_img[8], RIGHT),
     ]
 
-
     explorer = (
         ImageMobject(f"img/{'explorer' if DRAFT == False else 'explorer_small'}.png")
         .scale_to_fit_height(5)
@@ -657,9 +674,9 @@ def intro_images(intro=True):
         .shift(2 * LEFT + 0.4 * DOWN)
     )  # TODO pridat polylogo na laptop
 
-    background = ImageMobject(f"img/{'background-upscaled' if DRAFT == True else 'background'}.png").scale_to_fit_width(
-        config.frame_width
-    )
+    background = ImageMobject(
+        f"img/{'background-upscaled' if DRAFT == True else 'background'}.png"
+    ).scale_to_fit_width(config.frame_width)
 
     whiteboard = (
         ImageMobject(f"img/whiteboard{'_shame' if not intro else ''}.png")

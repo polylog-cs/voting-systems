@@ -713,12 +713,12 @@ class Proof2(Scene):
 
         # Remember, our goal is to demonstrate that for any reasonable voting system, there exists a scenario where a certain voter has an incentive to vote strategically. It turns out that any Condorcet cycle is almost, but not quite, such a scenario.
 
-        tables = Group(*[VotingTable(str) for str in proof_table_strings])
+        tables = VGroup(*[VotingTable(str) for str in proof_table_strings])
         table = tables[0].copy()
 
-        self.play(FadeIn(tables[2]))  # TODO
+        # self.play(FadeIn(tables[2]))  # TODO
 
-        self.play(FadeOut(tables[2]))
+        # self.play(FadeOut(tables[2]))
 
         # Let me explain. Let’s consider an arbitrary reasonable voting system like plurality voting or the two-round system. The system needs to elect a winner in this Condorcet cycle. Without loss of generality, let’s say that it elects the coconut.
 
@@ -735,7 +735,9 @@ class Proof2(Scene):
 
         # What if all these voters simultaneously cast a ballot that swaps avocado and banana?
 
-        self.play(*[table[i].rearrange("BAC") for i in range(4)])
+        self.play(
+            *table.rearrange("BAC", indexes=range(4)),
+        )
         self.wait()
         # self.play(FadeOut(border))
         # self.wait()
@@ -755,7 +757,7 @@ class Proof2(Scene):
         self.play(table.results_change("B"))
         self.wait()
 
-        self.play(FadeOut(reasonable_group))
+        self.play(FadeOut(reasonable_group), table.results_hide())
         self.wait()
 
         # So, if all of these voters coordinate and vote strategically, they can achieve a result that they like more than what happens when they tell the truth. This is by the way exactly what the four sly monkeys did at the beginning when we tried to use the two-round system to elect the winner.
@@ -772,19 +774,29 @@ class Proof2(Scene):
         # We don’t really know who the winner is in these intermediate situations, after all, we are considering an arbitrary voting system in our proof. But because the winner is different at the beginning and at the end, we know that it has to change at some point.
 
         for table in tables:
-            table.scale(0.3)
+            table.scale(0.5)
         tables.arrange(DOWN, buff=0.5)
+        tables.move_to(ORIGIN)
 
-        self.play(FadeIn(*tables))
-        self.wait()
+        self.play(FadeIn(tables[0]))
+        for i, table in enumerate(tables[:-1]):
+            self.add(tables[i])
+            table = tables[i].copy()
+            self.play(table.animate.next_to(tables[i], DOWN, buff=MED_LARGE_BUFF))
+            self.play(table[i].rearrange("BAC"))
+            shift = tables[i].get_center() - table.get_center()
+            # self.play(table.animate.shift(shift), tables[: i + 1].animate.shift(shift))
+            self.remove(table)
 
         self.play(
             tables[0].winner_show("C"),
             tables[-1].winner_show("B"),
         )
+        self.add(tables[0].results)
+        self.play(Circumscribe(tables[0]))
         self.wait()
 
-        self.play(*[t.winner_show("?") for t in tables[1:-2]])
+        self.play(*[t.winner_show("?") for t in tables[1:-1]])
         self.wait()
 
         self.play(
@@ -807,9 +819,16 @@ class Proof2(Scene):
 
         vec = (tables[2].get_center() + tables[3].get_center()) / 2.0
         sc = 3
-        self.play(Group(tables, border).animate.move_to(-vec * sc).scale(sc))
+        grp = Group(
+            tables,
+            border,
+            Group(*(Group(table.results.winner, table.arrow) for table in tables)),
+        )
+        self.clear()
+        self.add(grp)
+        self.play(grp.animate.move_to(-vec * sc).scale(sc))
         self.play(FadeOut(border))
-        self.wait()
+        self.wait(5)
 
         # Let’s also focus on this voter. Do you see how to finish the proof? Well, let’s imagine that the top scenario contains the honest preferences of all the voters. If this voter votes honestly, X is the winner. But what if they vote strategically and cast a ballot with ZYX instead of YZX? Well, we know that then the outcome of the voting system changes from X to some other candidate. But look, X is the worst option for our voter, so whatever the change, the voter will prefer it!
 
@@ -817,19 +836,6 @@ class Proof2(Scene):
         self.wait()
 
         # And this finishes the proof of the Gibbard-Satterthwaite theorem. To summarize, if you come up with any reasonable voting system, I can look at any Condorcet cycle scenario and tweak it a little bit to find a scenario where your voting system gives some voter the incentive to vote strategically.
-
-        table = VotingTable(example_table_str)
-        self.play(FadeIn(table))
-        self.wait()
-
-        self.play(
-            Succession(
-                table[0].rearrange("BAC"),
-                table[1].rearrange("BAC"),
-                table[2].rearrange("BAC"),
-            )
-        )
-        self.wait()
 
 
 class Reasonable(Scene):
