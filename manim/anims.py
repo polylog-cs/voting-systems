@@ -403,7 +403,7 @@ class Statement2(Scene):
         # Let’s go on, what do we mean by “sometimes incentivizes strategic voting”? Here is an example. Let’s look at this scenario with the plurality voting system and this voter in particular. So far, we did not distinguish between the true preference of the voter and the ranking that the voter actually writes on the ballot, we assumed this is always the same thing. But now let’s imagine that all other voters already cast their ballots and our voter actually sees what is written on them.
 
         i_voter = 3
-        table = VotingTable(example_table_str).next_to(gs_tex, DOWN).shift(0.7*DOWN)
+        table = VotingTable(example_table_str).next_to(gs_tex, DOWN).shift(0.7 * DOWN)
 
         monkeys_img = (
             Group(*[img_monkey(pref[0], width=1) for pref in example_table_str])
@@ -433,11 +433,18 @@ class Statement2(Scene):
 
         voter = monkeys_img[i_voter]
         voter.generate_target()
-        voter.target.scale(1.8).move_to(ORIGIN).to_edge(DOWN, buff = 0.2)#align_to(voter, DOWN).shift(0.5*DOWN)
+        voter.target.scale(1.8).move_to(ORIGIN).to_edge(
+            DOWN, buff=0.2
+        )  # align_to(voter, DOWN).shift(0.5*DOWN)
 
         h = 3
-        sht = 1.3*UP
-        bubble = SVGMobject("img/bubble_think.svg").scale_to_fit_height(h).next_to(voter.target, LEFT).shift(sht)
+        sht = 1.3 * UP
+        bubble = (
+            SVGMobject("img/bubble_think.svg")
+            .scale_to_fit_height(h)
+            .next_to(voter.target, LEFT)
+            .shift(sht)
+        )
         order = table[i_voter].copy()
         self.add(order)
         table[i_voter].restore()
@@ -445,7 +452,7 @@ class Statement2(Scene):
         self.play(
             MoveToTarget(voter),
             order.animate.scale(1 / monkey_scale).move_to(
-                bubble.get_center() + bubble.width/10 * LEFT + bubble.height/10*UP
+                bubble.get_center() + bubble.width / 10 * LEFT + bubble.height / 10 * UP
             ),
         )
         self.play(FadeIn(bubble))
@@ -466,14 +473,19 @@ class Statement2(Scene):
 
         # Now it is time for our voter to decide what ranking to put on the ballot. The voter can of course use their true preference - in this case, the voting system elects Y as the winner. But the voter can also vote strategically and write a different ranking on the ballot. For example, if the voter casts this ballot, the voting system now elects Z as the winner.
 
-        bubble2 = SVGMobject("img/bubble_say.svg").scale_to_fit_height(0.9 * h).next_to(voter, RIGHT).shift(sht)
+        bubble2 = (
+            SVGMobject("img/bubble_say.svg")
+            .scale_to_fit_height(0.9 * h)
+            .next_to(voter, RIGHT)
+            .shift(sht)
+        )
         order2 = table[i_voter].copy().rearrange("BAC", False).move_to(bubble2)
         self.play(FadeIn(bubble2), FadeIn(order2))
         self.wait()
         order2_copy = order2.copy()
         self.play(
             order2_copy.animate.move_to(table[i_voter]),
-            table.results_show("B"), # TODO problikne predchozi winner
+            table.results_show("B"),  # TODO problikne predchozi winner
         )
         self.wait()
 
@@ -1699,3 +1711,10 @@ class Outro(MovingCameraScene):
         # I had to leave the island pretty quickly then. The rumor has it the monkeys are still out there, arguing. But now about which voting system is the best one…
 
         # [závěrečné poděkování patronům a some, možná midjourney bloopers? možná odkázat na roughgardenovy lecture notes?]
+
+
+class Explore(Scene):
+    def construct(self):
+        default()
+        avocado = load_svg("monkeys/avocado_voting.svg")
+        self.add(avocado)
