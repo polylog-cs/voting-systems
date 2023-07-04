@@ -51,17 +51,26 @@ majority_table_str = ["BCA", "BAC", "BCA", "BAC", "BCA", "CAB", "CAB", "CAB", "C
 
 
 def img_monkey(kind, voting=False, width=2):
-    sc = 2
-    if voting:
-        votes_for_img = get_fruit(voting)  # TODO: replace with a banner
-        votes_for_img.scale_to_fit_width(width / sc).shift(1 * LEFT + 1 * UP)
-    else:
-        votes_for_img = Dot().scale(0.0000001)
-
+    sc = 2.5
     kinds = {"A": "avocado", "B": "banana", "C": "coconut"}
-    filename = f"img/monkeys/{kinds[kind]}{'_voting' if voting else ''}.png"
-    monkey_img = ImageMobject(filename).scale_to_fit_width(width)
-    return Group(monkey_img, votes_for_img)
+    normal_img = load_svg(f"img/monkeys/{kinds[kind]}.svg").scale_to_fit_width(width)
+    scaling_correction = {"A": 1.608, "B": 1.626, "C": 1.635}[kind]
+    voting_img = load_svg(f"img/monkeys/{kinds[kind]}_voting.svg").scale_to_fit_width(
+        width * scaling_correction
+    )
+    voting_img.align_to(normal_img, RIGHT + DOWN)
+    normal_img.save_state()
+    voting_img.save_state()
+    if voting:
+        normal_img.fade(1)
+    else:
+        voting_img.fade(1)
+    dual_img = VGroup(normal_img, voting_img)
+    if voting:
+        votes_for_img = get_fruit(voting).move_to(voting_img)
+        votes_for_img.scale_to_fit_width(width / sc).shift(LEFT + 0.8 * UP)
+        dual_img.add(votes_for_img)
+    return dual_img.move_to(ORIGIN)
 
 
 def ordering(str, background=None):
@@ -476,7 +485,6 @@ class VotingTable(VMobject):
 
     winner_show = results_show
     winner_hide = results_hide
-
 
     def candidates_by_votes(self):
         votes = [voter.ordering[0] for voter in self.group]

@@ -1716,5 +1716,11 @@ class Outro(MovingCameraScene):
 class Explore(Scene):
     def construct(self):
         default()
-        avocado = load_svg("monkeys/avocado_voting.svg")
-        self.add(avocado)
+        all_monkeys = (
+            Group(*(img_monkey(a, b) for a in "ABC" for b in list("ABC") + [False]))
+            .arrange_in_grid(3, 4)
+            .scale(0.8)
+        )
+
+        self.add(all_monkeys)
+        self.wait(10)

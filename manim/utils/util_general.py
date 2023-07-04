@@ -128,7 +128,7 @@ config.max_files_cached = 1000
 ### Utility functions
 
 
-def load_svg(*args, **kwargs):
+def load_svg(*args, **kwargs) -> SVGMobject:
     return (
         SVGMobject(*args, **kwargs)
         .set_stroke(BLACK, 0, 0)
