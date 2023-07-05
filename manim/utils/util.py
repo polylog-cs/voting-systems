@@ -9,7 +9,7 @@ from collections import Counter
 from manim import *
 from .util_general import *
 
-DRAFT = False
+DRAFT = True
 
 
 thm_scale = 0.8
@@ -68,9 +68,10 @@ def img_monkey(kind, voting=False, width=2):
     dual_img = VGroup(normal_img, voting_img)
     if voting:
         votes_for_img = get_fruit(voting).move_to(voting_img)
-        votes_for_img.scale_to_fit_width(width / sc).shift(LEFT + 0.8 * UP)
+        votes_for_img.scale_to_fit_width(width / sc).shift(width/2* LEFT + width/2 * UP)
         dual_img.add(votes_for_img)
     return dual_img.move_to(ORIGIN)
+
 
 
 def ordering(str, background=None):
@@ -87,6 +88,61 @@ def ordering(str, background=None):
 
     return VGroup(border, fruits)
 
+
+def intro_images(intro=True):
+    w = 1
+    monkeys_img = [
+        img_monkey(example_table_str[i][0], False, w)
+        for i in range(len(example_table_str))
+    ]
+
+    monkeys_img[0].to_corner(DL).shift(0.1 * DOWN)
+    monkeys_img[1].next_to(monkeys_img[0], RIGHT).shift(0.1 * DOWN)
+    monkeys_img[2].next_to(monkeys_img[1], RIGHT).shift(0.15 * UP)
+    monkeys_img[3].next_to(monkeys_img[0], UR)
+
+    monkeys_img[4].to_edge(DOWN).shift(1.5 * LEFT)
+    monkeys_img[5].next_to(monkeys_img[4], RIGHT).shift(0.2 * DOWN)
+
+    monkeys_img[6].shift(4 * LEFT + 2 * UP).shift(0.2 * UP + 0.5 * RIGHT)
+    monkeys_img[7].next_to(monkeys_img[6], RIGHT).shift(-0.1 * RIGHT + 0.2 * DOWN)
+    monkeys_img[8].next_to(monkeys_img[7], RIGHT).shift(0.2 * LEFT + 0.1 * DOWN)
+
+    monkeys_voting_img = [
+        [
+            img_monkey(example_table_str[i][0], example_table_str[i][j], w).align_to(
+                monkeys_img[i], DR
+            )
+            for j in range(3)
+        ]
+        for i in range(len(example_table_str))
+    ]
+
+    orderings = [
+        ordering("ABC", background=BACKGROUND_COLOR).next_to(monkeys_img[3], RIGHT),
+        ordering("BCA", background=BACKGROUND_COLOR).next_to(monkeys_img[5], RIGHT),
+        ordering("CAB", background=BACKGROUND_COLOR).next_to(monkeys_img[8], RIGHT),
+    ]
+
+    explorer = (
+        ImageMobject(f"img/{'explorer' if DRAFT == False else 'explorer_small'}.png")
+        .scale_to_fit_height(5)
+        .to_corner(DR)
+        .shift(2 * LEFT + 0.4 * DOWN)
+    )  # TODO pridat polylogo na laptop
+
+    background = ImageMobject(
+        f"img/{'background-upscaled' if DRAFT == True else 'background'}.png"
+    ).scale_to_fit_width(config.frame_width)
+
+    whiteboard = (
+        ImageMobject(f"img/whiteboard{'_shame' if not intro else ''}.png")
+        .scale_to_fit_width(5)
+        .to_corner(DR)
+        .shift(1.5 * RIGHT + 1.0 * DOWN)
+    )
+
+    return monkeys_img, monkeys_voting_img, orderings, explorer, background, whiteboard
 
 class Fruit(VMobject):
     def __init__(self, label, normal, *args, **kwargs):
@@ -587,58 +643,3 @@ class Interpol(AnimationGroup):
         # Call the parent constructor with the animations
         super().__init__(FadeOut(mobject_old), FadeIn(mobject_new), **kwargs)
 
-
-def intro_images(intro=True):
-    w = 1
-    monkeys_img = [
-        img_monkey(example_table_str[i][0], False, w)
-        for i in range(len(example_table_str))
-    ]
-
-    monkeys_img[0].to_corner(DL).shift(0.1 * DOWN)
-    monkeys_img[1].next_to(monkeys_img[0], RIGHT).shift(0.1 * DOWN)
-    monkeys_img[2].next_to(monkeys_img[1], RIGHT).shift(0.15 * UP)
-    monkeys_img[3].next_to(monkeys_img[0], UR)
-
-    monkeys_img[4].to_edge(DOWN).shift(1.5 * LEFT)
-    monkeys_img[5].next_to(monkeys_img[4], RIGHT).shift(0.2 * DOWN)
-
-    monkeys_img[6].shift(4 * LEFT + 2 * UP).shift(0.2 * UP + 0.5 * RIGHT)
-    monkeys_img[7].next_to(monkeys_img[6], RIGHT).shift(-0.1 * RIGHT + 0.2 * DOWN)
-    monkeys_img[8].next_to(monkeys_img[7], RIGHT).shift(0.2 * LEFT + 0.1 * DOWN)
-
-    monkeys_voting_img = [
-        [
-            img_monkey(example_table_str[i][0], example_table_str[i][j], w).align_to(
-                monkeys_img[i], DR
-            )
-            for j in range(3)
-        ]
-        for i in range(len(example_table_str))
-    ]
-
-    orderings = [
-        ordering("ABC", background=BACKGROUND_COLOR).next_to(monkeys_img[3], RIGHT),
-        ordering("BCA", background=BACKGROUND_COLOR).next_to(monkeys_img[5], RIGHT),
-        ordering("CAB", background=BACKGROUND_COLOR).next_to(monkeys_img[8], RIGHT),
-    ]
-
-    explorer = (
-        ImageMobject(f"img/{'explorer' if DRAFT == False else 'explorer_small'}.png")
-        .scale_to_fit_height(5)
-        .to_corner(DR)
-        .shift(2 * LEFT + 0.4 * DOWN)
-    )  # TODO pridat polylogo na laptop
-
-    background = ImageMobject(
-        f"img/{'background-upscaled' if DRAFT == True else 'background'}.png"
-    ).scale_to_fit_width(config.frame_width)
-
-    whiteboard = (
-        ImageMobject(f"img/whiteboard{'_shame' if not intro else ''}.png")
-        .scale_to_fit_width(5)
-        .to_corner(DR)
-        .shift(1.5 * RIGHT + 1.0 * DOWN)
-    )
-
-    return monkeys_img, monkeys_voting_img, orderings, explorer, background, whiteboard

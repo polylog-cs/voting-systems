@@ -14,7 +14,12 @@ class Intro(MovingCameraScene):
             whiteboard,
         ) = intro_images()
 
-        self.add(background, explorer)
+        self.add(background)
+
+        self.play(
+            explorer.arrive_from(RIGHT)
+        )
+        self.wait()
 
         # Throughout my expeditions, I've visited many beautiful places, but none struck me as much as this faraway tropical island.
 
@@ -140,8 +145,23 @@ class Intro(MovingCameraScene):
             + [monkeys_voting_img[i][0] for i in ranges[2]]
         )
 
-        self.play(*[Wiggle(monkeys_img[i]) for i in ranges[0]])
+        protest_tex = [Tex(str).move_to(monkeys_voting_img[i][0][0]).shift(0.5*LEFT + 0.5*UP) for i, str in enumerate(["We", "pro", "te", "st"])]
+        monkeys_protest = [VGroup(monkeys_voting_img[i][0][0], protest_tex[i]) for i in range(4)]
+
+        self.play(
+            *[Interpol(monkeys_img[i], monkeys_protest[i][0]) for i in range(4)],
+            *[FadeIn(monkeys_protest[i][1]) for i in range(4)],
+        )
         self.wait()
+        self.play(*[Wiggle(monkeys_protest[i]) for i in range(4)])
+        self.wait()
+
+        self.play(
+            *[Interpol(monkeys_protest[i][0], monkeys_img[i]) for i in range(4)],
+            *[FadeOut(monkeys_protest[i][1]) for i in range(4)],
+        )
+        self.wait()
+
 
         # Why?
         # We made a mistake in the first round, can we run the election one more time? Please!
@@ -392,7 +412,7 @@ class Statement2(Scene):
     def construct(self):
         default()
 
-        gs_tex[2].set_color(GREEN),
+        #gs_tex[2].set_color(GREEN),
         self.add(
             gs_tex.to_edge(UP, buff=0.5),
         )
@@ -438,7 +458,7 @@ class Statement2(Scene):
         )  # align_to(voter, DOWN).shift(0.5*DOWN)
 
         h = 3
-        sht = 1.3 * UP
+        sht = 1.3 * UP + 1 * RIGHT
         bubble = (
             SVGMobject("img/bubble_think.svg")
             .scale_to_fit_height(h)
@@ -485,53 +505,94 @@ class Statement2(Scene):
         order2_copy = order2.copy()
         self.play(
             order2_copy.animate.move_to(table[i_voter]),
+        )
+        self.wait()
+        self.play(
             table.results_show("B"),  # TODO problikne predchozi winner
         )
         self.wait()
 
-        self.play(order2_copy.rearrange("ABC"), table.results_show("C"))
-        self.play(order2_copy.rearrange("CAB"), table.results_show("B", DOWN))
-        self.play(order2_copy.rearrange("ABC"), table.results_show("C"))
-
-        self.play(FadeOut(order2_copy))
-        self.wait()
-        self.play(table.results_hide())
-        self.wait()
-
-        # What’s important, our voter actually prefers Z over Y, so it pays off to submit this dishonest ballot. Whenever this happens, we say that the voter is incentivized to vote strategically.
-
-        self.play(Circumscribe(order, color=RED))
-        self.wait()
-
+        ar = ImageMobject("img/arrow.png").scale_to_fit_width(1).next_to(order.group[1], LEFT)
         self.play(
-            FadeOut(border),
-            gs_tex[4].animate.set_color(GREEN),
+            FadeIn(ar)
+        )
+        self.wait()
+        self.play(
+            ar.animate.next_to(order.group[2], LEFT)
+        )
+        self.wait()
+        self.play(
+            FadeOut(ar)
         )
         self.wait()
 
-        self.play(*[FadeOut(o) for o in self.mobjects if o != gs_tex])
+        # TODO other monkeys
+
+        self.play(order2_copy.rearrange("ABC"), table.results_show("C"))
+        self.play(order2_copy.rearrange("BAC"), table.results_show("B", DOWN))
+        self.play(order2_copy.rearrange("ABC"), table.results_show("C"))
+        self.play(order2_copy.rearrange("BAC"), table.results_show("B", DOWN))
+
+        # self.play(FadeOut(order2_copy))
+        # self.wait()
+        # self.play(table.results_hide())
+        # self.wait()
+
+        # What’s important, our voter actually prefers Z over Y, so it pays off to submit this dishonest ballot. Whenever this happens, we say that the voter is incentivized to vote strategically.
+
+        # self.play(Circumscribe(order, color=RED))
+        # self.wait()
+
+        border2 = SurroundingRectangle(gs_tex[3], color = RED)
+        self.play(
+            *[FadeOut(o) for o in self.mobjects if o != gs_tex and o != border],
+        )
         self.wait()
+        self.play(
+            Transform(border, border2),
+        )
+        self.wait()
+
+
+        # self.play(
+        #     FadeOut(border),
+        #     gs_tex[4].animate.set_color(GREEN),
+        # )
+        # self.wait()
+
+        # self.play(*[FadeOut(o) for o in self.mobjects if o != gs_tex])
+        # self.wait()
 
         # So the definition is a bit different than what happened earlier because there, the whole group of monkeys coordinated. Also, the theorem is not saying that in every possible scenario, there is somebody who has this incentive. But, for any reasonable voting system we can find at least one scenario where strategic voting occurs.
 
-        self.play(Circumscribe(gs_tex, color=RED), run_time=2)
-        self.wait()
-        self.play(gs_tex[3].animate.set_color(GREEN))
-        self.wait()
+        # self.play(Circumscribe(gs_tex[3], color=RED), run_time=2)
+        # self.wait()
+        # self.play(gs_tex[3].animate.set_color(GREEN))
+        # self.wait()
 
         # And this brings us to the word “reasonable”. The problem is: Think of the dictatorship voting system where the winner is always the top preference of voter number 3. By that I mean that system always outputs the fruit in the highlighted square. This voting system actually satisfies our definition of a voting system. Also, you can check that there is no scenario in which strategic voting helps anybody.
 
-        border = SurroundingRectangle(gs_tex[1], color=RED)
-        self.play(FadeIn(border))
+        border2 = SurroundingRectangle(gs_tex[1], color=RED)
+        self.play(Transform(border, border2))
         self.wait()
 
         table.move_to(ORIGIN)
         self.play(FadeIn(table))
         self.wait()
 
-        border_fruit = SurroundingRectangle(table[3][0], color=RED)
-        self.play(FadeIn(border_fruit), table.results_show("B"))
+        border_fruit = SurroundingRectangle(table[2].group[0], color=RED)
+        self.play(FadeIn(border_fruit))
         self.wait()
+        self.play(table.results_show("A"))
+        self.wait()
+
+        for pos, new, win in [
+            [2, "BAC", "B"], [4, "ACB", "B"], [5, "ACB", "B"], [2, "CBA", "C"], [0, "BAC", "C"], [8, "BAC", "C"],
+            [2, "ABC", "A"], [1, "CBA", "A"], [2, "BAC", "A"], [2, "CBA", "C"], [6, "BAC", "C"], [7, "BCA", "C"]
+            ]:
+            self.play(table[pos].rearrange(new), table.winner_show(win))
+        self.wait()
+
         self.play(FadeOut(table), FadeOut(border_fruit), table.results_hide())
         self.wait()
 
@@ -550,7 +611,7 @@ class Statement2(Scene):
         self.play(FadeIn(majority_table))
         self.wait()
 
-        self.play(*majority_table.indicate(0, indexes=range(5)))
+        self.play(*majority_table.indicate(0, indexes=range(5)), run_time = 2)
         self.wait()
         self.play(majority_table.winner_show("B"))
         self.wait()
@@ -775,7 +836,7 @@ class Proof2(Scene):
         self.play(FadeIn(reasonable_group))
         self.wait()
 
-        self.play(table.results_change("B"))
+        self.play(table.winner_show("B"))
         self.wait()
 
         self.play(FadeOut(reasonable_group), table.results_hide())
