@@ -17,7 +17,7 @@ class Intro(MovingCameraScene):
         self.add(background)
 
         self.play(
-            explorer.arrive_from(RIGHT)
+            arrive_from(explorer, RIGHT)
         )
         self.wait()
 
@@ -53,7 +53,8 @@ class Intro(MovingCameraScene):
 
             self.play(*[Wiggle(monkeys_img[i]) for i in ranges[j]])
             self.wait()
-
+        
+        
         # Second group were fond of banana, coconut was their second choice, and avocado was the third.
 
         # “No, banana is better!”
@@ -145,7 +146,7 @@ class Intro(MovingCameraScene):
             + [monkeys_voting_img[i][0] for i in ranges[2]]
         )
 
-        protest_tex = [Tex(str).move_to(monkeys_voting_img[i][0][0]).shift(0.5*LEFT + 0.5*UP) for i, str in enumerate(["We", "pro", "te", "st"])]
+        protest_tex = [Tex(str, color = RED).scale(0.9).move_to(monkeys_voting_img[i][0][0]).shift(0.5*LEFT + 0.4*UP) for i, str in enumerate(["pro", "te", "st", "We"])]
         monkeys_protest = [VGroup(monkeys_voting_img[i][0][0], protest_tex[i]) for i in range(4)]
 
         self.play(
@@ -1609,7 +1610,7 @@ class Outro(MovingCameraScene):
         anims = []
         for i in range(len(monkeys_img)):
             start = monkeys_voting_img[i][0][1].get_center()
-            end = explorer.get_center() + 0.5 * RIGHT + 0.2 * DOWN
+            end = explorer.get_center() + 0.5 * RIGHT + 0.2 * DOWN + random.uniform(0, 0.2)*RIGHT
             midpoint = (start + end) / 2
             midpoint[1] = max(start[1], end[1])
             midpoint += 1 * UP
@@ -1629,7 +1630,11 @@ class Outro(MovingCameraScene):
             # self.add(path)
             anims.append(MoveAlongPath(monkeys_voting_img[i][0][1], path))
 
-            print(start, midpoint, end)
+            #print(start, midpoint, end)
+
+        random.shuffle(anims)
+
+        explorer_bag = ImageMobject(f"img/explorer_bag{'_small' if DRAFT else ''}.png").scale_to_fit_width(explorer.width).move_to(explorer.get_center())
 
         self.play(
             *anims,
@@ -1637,6 +1642,10 @@ class Outro(MovingCameraScene):
                 Interpol(monkeys_voting_img[i][0][0], monkeys_img[i])
                 for i in range(len(monkeys_img))
             ],
+            AnimationGroup(
+            FadeIn(explorer_bag),
+            run_time = 0.0001
+            )
         )
         # self.play(
         #     *[FadeOut(monkeys_voting_img[i][0][1]) for i in range(len(monkeys_img))]
@@ -1649,6 +1658,7 @@ class Outro(MovingCameraScene):
                     Group(
                         explorer,
                         *[monkeys_voting_img[i][0][1] for i in range(len(monkeys_img))],
+                        explorer_bag,
                     ),
                     scale_value=1,
                 )
@@ -1682,7 +1692,7 @@ class Outro(MovingCameraScene):
         # self.wait()
 
         self.play(
-            monkeys_voting_img[4][0][1].animate.shift(0.5 * LEFT + 1 * UP).scale(1.3)
+            monkeys_voting_img[4][0][1].animate.move_to(explorer.get_center() + 0.5 * RIGHT + 0.2 * DOWN + 0.5 * LEFT + 1 * UP).scale(1.3)
         )
         self.play(
             Flash(
@@ -1773,15 +1783,3 @@ class Outro(MovingCameraScene):
 
         # [závěrečné poděkování patronům a some, možná midjourney bloopers? možná odkázat na roughgardenovy lecture notes?]
 
-
-class Explore(Scene):
-    def construct(self):
-        default()
-        all_monkeys = (
-            Group(*(img_monkey(a, b) for a in "ABC" for b in list("ABC") + [False]))
-            .arrange_in_grid(3, 4)
-            .scale(0.8)
-        )
-
-        self.add(all_monkeys)
-        self.wait(10)

@@ -68,10 +68,12 @@ def img_monkey(kind, voting=False, width=2):
     dual_img = VGroup(normal_img, voting_img)
     if voting:
         votes_for_img = get_fruit(voting).move_to(voting_img)
-        votes_for_img.scale_to_fit_width(width / sc).shift(width/2* LEFT + width/2 * UP)
-        dual_img.add(votes_for_img)
-    return dual_img.move_to(ORIGIN)
-
+        votes_for_img.scale_to_fit_width(width / sc).shift(0.5 * width * LEFT + 0.4 * width * UP)
+        return VGroup(voting_img, votes_for_img)
+        #dual_img.add(votes_for_img)
+    
+    return normal_img
+    #return dual_img.move_to(ORIGIN)
 
 
 def ordering(str, background=None):
@@ -89,6 +91,7 @@ def ordering(str, background=None):
     return VGroup(border, fruits)
 
 
+
 def intro_images(intro=True):
     w = 1
     monkeys_img = [
@@ -96,7 +99,7 @@ def intro_images(intro=True):
         for i in range(len(example_table_str))
     ]
 
-    monkeys_img[0].to_corner(DL).shift(0.1 * DOWN)
+    monkeys_img[0].to_corner(DL).shift(0.1 * DOWN + 0.2*RIGHT)
     monkeys_img[1].next_to(monkeys_img[0], RIGHT).shift(0.1 * DOWN)
     monkeys_img[2].next_to(monkeys_img[1], RIGHT).shift(0.15 * UP)
     monkeys_img[3].next_to(monkeys_img[0], UR)
@@ -119,9 +122,9 @@ def intro_images(intro=True):
     ]
 
     orderings = [
-        ordering("ABC", background=BACKGROUND_COLOR).next_to(monkeys_img[3], RIGHT),
-        ordering("BCA", background=BACKGROUND_COLOR).next_to(monkeys_img[5], RIGHT),
-        ordering("CAB", background=BACKGROUND_COLOR).next_to(monkeys_img[8], RIGHT),
+        ordering("ABC", background=BACKGROUND_COLOR).next_to(monkeys_img[3], RIGHT).shift(0.4*UP),
+        ordering("BCA", background=BACKGROUND_COLOR).next_to(monkeys_img[5], RIGHT).shift(0.4*UP),
+        ordering("CAB", background=BACKGROUND_COLOR).next_to(monkeys_img[8], RIGHT).shift(0.4*UP),
     ]
 
     explorer = (
@@ -132,7 +135,7 @@ def intro_images(intro=True):
     )  # TODO pridat polylogo na laptop
 
     background = ImageMobject(
-        f"img/{'background-upscaled' if DRAFT == True else 'background'}.png"
+        f"img/{'background-upscaled' if DRAFT == False else 'background'}.png"
     ).scale_to_fit_width(config.frame_width)
 
     whiteboard = (
@@ -143,6 +146,7 @@ def intro_images(intro=True):
     )
 
     return monkeys_img, monkeys_voting_img, orderings, explorer, background, whiteboard
+
 
 class Fruit(VMobject):
     def __init__(self, label, normal, *args, **kwargs):
@@ -642,4 +646,3 @@ class Interpol(AnimationGroup):
     def __init__(self, mobject_old, mobject_new, **kwargs):
         # Call the parent constructor with the animations
         super().__init__(FadeOut(mobject_old), FadeIn(mobject_new), **kwargs)
-
