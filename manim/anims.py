@@ -1124,69 +1124,67 @@ class Approval(Scene):
 
         # It turns out that the full story is more complicated; to understand why, let’s look at one popular voting system called approval voting. This is an extremely simple voting system where every voter can give a vote to as many candidates as they want and then you order the candidates by how many votes they got.
 
+        approval_tex = Tex("Approval voting").scale(2).to_edge(UP)
+        self.play(FadeIn(approval_tex))
+        self.wait()
+
+
         nothing = Dot().scale(0.00001)
         thumbsup_img = load_svg("img/icon.svg").scale(0.3)
-        monkey_scale = 0.3
-        monkey_img1 = ImageMobject("img/monkeys/avocado.png").scale(monkey_scale)
-        monkey_img2 = ImageMobject("img/monkeys/avocado.png").scale(monkey_scale)
-        monkey_img3 = ImageMobject("img/monkeys/avocado.png").scale(monkey_scale)
+        w = 1
+        monkey_img1 = img_monkey("A").scale_to_fit_width(w)
+        monkey_img2 = img_monkey("B").scale_to_fit_width(w)
+        monkey_img3 = img_monkey("C").scale_to_fit_width(w)
+
         fruit_width = 1
-        avocado_img = ImageMobject("img/fruit/avocado.png").scale_to_fit_width(
-            fruit_width
-        )
-        banana_img = ImageMobject("img/fruit/banana.png").scale_to_fit_width(
-            fruit_width
-        )
-        coconut_img = ImageMobject("img/fruit/coconut.png").scale_to_fit_width(
-            fruit_width
-        )
-        # self.add(thumbsup_img)
 
         approval_data = [
             [
                 nothing.copy(),
                 monkey_img1.copy(),
-                monkey_img2.copy(),
+                monkey_img3.copy(),
                 monkey_img3.copy(),
                 monkey_img1.copy(),
-                monkey_img1.copy(),
-                monkey_img1.copy(),
+                monkey_img2.copy(),
+                monkey_img2.copy(),
                 Tex("Sum"),
             ],
             [
-                avocado_img.copy(),
+                FRUITS["A"].copy().scale(fruit_width),
                 thumbsup_img.copy(),
                 nothing.copy(),
                 thumbsup_img.copy(),
                 thumbsup_img.copy(),
                 nothing.copy(),
+                nothing.copy(),
+                Tex("3"),
+            ],
+            [
+                FRUITS["B"].copy().scale(fruit_width),
+                thumbsup_img.copy(),
+                nothing.copy(),
+                thumbsup_img.copy(),
+                thumbsup_img.copy(),
+                thumbsup_img.copy(),
                 thumbsup_img.copy(),
                 Tex("5"),
             ],
             [
-                banana_img.copy(),
-                thumbsup_img.copy(),
-                nothing.copy(),
-                thumbsup_img.copy(),
-                nothing.copy(),
-                nothing.copy(),
-                nothing.copy(),
-                Tex("2"),
-            ],
-            [
-                coconut_img.copy(),
+                FRUITS["C"].copy().scale(fruit_width),
                 nothing.copy(),
                 thumbsup_img.copy(),
                 thumbsup_img.copy(),
-                nothing.copy(),
+                thumbsup_img.copy(),
                 nothing.copy(),
                 thumbsup_img.copy(),
-                Tex("3"),
+                Tex("4"),
             ],
         ]
         approval_table = Group(
             *[item for row in approval_data for item in row]
-        ).arrange_in_grid(rows=4, buff=0.1)
+        ).arrange_in_grid(rows=4, buff=0.3)
+
+        Group(*[approval_data[i][-1] for i in range(4)]).shift(1*RIGHT)
 
         self.play(
             Succession(
@@ -1198,10 +1196,23 @@ class Approval(Scene):
         )
         self.wait()
 
-        # TODO hezky udelat posledni sloupec a preskladat radky podle poctu hlasu
+        lines = [Group(*approval_data[i]) for i in range(1, 4)]
+        
+        for i, j in [[0, 1], [0, 2]]:
+            lines[i].generate_target()
+            lines[i].target.move_to(lines[j].get_center())
+            lines[j].generate_target()
+            lines[j].target.move_to(lines[i].get_center())
+
+            self.play(
+                MoveToTarget(lines[i]),
+                MoveToTarget(lines[j]),
+            )
+            self.wait()
 
         self.play(FadeOut(approval_table))
         self.wait()
+        
 
         # For example, if you order the videos of your favorite YouTuber by popularity, one way you can do it is by sorting them by how many likes they got, and that is basically approval voting, with the addition of negative votes.
 
@@ -1209,44 +1220,90 @@ class Approval(Scene):
         v_scale = 0.7
         videos_data = []
 
-        for str1, str2 in [
-            ["img/thumbnail1.png", "10k likes"],
-            ["img/thumbnail2.png", "10k likes"],
-            ["img/thumbnail3.png", "10k likes"],
-            ["img/thumbnail1.png", "10k likes"],
-        ]:
+        thumb_data = [
+            ["img/thumbnail1.png", "17k likes"],
+            ["img/thumbnail2.png", "2k likes"],
+            ["img/thumbnail3.png", "5k likes"],
+            ["img/thumbnail4.png", "35k likes"],
+        ]
+
+        for str1, str2 in thumb_data:
             img = ImageMobject(str1).scale_to_fit_width(v_width)
             border = SurroundingRectangle(img, color=GRAY, buff=0)
             tex = Tex(str2).scale(v_scale)
-            videos_data.append(Group(Group(img, border), tex).arrange(DOWN))
+            gr = Group(Group(img, border), tex).arrange_in_grid(cols = 1, cell_alignment = LEFT, buff = 0.1)
+            videos_data.append(gr)
 
-        videos_group = Group(*videos_data).arrange_in_grid(cols=2)
+        videos_group_table = Group(*videos_data).arrange_in_grid(cols=2, buff = 0.8)
 
-        self.play(FadeIn(videos_group))
+        self.play(FadeIn(videos_group_table))
         self.wait()
 
-        self.play(videos_group.animate.arrange(DOWN).shift(3 * LEFT))
+        videos_group = Group(*[videos_group_table[i] for i in [3, 0, 1, 2]])
+        self.play(videos_group.animate.arrange(DOWN, buff = 0.5).shift(5 * LEFT))
         self.wait()
 
         # The way we order movies by their average rating is also similar to approval voting.
         # [třeba: pár videí od polylogu a u nich napsané kolik mají liků, potom záběr na imdb/netflix a nějaký seznam top filmů]
 
-        self.play(FadeOut(videos_group))
+        movies_img = ImageMobject("img/movies_short.png").scale_to_fit_width(6).shift(1*RIGHT).to_edge(DOWN, buff = 0.5)
+        self.play(FadeIn(movies_img))
         self.wait()
 
+
+        self.play(FadeOut(videos_group), FadeOut(movies_img))
+        self.wait()
+    
         # But notice that approval voting and its variants do not fit our definition that a voting system requires every voter to simply rank the candidates on the ballot and uses this information
 
-        table = VotingTable(example_table_str).scale(0.5)  # .to_edge(RIGHT, buff = 2)
 
-        self.play(AnimationGroup(*table.indicate(), lag_ratio=0.51))
-        self.wait()
+        monkeys_img = (
+            Group(*[img_monkey(pref[0], width=1) for pref in example_table_str])
+            .arrange()
+            .to_edge(LEFT, buff=1)
+            .to_edge(DOWN)
+        )
 
-        # to elect the winner.
+        table = VotingTable(example_table_str).scale(1.5).shift(0.5*DOWN)
+        monkey_scale = 0.4
+        for col, monkey in zip(table.group, monkeys_img):
+            col.save_state()
+            col.scale(monkey_scale).next_to(monkey, UP)
 
-        self.play(table.winner_show("A"))
+        self.play(
+            AnimationGroup(
+                FadeIn(monkeys_img),
+                lag_ratio=0.3,
+            ),
+            FadeIn(table)
+        )
+
+
         self.wait()
-        self.play(FadeOut(table))
+        self.play(
+            *(
+                col.animate.scale(1 / monkey_scale).move_to(col.saved_state)
+                for col in table.group
+            ),
+            FadeOut(monkeys_img),
+        )
         self.wait()
+        input_brace = BraceLabel(table, "input", UP)
+        self.play(FadeIn(input_brace))
+
+        
+
+        # table = VotingTable(example_table_str).scale(0.5)  # .to_edge(RIGHT, buff = 2)
+
+        # self.play(AnimationGroup(*table.indicate(), lag_ratio=0.51))
+        # self.wait()
+
+        # # to elect the winner.
+
+        # self.play(table.winner_show("A"))
+        # self.wait()
+        # self.play(FadeOut(table))
+        # self.wait()
 
         # Even if I tell you how I would rank these videos, you still don’t know which ones of them I would give a like to.
 
@@ -1259,8 +1316,29 @@ class Approval(Scene):
         # )
         # self.wait()
 
-        self.play(FadeIn(videos_group))
+        self.play(
+            FadeOut(Group(table, input_brace))
+        )
         self.wait()
+
+        videos_group = Group(*[Group(g[0], Tex(f"{i+1}. ")).arrange(LEFT) for i, g in enumerate(videos_group)]).arrange(DOWN, buff = 0.3).next_to(approval_tex, DOWN, buff = 0.5).shift(2 * LEFT)
+
+        self.play(FadeIn(*[g[0] for g in videos_group]))
+        self.wait()
+
+        self.play(
+            Succession(
+            *[FadeIn(g[1]) for g in videos_group],
+            lag_ratio = 0.5
+            ),
+        )
+        self.wait()
+
+        self.play(
+            *[FadeOut(g[1]) for g in videos_group]
+        )
+        self.wait()
+        videos_group = Group(*[g[0] for g in videos_group])
 
         arrow = (
             Tex(r"$\overset{?}{\rightarrow}$")
@@ -1285,36 +1363,39 @@ class Approval(Scene):
         self.play(FadeIn(arrow))
         self.wait()
 
-        self.play(
-            Succession(
-                AnimationGroup(FadeIn(likes[0])),
-                AnimationGroup(FadeIn(likes[1])),
-                AnimationGroup(FadeIn(dislikes[3])),
-            )
+        self.play(FadeIn(likes[0]))
+        self.play(FadeIn(likes[1]))
+        self.play(FadeOut(likes[0]), FadeOut(likes[1]), 
+                    *[FadeIn(dislikes[i]) for i in range(4)]
         )
         self.wait()
 
         self.play(
             FadeOut(arrow),
-            *[v[1].animate.set_color(BACKGROUND_COLOR) for v in videos_group],
+            #*[v[1].animate.set_color(BACKGROUND_COLOR) for v in videos_group],
             *[FadeOut(o) for o in (set(likes + dislikes) & set(self.mobjects))],
         )
-        self.play(Group(*[g for g in videos_group]).animate.arrange_in_grid(rows=2))
+        self.play(Group(*[g for g in videos_group]).animate.arrange_in_grid(rows=2).shift(1*LEFT))
         self.wait()
 
         # So, our proofs of Arrow and Gibbard-Satterthwaite don't directly apply to these types of voting systems. And actually, Arrow’s theorem cannot hold there, because approval voting does satisfy the independence of irrelevant alternatives: If I tell you that [video] got X likes and [video] got Y likes, you know that in the final ranking, [video] will be above [video] and this conclusion is not affected by how many likes all the other videos got. So Arrow’s theorem may not be as fundamental as it looked like.
 
-        i1 = 1
+        i1 = 0
+        j1 = 3
         i2 = 3
+        j2 = 0
 
-        self.play(videos_group[i1].animate.move_to(2 * RIGHT + 1.5 * UP))
+        st = 2.5*RIGHT
+        self.play(videos_group[i1].animate.move_to(st + 1.5 * UP))
+        tex1 = Tex(thumb_data[j1][1]).next_to(videos_group[i1], RIGHT, buff = 0.5)
+        self.play(FadeIn(tex1))
         self.wait()
-        self.play(videos_group[i1][1].animate.set_color(text_color))
+        #self.play(videos_group[i1][1].animate.set_color(text_color))
+        self.play(videos_group[i2].animate.move_to(st + 1.5 * DOWN))
+        tex2 = Tex(thumb_data[j2][1]).next_to(videos_group[i2], RIGHT, buff = 0.5)
+        self.play(FadeIn(tex2))
         self.wait()
-        self.play(videos_group[i2].animate.move_to(2 * RIGHT + 1.5 * DOWN))
-        self.wait()
-        self.play(videos_group[i2][1].animate.set_color(text_color))
-        self.wait()
+        #self.play(videos_group[i2][1].animate.set_color(text_color))
 
         greater_tex = (
             Tex(r"$<$")
@@ -1331,33 +1412,66 @@ class Approval(Scene):
             v.generate_target()
 
         new_videos_group = (
-            Group(*[videos_group[i].target for i in [3, 2, 1, 0]])
+            Group(*[videos_group[i].target for i in [0, 1, 3, 2]])
             .arrange(DOWN)
             .move_to(greater_tex.get_center())
+            .next_to(approval_tex, DOWN, buff = 0.5)
+            .shift(st)
         )
         self.play(FadeOut(greater_tex))
-        self.play(*[MoveToTarget(v) for v in videos_group])
+        shft1 = (videos_group[i1].get_center() - videos_group[i1].target.get_center())[1] * DOWN
+        shft2 = (videos_group[i2].get_center() - videos_group[i2].target.get_center())[1] * DOWN
+        self.play(*[MoveToTarget(v) for v in videos_group],
+                  tex1.animate.shift(shft1),
+                  tex2.animate.shift(shft2),
+                  )
+        
         self.play(*[v[1].animate.set_color(text_color) for v in videos_group])
         self.wait()
 
         # However, even the approval voting system sometimes incentivizes strategic voting! For example, if you really want this video to become our most liked video, but you see that currently, it is only the fifth one, you should first give it a like (and subscribe!). But then you should also dislike all the videos above it, regardless of your opinion of them. You can in fact generalize Gibbard-Satterthwaite theorem so that it applies to pretty much every voting system, so, unfortunately, in one way or another, strategic voting will always be with us.
 
-        self.play(videos_group.animate.move_to(ORIGIN))
+        # self.play(videos_group.animate.move_to(ORIGIN).next_to(approval_tex, DOWN))
+        # self.wait()
+
+        ar_tex = Tex(r"{{\raggedright Arrow's Theorem\\}}{{\;\;\;\;\;\;\;$\rightarrow$ not so fundamental}}")
+        gs_tex = Tex(r"{{\raggedright Gibbard-Satterthwaite Theorem\\}}{{\;\;\;\;\;\;\;$\rightarrow$ super-duper fundamental}}")
+        #Group(ar_tex[1], gs_tex[1]).shift(0.5*RIGHT)
+
+        smart_tex = Group(ar_tex, gs_tex).arrange_in_grid(cols = 1, cell_alignment = LEFT, buff = 1.5).to_edge(LEFT)
+
+        self.play(
+            FadeIn(ar_tex)
+        )
         self.wait()
 
-        i_like = 1
-        self.play(FadeIn(thumbsup_img.copy().next_to(videos_group[i_like])))
+        self.play(FadeOut(Group(tex1, tex2)))
+        self.wait()
+
+        i_like = 3
+
+        self.play(
+            videos_group[i_like][1].animate.set_color(RED)
+        )
+        self.wait()
+
+        self.play(FadeIn(thumbsup_img.copy().next_to(videos_group[i_like], RIGHT, buff = 1)))
         self.wait()
 
         self.play(
             *[
-                FadeIn(thumbsup_img.copy().rotate(PI).next_to(videos_group[i]))
+                FadeIn(thumbsup_img.copy().rotate(PI).next_to(videos_group[i], RIGHT, buff = 1))
                 for i in range(len(videos_group))
                 if videos_group[i].get_center()[1]
                 > videos_group[i_like].get_center()[1]
             ]
         )
         self.wait()
+
+        self.play(
+            FadeIn(gs_tex)
+        )
+        self.wait(5)
 
 
 class Debriefing(Scene):
