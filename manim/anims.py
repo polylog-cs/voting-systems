@@ -1016,11 +1016,11 @@ class Proof2(MovingCameraScene):
 
         for _ in range(3):
             self.play(
-                table[0].rearrange("BAC"),
+                table[2].rearrange("BAC"),
                 table.winner_show("D")
             )
             self.play(
-                table[0].rearrange("ABC"),
+                table[2].rearrange("ABC"),
                 table.winner_show("C")
             )
 
