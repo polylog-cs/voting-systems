@@ -1518,12 +1518,13 @@ class Debriefing(Scene):
         arrow_group = Group(arrow_img, arrow_tex).arrange(DOWN)
 
         quote_tex = Tex(
-            r"Most systems are not going to work badly all of the time. \\ All I proved is that all can work badly at times."
+            r"Most systems are not going to work badly all of the time. \\ All I proved is that all can work badly \emph{at} times."
         )
         Group(quote_tex, arrow_group).arrange(DOWN, buff=1)
 
         self.play(FadeIn(arrow_group))
-        self.play(Write(quote_tex))
+        self.wait()
+        self.play(Write(quote_tex), run_time = 5)
         self.wait()
         self.play(FadeOut(arrow_group), FadeOut(quote_tex))
         self.wait()
@@ -1564,8 +1565,14 @@ class Debriefing(Scene):
             .to_edge(UP)
             .shift(1 * DOWN)
         )
+        Group(*voting_data[0]).shift(0.3*UP)
 
-        self.play(FadeIn(*[element for row in voting_data for element in row[:2]]))
+        self.play(
+            Succession(
+                *[FadeIn(Group(*row[:2])) for row in voting_data],
+                lag_ratio = 0.25
+            )
+        )
         self.wait()
 
         self.play(Circumscribe(Group(*voting_data[1][0:2]), color=RED))
@@ -1630,13 +1637,12 @@ class Debriefing(Scene):
                 Tex("97\,488"),
             )
             .arrange_in_grid(cols=2)
-            .shift(2 * DOWN)
+            .shift(2 * DOWN).to_edge(LEFT)
         )
 
-        self.play(FadeIn(bush_gore_table))
-        self.wait()
-
-        self.play(FadeOut(bush_gore_table))
+        self.play(arrive_from(bush_gore_table, LEFT))
+        self.wait(0.3)
+        self.play(bush_gore_table.animate.shift(5*LEFT))
         self.wait()
 
         self.play(FadeOut(voting_group), FadeOut(arrow))
@@ -1686,20 +1692,17 @@ class Debriefing(Scene):
         shame_table = Group(
             *[Tex(str).scale(0.7) for str in shame_list]
         ).arrange_in_grid(cols=5)
-        Group(*shame_table[20:]).shift(1.0 * DOWN)
+        Group(*shame_table[20:]).shift(1.2 * DOWN)
         Group(*shame_table[:20]).shift(1.5 * UP)
-        shame_tex = Tex("Shame.", font_size=300)
+        shame_tex = Tex("Shame.", font_size=300).shift(0.1*DOWN)
 
         self.play(
             AnimationGroup(
                 Succession(*[FadeIn(o) for o in shame_table], lag_ratio=0.2),
-                AnimationGroup(FadeIn(shame_tex), run_time=10),
+                AnimationGroup(FadeIn(shame_tex), run_time=11),
             )
         )
-        self.wait()
-        return
-
-        self.wait()
+        self.wait(5)
 
 
 class Outro(MovingCameraScene):
@@ -1715,6 +1718,17 @@ class Outro(MovingCameraScene):
             whiteboard,
         ) = intro_images(False)
         self.add(background, explorer, whiteboard, *monkeys_img)
+
+        zoom = 0.19
+        where = whiteboard.get_center() + 0.5 * UP
+        shame_img = ImageMobject("img/shame.png").scale_to_fit_width(config["frame_width"] * zoom).move_to(where)
+        self.add(shame_img)
+        self.camera.frame.save_state()
+        self.camera.frame.scale(zoom).move_to(where)
+        self.play(
+            self.camera.frame.animate.restore()
+        )
+        self.wait()
 
         # [tady se zase může “oddálit tabule”]
         # So, my dear monkeys, the short answer is that voting is complicated. But, as a practical choice, I would recommend you to use…
