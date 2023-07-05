@@ -36,7 +36,7 @@ reasonable1_tex = Tex("{{Reasonable system: }}", color=TEXT_COLOR)
 reasonable2_tex = Tex(
     r"{{\raggedright The candidate which is the first choice for majority\\ is always the winner. }}",
     color=TEXT_COLOR,
-).scale(0.8)
+).scale(0.75)
 reasonable_group = Group(reasonable1_tex, reasonable2_tex).arrange(RIGHT)
 
 example_table_str = ["ABC", "ABC", "ABC", "ABC", "BCA", "BCA", "CAB", "CAB", "CAB"]
@@ -201,7 +201,7 @@ FRUITS = [
             load_svg("img/fruit/avocado.svg"),
             Tex(r"/"),
             load_svg("img/fruit/banana.svg"),
-        ).arrange(RIGHT),
+        ).arrange(RIGHT).scale(2),
     ),
     Fruit("?", Tex(r"?")),
 ]

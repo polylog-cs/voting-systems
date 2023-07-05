@@ -459,7 +459,7 @@ class Statement2(Scene):
         )  # align_to(voter, DOWN).shift(0.5*DOWN)
 
         h = 3
-        sht = 1.3 * UP + 1 * RIGHT
+        sht = 1.3 * UP #+ 1 * RIGHT
         bubble = (
             SVGMobject("img/bubble_think.svg")
             .scale_to_fit_height(h)
@@ -741,6 +741,8 @@ class Proof1(Scene):
             )
         )
 
+        self.remove(*table.group)
+
         for mobj in self.mobjects:
             mobj.clear_updaters()
 
@@ -790,10 +792,10 @@ class Proof1(Scene):
         self.wait()
 
 
-class Proof2(Scene):
+class Proof2(MovingCameraScene):
     def construct(self):
         default()
-
+        self.next_section(skip_animations=False)
         # Remember, our goal is to demonstrate that for any reasonable voting system, there exists a scenario where a certain voter has an incentive to vote strategically. It turns out that any Condorcet cycle is almost, but not quite, such a scenario.
 
         tables = VGroup(*[VotingTable(str) for str in proof_table_strings])
@@ -827,7 +829,7 @@ class Proof2(Scene):
 
         # In this case, you can see that by the properties of the Condorcet cycle, a majority of voters have the banana as their first choice. But wait a minute, our definition of a reasonable voting system says that in this case, the voting system has to elect the banana as the winner.
 
-        border2 = SurroundingRectangle(Group(table[0].group[0], table[5].group[0]), color=RED)
+        border2 = SurroundingRectangle(Group(table[0].group[1], table[5].group[0]), color=RED)
 
         self.play(Transform(border, border2))
         self.wait()
@@ -862,6 +864,9 @@ class Proof2(Scene):
         tables.move_to(ORIGIN)
 
         self.play(FadeIn(tables[0]))
+        self.play(Circumscribe(Group(table[0].group[0], table[5].group[1]), color=RED))
+        self.wait()
+
         for i, table in enumerate(tables[:-1]):
             self.add(tables[i])
             table = tables[i].copy()
@@ -873,10 +878,13 @@ class Proof2(Scene):
 
         self.play(
             tables[0].winner_show("C"),
+        )
+        self.wait()
+        self.play(
             tables[-1].winner_show("B"),
         )
         self.add(tables[0].results)
-        self.play(Circumscribe(tables[0]))
+        self.play(Circumscribe(tables[0], color = RED))
         self.wait()
 
         self.play(*[t.winner_show("?") for t in tables[1:-1]])
@@ -900,23 +908,123 @@ class Proof2(Scene):
         self.play(FadeIn(border))
         self.wait()
 
-        vec = (tables[2].get_center() + tables[3].get_center()) / 2.0
-        sc = 3
+
+        self.next_section(skip_animations = False)
+        dif = 4*DOWN
+
+        sc = 2.5
+        tables.generate_target()
+        tables.target.scale(sc)
+        tables.target.arrange(DOWN, buff = 3)
+        where = (tables.target[2].get_center() + tables.target[3].get_center()) / 2.0
+        tables.target.shift(-where + 1 * LEFT)
+        self.remove(*self.mobjects)
+
+        border.generate_target()
+        border.target = SurroundingRectangle(Group(*tables.target[2:4]), color=RED)
+
+
         grp = Group(
             tables,
             border,
             Group(*(Group(table.results.winner, table.arrow) for table in tables)),
         )
-        self.clear()
-        self.add(grp)
-        self.play(grp.animate.move_to(-vec * sc).scale(sc))
+
+        #self.add(grp)
+        self.play(
+            MoveToTarget(tables),
+            MoveToTarget(border)
+        )
+        self.wait()
+
         self.play(FadeOut(border))
-        self.wait(5)
+
+
+        borders = [
+            SurroundingRectangle(tables[2][2], color = RED),
+            SurroundingRectangle(tables[3][2], color = RED)
+        ]
+
+        self.play(
+            FadeIn(Group(*borders))
+        )
+        self.wait()
+
+        # self.play(
+        #     FadeOut(Group(tables[2][2], tables[3][2]))
+        # )
+        # self.wait()
+
+        # self.play(
+        #     # FadeIn(Group(tables[2][2], tables[3][2])),
+        #     FadeOut(Group(*borders))
+        # )
+        # self.wait()
+
+        monkey = img_monkey("A", width=1).shift(0*sc*LEFT)
+
+        bubble = (
+            SVGMobject("img/bubble_think.svg")
+            .scale_to_fit_height(1.5 * sc)
+            .next_to(monkey, LEFT)
+            .shift(1*sc * UP)
+        )
+
+        self.play(
+            FadeIn(monkey)
+        )
+        self.play(
+            FadeIn(bubble),
+            FadeOut(borders[0])
+        )
+        self.wait()
+
+        bubble2 = (
+            SVGMobject("img/bubble_say.svg")
+            .rotate(PI)
+            .scale_to_fit_height(1.5 * sc)
+            .next_to(monkey, LEFT)
+            .shift(1*sc * DOWN)
+        )
+
+        self.play(
+            FadeIn(bubble2),
+            FadeOut(borders[1]),
+        )
+        self.wait()
+
+
+
+        self.wait()
 
         # Let’s also focus on this voter. Do you see how to finish the proof? Well, let’s imagine that the top scenario contains the honest preferences of all the voters. If this voter votes honestly, X is the winner. But what if they vote strategically and cast a ballot with ZYX instead of YZX? Well, we know that then the outcome of the voting system changes from X to some other candidate. But look, X is the worst option for our voter, so whatever the change, the voter will prefer it!
 
         self.play(*[FadeOut(o) for o in self.mobjects])
         self.wait()
+
+        table = VotingTable(example_table_str)
+        self.play(
+            FadeIn(table)
+        )
+        self.wait()
+
+        self.play(table.winner_show("C"))
+        self.wait()
+
+        self.play(table[0].rearrange("BAC"))
+        self.play(table[1].rearrange("BAC"))
+
+        for _ in range(3):
+            self.play(
+                table[0].rearrange("BAC"),
+                table.winner_show("D")
+            )
+            self.play(
+                table[0].rearrange("ABC"),
+                table.winner_show("C")
+            )
+
+        self.wait(5)
 
         # And this finishes the proof of the Gibbard-Satterthwaite theorem. To summarize, if you come up with any reasonable voting system, I can look at any Condorcet cycle scenario and tweak it a little bit to find a scenario where your voting system gives some voter the incentive to vote strategically.
 
