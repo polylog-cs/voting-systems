@@ -25,12 +25,12 @@ gs_group = (
     .to_edge(LEFT)
 )
 gs_new_tex = Tex(
-    r"{{For any number of voters, any number of candidates, consider any voting system that satisfies: \\ }}"
-    + r"{{1) The system is not a dictatorship of one voter. \\}}"
-    + r"{{2) At least three candidates are elected by the system in at least one scenario. \\}}"
-    + r"There exists at least one scenario where the system incentivizes strategic voting. ",
+    r"{{\raggedright For any number of voters and any number of candidates, consider any voting system that satisfies: \\ }}"
+    + r"{{\raggedright \;\;\;\;\; 1) The system is not a dictatorship of one voter. \\}}"
+    + r"{{\raggedright \;\;\;\;\; 2) At least three candidates are elected by the system in at least one scenario. \\}}"
+    + r"{{\raggedright Then there is at least one scenario where the system incentivizes strategic voting. }}",
     color=text_color,
-).scale(thm_scale)
+).scale(thm_scale*0.85)
 
 reasonable1_tex = Tex("{{Reasonable system: }}", color=TEXT_COLOR)
 reasonable2_tex = Tex(
@@ -306,6 +306,20 @@ class Preference(VMobject):
         ordering.append(label)
         return self.rearrange(ordering)
 
+
+    def random_change(self, label):
+        ordering = list(self.ordering)
+        ordering_old = ordering.copy()
+
+        while(True):
+            ordering.remove(label)
+            ordering.insert(random.randint(0, len(ordering)), label)
+            if ordering != ordering_old:
+                break
+
+        return self.rearrange(ordering)
+
+
     def highlight(self, *args, **kwargs):
         return self.indicate(*args, **kwargs)
 
@@ -481,6 +495,7 @@ class VotingTable(VMobject):
         "fadeout",
         "fadein",
         "push_down",
+        "random_change",
         "rearrange",
         "indicate",
         "highlight",

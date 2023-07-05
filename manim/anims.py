@@ -827,7 +827,7 @@ class Proof2(Scene):
 
         # In this case, you can see that by the properties of the Condorcet cycle, a majority of voters have the banana as their first choice. But wait a minute, our definition of a reasonable voting system says that in this case, the voting system has to elect the banana as the winner.
 
-        border2 = SurroundingRectangle(Group(table[0][0], table[5][0]), color=RED)
+        border2 = SurroundingRectangle(Group(table[0].group[0], table[5].group[0]), color=RED)
 
         self.play(Transform(border, border2))
         self.wait()
@@ -952,16 +952,31 @@ class Reasonable(Scene):
         self.play(*table.highlight("A", indexes=range(5, table.num_of_voters)))
         self.wait()
 
-        self.play(*table.highlight("B", indexes=range(5, table.num_of_voters)))
+        self.play(*table.highlight("B", indexes=range(0, table.num_of_voters)))
         self.wait()
-        self.play(*table.highlight("B", indexes=range(5)))
-        self.wait()
+        # self.play(*table.highlight("B", indexes=range(5)))
+        # self.wait()
 
         # So maybe we should think about the theorem one more time and try to prove it with a definition of “reasonable” that permits as many voting systems as possible. That is exactly what Gibbard and Satterthwaite did, this is their theorem in full glory. They found out that these two conditions on the voting system suffice to prove the theorem, and they are also necessary. The proof of this more general theorem is similar to our proof but more tedious, so let’s skip it.
 
-        self.play(FadeOut(gs_tex))
+
+        line.save_state()
+        table.save_state()
+
+        r_tex = Tex(r"Reasonable = ??").next_to(gs_group, DOWN).shift(1*DOWN)
+        self.play(
+            Group(line, table).animate.shift(2*DOWN),
+        )
+        self.play(
+            FadeIn(r_tex),
+        )
         self.wait()
-        self.play(FadeIn(gs_new_tex), line.animate.next_to(gs_new_tex, DOWN))
+
+
+
+        self.play(FadeOut(gs_tex), FadeOut(r_tex))
+        self.wait()
+        self.play(FadeIn(gs_new_tex),)# line.animate.next_to(gs_new_tex, DOWN))
         self.wait()
 
         self.play(Circumscribe(Group(*gs_new_tex[1:3]), color=RED))
@@ -969,7 +984,7 @@ class Reasonable(Scene):
 
         self.play(FadeOut(gs_new_tex))
         self.wait()
-        self.play(FadeIn(gs_tex), line.animate.next_to(gs_tex, DOWN))
+        self.play(FadeIn(gs_tex), line.animate.next_to(gs_tex, DOWN), table.animate.restore())
         self.wait()
 
 
@@ -981,8 +996,8 @@ class ArrowThm(Scene):
         self.add(gs_group)
         arrow_title = Tex(r"Arrow's theorem:")
         arrow_tex = Tex(
-            r"{{Any reasonable voting system doesn't satisfy the }}{{\emph{independence of irrelevant alternatives}. }}"
-        ).scale(thm_scale)
+            r"{{Any reasonable voting system doesn't satisfy the }}{{independence of irrelevant alternatives. }}"
+        ).scale(thm_scale * 0.8)
         arrow_full = (
             Group(arrow_title, arrow_tex)
             .arrange_in_grid(cols=1, cell_alignment=LEFT)
@@ -995,12 +1010,12 @@ class ArrowThm(Scene):
 
         # That theorem also talks about voting systems, but a little bit more general ones that not only elect the winner but rank all the candidates from best to worst.
 
-        table = VotingTable(example_table_str).shift(2 * LEFT)
+        table = VotingTable(example_table_str).shift(2 * LEFT + 1.5*DOWN)
 
         self.play(FadeIn(table))
         self.wait()
 
-        self.play(table.results_show("CBA"))
+        self.play(table.results_show("ABC"))
         self.wait()
 
         # (animace s tabulkou, outcome se změní z vítěze na order)
@@ -1012,48 +1027,48 @@ class ArrowThm(Scene):
 
         # This is a condition that says that if you look at how the voting system orders any two candidates, for example here it decides that banana is above coconut
 
-        self.play(*table.results.highlight("B"))
+        self.play(*table.results.highlight("A"))
         self.wait()
-        self.play(*table.results.highlight("C"))
+        self.play(*table.results.highlight("B"))
         self.wait()
         # (vyznačí se že outcome je banana lepší než coconut nebo naopak)
 
         # this decision should not depend on whatever the voters’ opinion on the avocado is.
 
-        self.play(*table.gray("A"))
+        self.play(*table.gray("C")) # TODO gray also the result
         self.wait()
 
         # In other words, in all of these situations, the banana has to be above the coconut.
         # [animace kde avocado skáče nahoru a dolu u různých voterů, outcome je furt banana lepší než coconut]
 
-        self.play(
-            Succession(
-                AnimationGroup(table[0].rearrange("ABC")),
-                AnimationGroup(table[1].rearrange("ABC"), table.results_show("BAC")),
-                AnimationGroup(table[2].rearrange("ABC")),
-            )
-        )
+        # self.play(
+        #     Succession(
+        #         AnimationGroup(table[0].rearrange("ABC")),
+        #         AnimationGroup(table[1].rearrange("ABC"), table.results_show("BAC")),
+        #         AnimationGroup(table[2].rearrange("ABC")),
+        #     )
+        # )
 
+        # self.play(
+        #     *(
+        #         AnimationGroup(table[i].rearrange(example_table_str[i]))
+        #         for i in range(len(example_table_str))
+        #     )
+        # )
+
+        for _ in range(1):
+            l = list(range(len(example_table_str))) + list(range(len(example_table_str) - 2, 0, -1))
+            for i in l:
+                anims = []
+                anims.append(table[i].random_change("C"))
+                if random.randint(0, 2) == 0:
+                    anims.append(table.results_show(random.choice(["ABC", "ACB", "CAB"])))
+                self.play(*anims)
+        
+        self.wait()
+        
         # The first part of our proof can actually be used to prove a version of Arrow’s theorem, but if you use the textbook definition of a reasonable voting system, the proof again becomes a bit tedious.
 
-        self.play(
-            *(
-                AnimationGroup(table[i].rearrange(example_table_str[i]))
-                for i in range(len(example_table_str))
-            )
-        )
-
-        for _ in range(2):
-            self.play(
-                *table.rearrange("ABC", indexes=range(5, 9)),
-                table.results_show("ABC"),
-            )
-            self.wait()
-            self.play(
-                *table.rearrange("CBA", indexes=range(5, 9)),
-                table.results_show("CBA"),
-            )
-            self.wait()
 
         # Both Arrow and Gibbard-Satterthwaite theorems are good examples showing that while we often like to think that important mathematical theorems are simply-looking statements that turn out to be insanely complicated to prove, it is not always like that.
         # (možná někde problikne statement Fermata nebo P vs NP?)
@@ -1062,24 +1077,42 @@ class ArrowThm(Scene):
         self.wait()
 
         fermat_tex = Tex(
-            r"$a^n + b^n \not= c^n, n > 2$ \\ does not have solutions in $\mathbb{N}$"
+            r"Does $a^n + b^n = c^n, n > 2$ \\ have solutions in $\mathbb{N}$?"
         )
         pnp_tex = Tex(r"Does P = NP?")
+        thm_group = Group(fermat_tex, pnp_tex).arrange(RIGHT, buff = 3 ).shift(1*DOWN)
+
         self.play(
             Succession(
                 FadeIn(fermat_tex),
                 FadeIn(pnp_tex),
                 Wait(),
-                FadeOut(fermat_tex),
-                FadeOut(pnp_tex),
+                FadeOut(thm_group),
                 Wait(),
             )
         )
         # For me, the biggest insight of those two theorems is simply noticing that there is something to prove. Strategic voting is not just a sociological fact, but it is a fundamental flaw of every voting system, and so is the lack of independence of irrelevant alternatives. Or is it?
 
-        self.play(Indicate(gs_tex[4], color=text_color))
+        border = SurroundingRectangle(gs_tex[4], color = RED)
+        border2 = SurroundingRectangle(arrow_tex[1], color = RED)
+
+
+        self.play(FadeIn(border))
         self.wait()
-        self.play(Indicate(arrow_tex[1], color=text_color))
+        self.play(Transform(border, border2))
+        self.wait()
+
+        explorer = ImageMobject(f"img/explorer{'_small' if DRAFT else ''}.png").scale_to_fit_width(12).shift(5*DOWN)
+
+        self.play(
+            arrive_from(explorer, DOWN)
+        )
+        self.wait()
+
+        self.play(
+            *[FadeOut(o) for o in self.mobjects if o != explorer],
+            explorer.animate.shift(5*DOWN),
+        )
         self.wait()
 
         # [vsauce pauza + trošku zoom?]
