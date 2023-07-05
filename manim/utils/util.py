@@ -9,7 +9,7 @@ from collections import Counter
 from manim import *
 from .util_general import *
 
-DRAFT = True
+DRAFT = False
 
 
 thm_scale = 0.8
@@ -136,7 +136,7 @@ def intro_images(intro=True):
 
     background = ImageMobject(
         f"img/{'background-upscaled' if DRAFT == False else 'background'}.png"
-    ).scale_to_fit_width(config.frame_width)
+    ).scale_to_fit_height(config.frame_height)
 
     whiteboard = (
         ImageMobject(f"img/whiteboard{'_shame' if not intro else ''}.png")

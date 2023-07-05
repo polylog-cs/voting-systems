@@ -1082,15 +1082,18 @@ class ArrowThm(Scene):
         pnp_tex = Tex(r"Does P = NP?")
         thm_group = Group(fermat_tex, pnp_tex).arrange(RIGHT, buff = 3 ).shift(1*DOWN)
 
+
+
         self.play(
             Succession(
                 FadeIn(fermat_tex),
                 FadeIn(pnp_tex),
                 Wait(),
-                FadeOut(thm_group),
-                Wait(),
             )
         )
+        self.play(FadeOut(thm_group))
+        self.wait()
+
         # For me, the biggest insight of those two theorems is simply noticing that there is something to prove. Strategic voting is not just a sociological fact, but it is a fundamental flaw of every voting system, and so is the lack of independence of irrelevant alternatives. Or is it?
 
         border = SurroundingRectangle(gs_tex[4], color = RED)
@@ -1236,10 +1239,10 @@ class Approval(Scene):
 
         videos_group_table = Group(*videos_data).arrange_in_grid(cols=2, buff = 0.8)
 
-        self.play(FadeIn(videos_group_table))
+        self.play(*[FadeIn(v) for v in videos_group_table])
         self.wait()
 
-        videos_group = Group(*[videos_group_table[i] for i in [3, 0, 1, 2]])
+        videos_group = Group(*[videos_group_table[i] for i in [3, 0, 2, 1]])
         self.play(videos_group.animate.arrange(DOWN, buff = 0.5).shift(5 * LEFT))
         self.wait()
 
@@ -1334,10 +1337,6 @@ class Approval(Scene):
         )
         self.wait()
 
-        self.play(
-            *[FadeOut(g[1]) for g in videos_group]
-        )
-        self.wait()
         videos_group = Group(*[g[0] for g in videos_group])
 
         arrow = (
@@ -1372,7 +1371,7 @@ class Approval(Scene):
 
         self.play(
             FadeOut(arrow),
-            #*[v[1].animate.set_color(BACKGROUND_COLOR) for v in videos_group],
+            *[FadeOut(g[1]) for g in videos_group],
             *[FadeOut(o) for o in (set(likes + dislikes) & set(self.mobjects))],
         )
         self.play(Group(*[g for g in videos_group]).animate.arrange_in_grid(rows=2).shift(1*LEFT))
@@ -1383,7 +1382,7 @@ class Approval(Scene):
         i1 = 0
         j1 = 3
         i2 = 3
-        j2 = 0
+        j2 = 2
 
         st = 2.5*RIGHT
         self.play(videos_group[i1].animate.move_to(st + 1.5 * UP))
@@ -1484,11 +1483,11 @@ class Debriefing(Scene):
         # https://www.youtube.com/playlist?list=PLnQX-jgAF5pTZXPiD8ciEARRylD9brJXU
 
         w = 5
-        some_left_img = ImageMobject("img/some1-small.png").scale_to_fit_width(w)
+        some_left_img = ImageMobject(f"img/some1{'-small' if DRAFT else ''}.png").scale_to_fit_width(w)
         some_leftleft_img = ImageMobject("img/some1left.png").scale_to_fit_width(
             w * 0.3
         )
-        some_right_img = ImageMobject("img/some2-small.png").scale_to_fit_width(w)
+        some_right_img = ImageMobject(f"img/some2{'-small' if DRAFT else ''}.png").scale_to_fit_width(w)
         Group(some_left_img, some_right_img).arrange(RIGHT)
         some_left_img.to_edge(UP)
         some_right_img.to_edge(UP)
@@ -1636,7 +1635,7 @@ class Debriefing(Scene):
                 Tex("Nader:"),
                 Tex("97\,488"),
             )
-            .arrange_in_grid(cols=2)
+            .arrange_in_grid(cols=2, cell_alignment=RIGHT)
             .shift(2 * DOWN).to_edge(LEFT)
         )
 
