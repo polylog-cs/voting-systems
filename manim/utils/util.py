@@ -9,7 +9,7 @@ from collections import Counter
 from manim import *
 from .util_general import *
 
-DRAFT = True
+DRAFT = False
 
 
 thm_scale = 0.8
