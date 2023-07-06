@@ -373,7 +373,7 @@ class Statement1(Scene):
         self.play(table.results_hide())
         self.wait(3)
 
-        self.play(Succession(*table.two_round_system()))
+        table.two_round_system(self)
         self.wait()
 
         self.play(FadeOut(table), table.results_hide())
@@ -409,6 +409,7 @@ class Statement1(Scene):
         self.play(FadeIn(comparison))
         self.wait()
 
+        table.group.fade(1)
         self.play(table.winner_show("A"))
         self.wait()
 
@@ -465,7 +466,7 @@ class Statement2(Scene):
         h = 3
         sht = 1.3 * UP  # + 1 * RIGHT
         bubble = (
-            SVGMobject("img/bubble_think.svg")
+            load_svg("img/bubble_think.svg")
             .scale_to_fit_height(h)
             .next_to(voter.target, LEFT)
             .shift(sht)
@@ -499,7 +500,7 @@ class Statement2(Scene):
         # Now it is time for our voter to decide what ranking to put on the ballot. The voter can of course use their true preference - in this case, the voting system elects Y as the winner. But the voter can also vote strategically and write a different ranking on the ballot. For example, if the voter casts this ballot, the voting system now elects Z as the winner.
 
         bubble2 = (
-            SVGMobject("img/bubble_say.svg")
+            load_svg("img/bubble_say.svg")
             .scale_to_fit_height(0.9 * h)
             .next_to(voter, RIGHT)
             .shift(sht)
@@ -970,7 +971,7 @@ class Proof2(MovingCameraScene):
         monkey = img_monkey("A", width=1).shift(0 * sc * LEFT)
 
         bubble = (
-            SVGMobject("img/bubble_think.svg")
+            load_svg("img/bubble_think.svg")
             .scale_to_fit_height(1.5 * sc)
             .next_to(monkey, LEFT)
             .shift(1 * sc * UP)
@@ -981,7 +982,7 @@ class Proof2(MovingCameraScene):
         self.wait()
 
         bubble2 = (
-            SVGMobject("img/bubble_say.svg")
+            load_svg("img/bubble_say.svg")
             .rotate(PI)
             .scale_to_fit_height(1.5 * sc)
             .next_to(monkey, LEFT)
@@ -1063,7 +1064,7 @@ class Reasonable(Scene):
 
         r_tex = Tex(r"Reasonable = ??").next_to(gs_group, DOWN).shift(1 * DOWN)
         self.play(
-            Group(line, table).animate.shift(2 * DOWN),
+            Group(line, table, table.results).animate.shift(2 * DOWN),
         )
         self.play(
             FadeIn(r_tex),

@@ -240,7 +240,7 @@ def get_fruit(label):
 
 def get_crowned_fruit(label, surround=False):
     fruit = get_fruit(label)
-    crown = SVGMobject("img/crown.svg").scale_to_fit_width(fruit.width * 0.8)
+    crown = load_svg("img/crown.svg").scale_to_fit_width(fruit.width * 0.8)
     fruit_group = VGroup(crown, fruit, crown.copy().fade(1)).arrange(
         DOWN, buff=SMALL_BUFF
     )
@@ -597,12 +597,12 @@ class VotingTable(VMobject):
         ret.append(self.results_show(winner))
         return ret
 
-    def two_round_system(self):
+    def two_round_system(self, player):
         ret = []
         top = self.candidates_by_votes()
         top2 = top[:2]
-        ret.append(AnimationGroup(*self.gray(range(1, self.C))))
-        ret.append(
+        player.play(AnimationGroup(*self.gray(range(1, self.C))))
+        player.play(
             AnimationGroup(
                 *(
                     col.at(0)[0].indicate()
@@ -611,7 +611,7 @@ class VotingTable(VMobject):
                 )
             )
         )
-        ret.append(
+        player.play(
             AnimationGroup(
                 *(
                     col.at(0)[0].indicate()
@@ -620,8 +620,8 @@ class VotingTable(VMobject):
                 )
             )
         )
-        ret.append(AnimationGroup(*self.ungray(range(1, self.C))))
-        ret.append(AnimationGroup(*self.fadeout(top[2:])))
+        player.play(AnimationGroup(*self.ungray(range(1, self.C))))
+        player.play(AnimationGroup(*self.fadeout(top[2:])))
         winner = Counter(
             [[c for c in col.ordering if c in top2][0] for col in self.group]
         ).most_common()[0][0]
@@ -641,12 +641,10 @@ class VotingTable(VMobject):
                     anims.append(col.gray(a))
                     restore_anims.append(col.ungray(a))
         restore_anims += self.fadein(top[2:])
-        ret.append(AnimationGroup(*anims))
-        ret.append(AnimationGroup(*winner_anims))
-        ret.append(self.results_show(winner))
-        ret.append(AnimationGroup(*restore_anims))
-
-        return ret
+        player.play(AnimationGroup(*anims))
+        player.play(AnimationGroup(*winner_anims))
+        player.play(self.results_show(winner))
+        player.play(AnimationGroup(*restore_anims))
 
     def nejake_funkce_pro_mysli_si_X_ale_rika_Y(self):
         pass
