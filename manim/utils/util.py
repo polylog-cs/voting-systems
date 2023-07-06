@@ -9,7 +9,7 @@ from collections import Counter
 from manim import *
 from .util_general import *
 
-DRAFT = False
+DRAFT = True
 
 
 thm_scale = 0.8
@@ -30,7 +30,7 @@ gs_new_tex = Tex(
     + r"{{\raggedright \;\;\;\;\; 2) At least three candidates are elected by the system in at least one scenario. \\}}"
     + r"{{\raggedright Then there is at least one scenario where the system incentivizes strategic voting. }}",
     color=text_color,
-).scale(thm_scale*0.85)
+).scale(thm_scale * 0.85)
 
 reasonable1_tex = Tex("{{Reasonable system: }}", color=TEXT_COLOR)
 reasonable2_tex = Tex(
@@ -53,11 +53,13 @@ majority_table_str = ["BCA", "BAC", "BCA", "BAC", "BCA", "CAB", "CAB", "CAB", "C
 def img_monkey(kind, voting=False, width=2):
     sc = 2.5
     kinds = {"A": "avocado", "B": "banana", "C": "coconut"}
-    normal_img = load_svg(f"img/monkeys/{kinds[kind]}.svg").scale_to_fit_width(width)
     scaling_correction = {"A": 1.608, "B": 1.626, "C": 1.635}[kind]
+    # intersection_img = load_svg( f"img/monkeys/{kinds[kind]}_intersection.svg").scale_to_fit_width(width)
+    normal_img = load_svg(f"img/monkeys/{kinds[kind]}.svg").scale_to_fit_width(width)
     voting_img = load_svg(f"img/monkeys/{kinds[kind]}_voting.svg").scale_to_fit_width(
         width * scaling_correction
     )
+    # intersection_img.align_to(normal_img, RIGHT + DOWN)
     voting_img.align_to(normal_img, RIGHT + DOWN)
     normal_img.save_state()
     voting_img.save_state()
@@ -68,12 +70,14 @@ def img_monkey(kind, voting=False, width=2):
     dual_img = VGroup(normal_img, voting_img)
     if voting:
         votes_for_img = get_fruit(voting).move_to(voting_img)
-        votes_for_img.scale_to_fit_width(width / sc).shift(0.5 * width * LEFT + 0.4 * width * UP)
+        votes_for_img.scale_to_fit_width(width / sc).shift(
+            0.5 * width * LEFT + 0.4 * width * UP
+        )
         return VGroup(voting_img, votes_for_img)
-        #dual_img.add(votes_for_img)
-    
+        # dual_img.add(votes_for_img)
+
     return normal_img
-    #return dual_img.move_to(ORIGIN)
+    # return dual_img.move_to(ORIGIN)
 
 
 def ordering(str, background=None):
@@ -91,7 +95,6 @@ def ordering(str, background=None):
     return VGroup(border, fruits)
 
 
-
 def intro_images(intro=True):
     w = 1
     monkeys_img = [
@@ -99,7 +102,7 @@ def intro_images(intro=True):
         for i in range(len(example_table_str))
     ]
 
-    monkeys_img[0].to_corner(DL).shift(0.1 * DOWN + 0.2*RIGHT)
+    monkeys_img[0].to_corner(DL).shift(0.1 * DOWN + 0.2 * RIGHT)
     monkeys_img[1].next_to(monkeys_img[0], RIGHT).shift(0.1 * DOWN)
     monkeys_img[2].next_to(monkeys_img[1], RIGHT).shift(0.15 * UP)
     monkeys_img[3].next_to(monkeys_img[0], UR)
@@ -122,9 +125,15 @@ def intro_images(intro=True):
     ]
 
     orderings = [
-        ordering("ABC", background=BACKGROUND_COLOR).next_to(monkeys_img[3], RIGHT).shift(0.4*UP),
-        ordering("BCA", background=BACKGROUND_COLOR).next_to(monkeys_img[5], RIGHT).shift(0.4*UP),
-        ordering("CAB", background=BACKGROUND_COLOR).next_to(monkeys_img[8], RIGHT).shift(0.4*UP),
+        ordering("ABC", background=BACKGROUND_COLOR)
+        .next_to(monkeys_img[3], RIGHT)
+        .shift(0.4 * UP),
+        ordering("BCA", background=BACKGROUND_COLOR)
+        .next_to(monkeys_img[5], RIGHT)
+        .shift(0.4 * UP),
+        ordering("CAB", background=BACKGROUND_COLOR)
+        .next_to(monkeys_img[8], RIGHT)
+        .shift(0.4 * UP),
     ]
 
     explorer = (
@@ -184,8 +193,8 @@ class Fruit(VMobject):
         self.disabled = False
         return self.animate.restore()
 
-    def indicate(self):
-        return Indicate(self, color=None)
+    def indicate(self, scale_factor=1.3):
+        return Indicate(self, color=None, scale_factor=scale_factor)
 
     def highlight(self):
         return self.indicate()
@@ -201,7 +210,9 @@ FRUITS = [
             load_svg("img/fruit/avocado.svg"),
             Tex(r"/"),
             load_svg("img/fruit/banana.svg"),
-        ).arrange(RIGHT).scale(2),
+        )
+        .arrange(RIGHT)
+        .scale(2),
     ),
     Fruit("?", Tex(r"?")),
 ]
@@ -306,19 +317,17 @@ class Preference(VMobject):
         ordering.append(label)
         return self.rearrange(ordering)
 
-
     def random_change(self, label):
         ordering = list(self.ordering)
         ordering_old = ordering.copy()
 
-        while(True):
+        while True:
             ordering.remove(label)
             ordering.insert(random.randint(0, len(ordering)), label)
             if ordering != ordering_old:
                 break
 
         return self.rearrange(ordering)
-
 
     def highlight(self, *args, **kwargs):
         return self.indicate(*args, **kwargs)
@@ -403,6 +412,8 @@ class VotingWinner(VotingResults):
         return FadeOut(self.winner)
 
     def show(self, winner, shift=UP):
+        if self.winner is not None and self.winner[1].label == winner:
+            return Wait()
         was_hidden = self.is_hidden
         super().show(winner)
         old_winner = self.winner

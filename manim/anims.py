@@ -16,9 +16,7 @@ class Intro(MovingCameraScene):
 
         self.add(background)
 
-        self.play(
-            arrive_from(explorer, RIGHT)
-        )
+        self.play(arrive_from(explorer, RIGHT))
         self.wait()
 
         # Throughout my expeditions, I've visited many beautiful places, but none struck me as much as this faraway tropical island.
@@ -53,8 +51,7 @@ class Intro(MovingCameraScene):
 
             self.play(*[Wiggle(monkeys_img[i]) for i in ranges[j]])
             self.wait()
-        
-        
+
         # Second group were fond of banana, coconut was their second choice, and avocado was the third.
 
         # “No, banana is better!”
@@ -146,8 +143,16 @@ class Intro(MovingCameraScene):
             + [monkeys_voting_img[i][0] for i in ranges[2]]
         )
 
-        protest_tex = [Tex(str, color = RED).scale(0.9).move_to(monkeys_voting_img[i][0][0]).shift(0.5*LEFT + 0.4*UP) for i, str in enumerate(["pro", "te", "st", "We"])]
-        monkeys_protest = [VGroup(monkeys_voting_img[i][0][0], protest_tex[i]) for i in range(4)]
+        protest_tex = [
+            Tex(str, color=RED)
+            .scale(0.8)
+            .move_to(monkeys_voting_img[i][0][0])
+            .shift(0.5 * LEFT + 0.4 * UP)
+            for i, str in enumerate(["pro", "te", "st", "We"])
+        ]
+        monkeys_protest = [
+            VGroup(monkeys_voting_img[i][0][0], protest_tex[i]) for i in range(4)
+        ]
 
         self.play(
             *[Interpol(monkeys_img[i], monkeys_protest[i][0]) for i in range(4)],
@@ -162,7 +167,6 @@ class Intro(MovingCameraScene):
             *[FadeOut(monkeys_protest[i][1]) for i in range(4)],
         )
         self.wait()
-
 
         # Why?
         # We made a mistake in the first round, can we run the election one more time? Please!
@@ -413,7 +417,7 @@ class Statement2(Scene):
     def construct(self):
         default()
 
-        #gs_tex[2].set_color(GREEN),
+        # gs_tex[2].set_color(GREEN),
         self.add(
             gs_tex.to_edge(UP, buff=0.5),
         )
@@ -459,7 +463,7 @@ class Statement2(Scene):
         )  # align_to(voter, DOWN).shift(0.5*DOWN)
 
         h = 3
-        sht = 1.3 * UP #+ 1 * RIGHT
+        sht = 1.3 * UP  # + 1 * RIGHT
         bubble = (
             SVGMobject("img/bubble_think.svg")
             .scale_to_fit_height(h)
@@ -513,18 +517,16 @@ class Statement2(Scene):
         )
         self.wait()
 
-        ar = ImageMobject("img/arrow.png").scale_to_fit_width(1).next_to(order.group[1], LEFT)
-        self.play(
-            FadeIn(ar)
+        ar = (
+            ImageMobject("img/arrow.png")
+            .scale_to_fit_width(1)
+            .next_to(order.group[1], LEFT)
         )
+        self.play(FadeIn(ar))
         self.wait()
-        self.play(
-            ar.animate.next_to(order.group[2], LEFT)
-        )
+        self.play(ar.animate.next_to(order.group[2], LEFT))
         self.wait()
-        self.play(
-            FadeOut(ar)
-        )
+        self.play(FadeOut(ar))
         self.wait()
 
         # TODO other monkeys
@@ -544,7 +546,7 @@ class Statement2(Scene):
         # self.play(Circumscribe(order, color=RED))
         # self.wait()
 
-        border2 = SurroundingRectangle(gs_tex[3], color = RED)
+        border2 = SurroundingRectangle(gs_tex[3], color=RED)
         self.play(
             *[FadeOut(o) for o in self.mobjects if o != gs_tex and o != border],
         )
@@ -553,7 +555,6 @@ class Statement2(Scene):
             Transform(border, border2),
         )
         self.wait()
-
 
         # self.play(
         #     FadeOut(border),
@@ -577,6 +578,7 @@ class Statement2(Scene):
         self.play(Transform(border, border2))
         self.wait()
 
+        table = VotingTable(example_table_str)
         table.move_to(ORIGIN)
         self.play(FadeIn(table))
         self.wait()
@@ -588,9 +590,19 @@ class Statement2(Scene):
         self.wait()
 
         for pos, new, win in [
-            [2, "BAC", "B"], [4, "ACB", "B"], [5, "ACB", "B"], [2, "CBA", "C"], [0, "BAC", "C"], [8, "BAC", "C"],
-            [2, "ABC", "A"], [1, "CBA", "A"], [2, "BAC", "A"], [2, "CBA", "C"], [6, "BAC", "C"], [7, "BCA", "C"]
-            ]:
+            [2, "BAC", "B"],
+            [4, "ACB", "B"],
+            [5, "ACB", "B"],
+            [2, "CBA", "C"],
+            [0, "BAC", "C"],
+            [8, "BAC", "C"],
+            [2, "ABC", "A"],
+            [1, "CBA", "A"],
+            [2, "BAC", "A"],
+            [2, "CBA", "C"],
+            [6, "BAC", "C"],
+            [7, "BCA", "C"],
+        ]:
             self.play(table[pos].rearrange(new), table.winner_show(win))
         self.wait()
 
@@ -612,7 +624,7 @@ class Statement2(Scene):
         self.play(FadeIn(majority_table))
         self.wait()
 
-        self.play(*majority_table.indicate(0, indexes=range(5)), run_time = 2)
+        self.play(*majority_table.indicate(0, indexes=range(5)), run_time=2)
         self.wait()
         self.play(majority_table.winner_show("B"))
         self.wait()
@@ -829,7 +841,9 @@ class Proof2(MovingCameraScene):
 
         # In this case, you can see that by the properties of the Condorcet cycle, a majority of voters have the banana as their first choice. But wait a minute, our definition of a reasonable voting system says that in this case, the voting system has to elect the banana as the winner.
 
-        border2 = SurroundingRectangle(Group(table[0].group[1], table[5].group[0]), color=RED)
+        border2 = SurroundingRectangle(
+            Group(table[0].group[1], table[5].group[0]), color=RED
+        )
 
         self.play(Transform(border, border2))
         self.wait()
@@ -884,7 +898,7 @@ class Proof2(MovingCameraScene):
             tables[-1].winner_show("B"),
         )
         self.add(tables[0].results)
-        self.play(Circumscribe(tables[0], color = RED))
+        self.play(Circumscribe(tables[0], color=RED))
         self.wait()
 
         self.play(*[t.winner_show("?") for t in tables[1:-1]])
@@ -908,14 +922,13 @@ class Proof2(MovingCameraScene):
         self.play(FadeIn(border))
         self.wait()
 
-
-        self.next_section(skip_animations = False)
-        dif = 4*DOWN
+        self.next_section(skip_animations=False)
+        dif = 4 * DOWN
 
         sc = 2.5
         tables.generate_target()
         tables.target.scale(sc)
-        tables.target.arrange(DOWN, buff = 3)
+        tables.target.arrange(DOWN, buff=3)
         where = (tables.target[2].get_center() + tables.target[3].get_center()) / 2.0
         tables.target.shift(-where + 1 * LEFT)
         self.remove(*self.mobjects)
@@ -923,31 +936,24 @@ class Proof2(MovingCameraScene):
         border.generate_target()
         border.target = SurroundingRectangle(Group(*tables.target[2:4]), color=RED)
 
-
         grp = Group(
             tables,
             border,
             Group(*(Group(table.results.winner, table.arrow) for table in tables)),
         )
 
-        #self.add(grp)
-        self.play(
-            MoveToTarget(tables),
-            MoveToTarget(border)
-        )
+        # self.add(grp)
+        self.play(MoveToTarget(tables), MoveToTarget(border))
         self.wait()
 
         self.play(FadeOut(border))
 
-
         borders = [
-            SurroundingRectangle(tables[2][2], color = RED),
-            SurroundingRectangle(tables[3][2], color = RED)
+            SurroundingRectangle(tables[2][2], color=RED),
+            SurroundingRectangle(tables[3][2], color=RED),
         ]
 
-        self.play(
-            FadeIn(Group(*borders))
-        )
+        self.play(FadeIn(Group(*borders)))
         self.wait()
 
         # self.play(
@@ -961,22 +967,17 @@ class Proof2(MovingCameraScene):
         # )
         # self.wait()
 
-        monkey = img_monkey("A", width=1).shift(0*sc*LEFT)
+        monkey = img_monkey("A", width=1).shift(0 * sc * LEFT)
 
         bubble = (
             SVGMobject("img/bubble_think.svg")
             .scale_to_fit_height(1.5 * sc)
             .next_to(monkey, LEFT)
-            .shift(1*sc * UP)
+            .shift(1 * sc * UP)
         )
 
-        self.play(
-            FadeIn(monkey)
-        )
-        self.play(
-            FadeIn(bubble),
-            FadeOut(borders[0])
-        )
+        self.play(FadeIn(monkey))
+        self.play(FadeIn(bubble), FadeOut(borders[0]))
         self.wait()
 
         bubble2 = (
@@ -984,7 +985,7 @@ class Proof2(MovingCameraScene):
             .rotate(PI)
             .scale_to_fit_height(1.5 * sc)
             .next_to(monkey, LEFT)
-            .shift(1*sc * DOWN)
+            .shift(1 * sc * DOWN)
         )
 
         self.play(
@@ -992,8 +993,6 @@ class Proof2(MovingCameraScene):
             FadeOut(borders[1]),
         )
         self.wait()
-
-
 
         self.wait()
 
@@ -1003,9 +1002,7 @@ class Proof2(MovingCameraScene):
         self.wait()
 
         table = VotingTable(example_table_str)
-        self.play(
-            FadeIn(table)
-        )
+        self.play(FadeIn(table))
         self.wait()
 
         self.play(table.winner_show("C"))
@@ -1015,14 +1012,8 @@ class Proof2(MovingCameraScene):
         self.play(table[1].rearrange("BAC"))
 
         for _ in range(3):
-            self.play(
-                table[2].rearrange("BAC"),
-                table.winner_show("D")
-            )
-            self.play(
-                table[2].rearrange("ABC"),
-                table.winner_show("C")
-            )
+            self.play(table[2].rearrange("BAC"), table.winner_show("D"))
+            self.play(table[2].rearrange("ABC"), table.winner_show("C"))
 
         self.wait(5)
 
@@ -1067,24 +1058,23 @@ class Reasonable(Scene):
 
         # So maybe we should think about the theorem one more time and try to prove it with a definition of “reasonable” that permits as many voting systems as possible. That is exactly what Gibbard and Satterthwaite did, this is their theorem in full glory. They found out that these two conditions on the voting system suffice to prove the theorem, and they are also necessary. The proof of this more general theorem is similar to our proof but more tedious, so let’s skip it.
 
-
         line.save_state()
         table.save_state()
 
-        r_tex = Tex(r"Reasonable = ??").next_to(gs_group, DOWN).shift(1*DOWN)
+        r_tex = Tex(r"Reasonable = ??").next_to(gs_group, DOWN).shift(1 * DOWN)
         self.play(
-            Group(line, table).animate.shift(2*DOWN),
+            Group(line, table).animate.shift(2 * DOWN),
         )
         self.play(
             FadeIn(r_tex),
         )
         self.wait()
 
-
-
         self.play(FadeOut(gs_tex), FadeOut(r_tex))
         self.wait()
-        self.play(FadeIn(gs_new_tex),)# line.animate.next_to(gs_new_tex, DOWN))
+        self.play(
+            FadeIn(gs_new_tex),
+        )  # line.animate.next_to(gs_new_tex, DOWN))
         self.wait()
 
         self.play(Circumscribe(Group(*gs_new_tex[1:3]), color=RED))
@@ -1092,7 +1082,9 @@ class Reasonable(Scene):
 
         self.play(FadeOut(gs_new_tex))
         self.wait()
-        self.play(FadeIn(gs_tex), line.animate.next_to(gs_tex, DOWN), table.animate.restore())
+        self.play(
+            FadeIn(gs_tex), line.animate.next_to(gs_tex, DOWN), table.animate.restore()
+        )
         self.wait()
 
 
@@ -1118,7 +1110,7 @@ class ArrowThm(Scene):
 
         # That theorem also talks about voting systems, but a little bit more general ones that not only elect the winner but rank all the candidates from best to worst.
 
-        table = VotingTable(example_table_str).shift(2 * LEFT + 1.5*DOWN)
+        table = VotingTable(example_table_str).shift(2 * LEFT + 1.5 * DOWN)
 
         self.play(FadeIn(table))
         self.wait()
@@ -1143,7 +1135,7 @@ class ArrowThm(Scene):
 
         # this decision should not depend on whatever the voters’ opinion on the avocado is.
 
-        self.play(*table.gray("C")) # TODO gray also the result
+        self.play(*table.gray("C"))  # TODO gray also the result
         self.wait()
 
         # In other words, in all of these situations, the banana has to be above the coconut.
@@ -1165,18 +1157,21 @@ class ArrowThm(Scene):
         # )
 
         for _ in range(1):
-            l = list(range(len(example_table_str))) + list(range(len(example_table_str) - 2, 0, -1))
+            l = list(range(len(example_table_str))) + list(
+                range(len(example_table_str) - 2, 0, -1)
+            )
             for i in l:
                 anims = []
                 anims.append(table[i].random_change("C"))
                 if random.randint(0, 2) == 0:
-                    anims.append(table.results_show(random.choice(["ABC", "ACB", "CAB"])))
+                    anims.append(
+                        table.results_show(random.choice(["ABC", "ACB", "CAB"]))
+                    )
                 self.play(*anims)
-        
-        self.wait()
-        
-        # The first part of our proof can actually be used to prove a version of Arrow’s theorem, but if you use the textbook definition of a reasonable voting system, the proof again becomes a bit tedious.
 
+        self.wait()
+
+        # The first part of our proof can actually be used to prove a version of Arrow’s theorem, but if you use the textbook definition of a reasonable voting system, the proof again becomes a bit tedious.
 
         # Both Arrow and Gibbard-Satterthwaite theorems are good examples showing that while we often like to think that important mathematical theorems are simply-looking statements that turn out to be insanely complicated to prove, it is not always like that.
         # (možná někde problikne statement Fermata nebo P vs NP?)
@@ -1188,9 +1183,7 @@ class ArrowThm(Scene):
             r"Does $a^n + b^n = c^n, n > 2$ \\ have solutions in $\mathbb{N}$?"
         )
         pnp_tex = Tex(r"Does P = NP?")
-        thm_group = Group(fermat_tex, pnp_tex).arrange(RIGHT, buff = 3 ).shift(1*DOWN)
-
-
+        thm_group = Group(fermat_tex, pnp_tex).arrange(RIGHT, buff=3).shift(1 * DOWN)
 
         self.play(
             Succession(
@@ -1204,25 +1197,26 @@ class ArrowThm(Scene):
 
         # For me, the biggest insight of those two theorems is simply noticing that there is something to prove. Strategic voting is not just a sociological fact, but it is a fundamental flaw of every voting system, and so is the lack of independence of irrelevant alternatives. Or is it?
 
-        border = SurroundingRectangle(gs_tex[4], color = RED)
-        border2 = SurroundingRectangle(arrow_tex[1], color = RED)
-
+        border = SurroundingRectangle(gs_tex[4], color=RED)
+        border2 = SurroundingRectangle(arrow_tex[1], color=RED)
 
         self.play(FadeIn(border))
         self.wait()
         self.play(Transform(border, border2))
         self.wait()
 
-        explorer = ImageMobject(f"img/explorer{'_small' if DRAFT else ''}.png").scale_to_fit_width(12).shift(5*DOWN)
-
-        self.play(
-            arrive_from(explorer, DOWN)
+        explorer = (
+            ImageMobject(f"img/explorer{'_small' if DRAFT else ''}.png")
+            .scale_to_fit_width(12)
+            .shift(5 * DOWN)
         )
+
+        self.play(arrive_from(explorer, DOWN))
         self.wait()
 
         self.play(
             *[FadeOut(o) for o in self.mobjects if o != explorer],
-            explorer.animate.shift(5*DOWN),
+            explorer.animate.shift(5 * DOWN),
         )
         self.wait()
 
@@ -1238,7 +1232,6 @@ class Approval(Scene):
         approval_tex = Tex("Approval voting").scale(2).to_edge(UP)
         self.play(FadeIn(approval_tex))
         self.wait()
-
 
         nothing = Dot().scale(0.00001)
         thumbsup_img = load_svg("img/icon.svg").scale(0.3)
@@ -1295,7 +1288,7 @@ class Approval(Scene):
             *[item for row in approval_data for item in row]
         ).arrange_in_grid(rows=4, buff=0.3)
 
-        Group(*[approval_data[i][-1] for i in range(4)]).shift(1*RIGHT)
+        Group(*[approval_data[i][-1] for i in range(4)]).shift(1 * RIGHT)
 
         self.play(
             Succession(
@@ -1308,7 +1301,7 @@ class Approval(Scene):
         self.wait()
 
         lines = [Group(*approval_data[i]) for i in range(1, 4)]
-        
+
         for i, j in [[0, 1], [0, 2]]:
             lines[i].generate_target()
             lines[i].target.move_to(lines[j].get_center())
@@ -1323,7 +1316,6 @@ class Approval(Scene):
 
         self.play(FadeOut(approval_table))
         self.wait()
-        
 
         # For example, if you order the videos of your favorite YouTuber by popularity, one way you can do it is by sorting them by how many likes they got, and that is basically approval voting, with the addition of negative votes.
 
@@ -1342,31 +1334,36 @@ class Approval(Scene):
             img = ImageMobject(str1).scale_to_fit_width(v_width)
             border = SurroundingRectangle(img, color=GRAY, buff=0)
             tex = Tex(str2).scale(v_scale)
-            gr = Group(Group(img, border), tex).arrange_in_grid(cols = 1, cell_alignment = LEFT, buff = 0.1)
+            gr = Group(Group(img, border), tex).arrange_in_grid(
+                cols=1, cell_alignment=LEFT, buff=0.1
+            )
             videos_data.append(gr)
 
-        videos_group_table = Group(*videos_data).arrange_in_grid(cols=2, buff = 0.8)
+        videos_group_table = Group(*videos_data).arrange_in_grid(cols=2, buff=0.8)
 
         self.play(*[FadeIn(v) for v in videos_group_table])
         self.wait()
 
         videos_group = Group(*[videos_group_table[i] for i in [3, 0, 2, 1]])
-        self.play(videos_group.animate.arrange(DOWN, buff = 0.5).shift(5 * LEFT))
+        self.play(videos_group.animate.arrange(DOWN, buff=0.5).shift(5 * LEFT))
         self.wait()
 
         # The way we order movies by their average rating is also similar to approval voting.
         # [třeba: pár videí od polylogu a u nich napsané kolik mají liků, potom záběr na imdb/netflix a nějaký seznam top filmů]
 
-        movies_img = ImageMobject("img/movies_short.png").scale_to_fit_width(6).shift(1*RIGHT).to_edge(DOWN, buff = 0.5)
+        movies_img = (
+            ImageMobject("img/movies_short.png")
+            .scale_to_fit_width(6)
+            .shift(1 * RIGHT)
+            .to_edge(DOWN, buff=0.5)
+        )
         self.play(FadeIn(movies_img))
         self.wait()
 
-
         self.play(FadeOut(videos_group), FadeOut(movies_img))
         self.wait()
-    
-        # But notice that approval voting and its variants do not fit our definition that a voting system requires every voter to simply rank the candidates on the ballot and uses this information
 
+        # But notice that approval voting and its variants do not fit our definition that a voting system requires every voter to simply rank the candidates on the ballot and uses this information
 
         monkeys_img = (
             Group(*[img_monkey(pref[0], width=1) for pref in example_table_str])
@@ -1375,7 +1372,7 @@ class Approval(Scene):
             .to_edge(DOWN)
         )
 
-        table = VotingTable(example_table_str).scale(1.5).shift(0.5*DOWN)
+        table = VotingTable(example_table_str).scale(1.5).shift(0.5 * DOWN)
         monkey_scale = 0.4
         for col, monkey in zip(table.group, monkeys_img):
             col.save_state()
@@ -1386,9 +1383,8 @@ class Approval(Scene):
                 FadeIn(monkeys_img),
                 lag_ratio=0.3,
             ),
-            FadeIn(table)
+            FadeIn(table),
         )
-
 
         self.wait()
         self.play(
@@ -1401,8 +1397,6 @@ class Approval(Scene):
         self.wait()
         input_brace = BraceLabel(table, "input", UP)
         self.play(FadeIn(input_brace))
-
-        
 
         # table = VotingTable(example_table_str).scale(0.5)  # .to_edge(RIGHT, buff = 2)
 
@@ -1427,21 +1421,26 @@ class Approval(Scene):
         # )
         # self.wait()
 
-        self.play(
-            FadeOut(Group(table, input_brace))
-        )
+        self.play(FadeOut(Group(table, input_brace)))
         self.wait()
 
-        videos_group = Group(*[Group(g[0], Tex(f"{i+1}. ")).arrange(LEFT) for i, g in enumerate(videos_group)]).arrange(DOWN, buff = 0.3).next_to(approval_tex, DOWN, buff = 0.5).shift(2 * LEFT)
+        videos_group = (
+            Group(
+                *[
+                    Group(g[0], Tex(f"{i+1}. ")).arrange(LEFT)
+                    for i, g in enumerate(videos_group)
+                ]
+            )
+            .arrange(DOWN, buff=0.3)
+            .next_to(approval_tex, DOWN, buff=0.5)
+            .shift(2 * LEFT)
+        )
 
         self.play(FadeIn(*[g[0] for g in videos_group]))
         self.wait()
 
         self.play(
-            Succession(
-            *[FadeIn(g[1]) for g in videos_group],
-            lag_ratio = 0.5
-            ),
+            Succession(*[FadeIn(g[1]) for g in videos_group], lag_ratio=0.5),
         )
         self.wait()
 
@@ -1472,8 +1471,10 @@ class Approval(Scene):
 
         self.play(FadeIn(likes[0]))
         self.play(FadeIn(likes[1]))
-        self.play(FadeOut(likes[0]), FadeOut(likes[1]), 
-                    *[FadeIn(dislikes[i]) for i in range(4)]
+        self.play(
+            FadeOut(likes[0]),
+            FadeOut(likes[1]),
+            *[FadeIn(dislikes[i]) for i in range(4)],
         )
         self.wait()
 
@@ -1482,7 +1483,11 @@ class Approval(Scene):
             *[FadeOut(g[1]) for g in videos_group],
             *[FadeOut(o) for o in (set(likes + dislikes) & set(self.mobjects))],
         )
-        self.play(Group(*[g for g in videos_group]).animate.arrange_in_grid(rows=2).shift(1*LEFT))
+        self.play(
+            Group(*[g for g in videos_group])
+            .animate.arrange_in_grid(rows=2)
+            .shift(1 * LEFT)
+        )
         self.wait()
 
         # So, our proofs of Arrow and Gibbard-Satterthwaite don't directly apply to these types of voting systems. And actually, Arrow’s theorem cannot hold there, because approval voting does satisfy the independence of irrelevant alternatives: If I tell you that [video] got X likes and [video] got Y likes, you know that in the final ranking, [video] will be above [video] and this conclusion is not affected by how many likes all the other videos got. So Arrow’s theorem may not be as fundamental as it looked like.
@@ -1492,17 +1497,17 @@ class Approval(Scene):
         i2 = 3
         j2 = 2
 
-        st = 2.5*RIGHT
+        st = 2.5 * RIGHT
         self.play(videos_group[i1].animate.move_to(st + 1.5 * UP))
-        tex1 = Tex(thumb_data[j1][1]).next_to(videos_group[i1], RIGHT, buff = 0.5)
+        tex1 = Tex(thumb_data[j1][1]).next_to(videos_group[i1], RIGHT, buff=0.5)
         self.play(FadeIn(tex1))
         self.wait()
-        #self.play(videos_group[i1][1].animate.set_color(text_color))
+        # self.play(videos_group[i1][1].animate.set_color(text_color))
         self.play(videos_group[i2].animate.move_to(st + 1.5 * DOWN))
-        tex2 = Tex(thumb_data[j2][1]).next_to(videos_group[i2], RIGHT, buff = 0.5)
+        tex2 = Tex(thumb_data[j2][1]).next_to(videos_group[i2], RIGHT, buff=0.5)
         self.play(FadeIn(tex2))
         self.wait()
-        #self.play(videos_group[i2][1].animate.set_color(text_color))
+        # self.play(videos_group[i2][1].animate.set_color(text_color))
 
         greater_tex = (
             Tex(r"$<$")
@@ -1522,17 +1527,22 @@ class Approval(Scene):
             Group(*[videos_group[i].target for i in [0, 1, 3, 2]])
             .arrange(DOWN)
             .move_to(greater_tex.get_center())
-            .next_to(approval_tex, DOWN, buff = 0.5)
+            .next_to(approval_tex, DOWN, buff=0.5)
             .shift(st)
         )
         self.play(FadeOut(greater_tex))
-        shft1 = (videos_group[i1].get_center() - videos_group[i1].target.get_center())[1] * DOWN
-        shft2 = (videos_group[i2].get_center() - videos_group[i2].target.get_center())[1] * DOWN
-        self.play(*[MoveToTarget(v) for v in videos_group],
-                  tex1.animate.shift(shft1),
-                  tex2.animate.shift(shft2),
-                  )
-        
+        shft1 = (videos_group[i1].get_center() - videos_group[i1].target.get_center())[
+            1
+        ] * DOWN
+        shft2 = (videos_group[i2].get_center() - videos_group[i2].target.get_center())[
+            1
+        ] * DOWN
+        self.play(
+            *[MoveToTarget(v) for v in videos_group],
+            tex1.animate.shift(shft1),
+            tex2.animate.shift(shft2),
+        )
+
         self.play(*[v[1].animate.set_color(text_color) for v in videos_group])
         self.wait()
 
@@ -1541,15 +1551,21 @@ class Approval(Scene):
         # self.play(videos_group.animate.move_to(ORIGIN).next_to(approval_tex, DOWN))
         # self.wait()
 
-        ar_tex = Tex(r"{{\raggedright Arrow's Theorem\\}}{{\;\;\;\;\;\;\;$\rightarrow$ not so fundamental}}")
-        gs_tex = Tex(r"{{\raggedright Gibbard-Satterthwaite Theorem\\}}{{\;\;\;\;\;\;\;$\rightarrow$ super-duper fundamental}}")
-        #Group(ar_tex[1], gs_tex[1]).shift(0.5*RIGHT)
-
-        smart_tex = Group(ar_tex, gs_tex).arrange_in_grid(cols = 1, cell_alignment = LEFT, buff = 1.5).to_edge(LEFT)
-
-        self.play(
-            FadeIn(ar_tex)
+        ar_tex = Tex(
+            r"{{\raggedright Arrow's Theorem\\}}{{\;\;\;\;\;\;\;$\rightarrow$ not so fundamental}}"
         )
+        gs_tex = Tex(
+            r"{{\raggedright Gibbard-Satterthwaite Theorem\\}}{{\;\;\;\;\;\;\;$\rightarrow$ super-duper fundamental}}"
+        )
+        # Group(ar_tex[1], gs_tex[1]).shift(0.5*RIGHT)
+
+        smart_tex = (
+            Group(ar_tex, gs_tex)
+            .arrange_in_grid(cols=1, cell_alignment=LEFT, buff=1.5)
+            .to_edge(LEFT)
+        )
+
+        self.play(FadeIn(ar_tex))
         self.wait()
 
         self.play(FadeOut(Group(tex1, tex2)))
@@ -1557,17 +1573,21 @@ class Approval(Scene):
 
         i_like = 3
 
-        self.play(
-            videos_group[i_like][1].animate.set_color(RED)
-        )
+        self.play(videos_group[i_like][1].animate.set_color(RED))
         self.wait()
 
-        self.play(FadeIn(thumbsup_img.copy().next_to(videos_group[i_like], RIGHT, buff = 1)))
+        self.play(
+            FadeIn(thumbsup_img.copy().next_to(videos_group[i_like], RIGHT, buff=1))
+        )
         self.wait()
 
         self.play(
             *[
-                FadeIn(thumbsup_img.copy().rotate(PI).next_to(videos_group[i], RIGHT, buff = 1))
+                FadeIn(
+                    thumbsup_img.copy()
+                    .rotate(PI)
+                    .next_to(videos_group[i], RIGHT, buff=1)
+                )
                 for i in range(len(videos_group))
                 if videos_group[i].get_center()[1]
                 > videos_group[i_like].get_center()[1]
@@ -1575,9 +1595,7 @@ class Approval(Scene):
         )
         self.wait()
 
-        self.play(
-            FadeIn(gs_tex)
-        )
+        self.play(FadeIn(gs_tex))
         self.wait(5)
 
 
@@ -1591,11 +1609,15 @@ class Debriefing(Scene):
         # https://www.youtube.com/playlist?list=PLnQX-jgAF5pTZXPiD8ciEARRylD9brJXU
 
         w = 5
-        some_left_img = ImageMobject(f"img/some1{'-small' if DRAFT else ''}.png").scale_to_fit_width(w)
+        some_left_img = ImageMobject(
+            f"img/some1{'-small' if DRAFT else ''}.png"
+        ).scale_to_fit_width(w)
         some_leftleft_img = ImageMobject("img/some1left.png").scale_to_fit_width(
             w * 0.3
         )
-        some_right_img = ImageMobject(f"img/some2{'-small' if DRAFT else ''}.png").scale_to_fit_width(w)
+        some_right_img = ImageMobject(
+            f"img/some2{'-small' if DRAFT else ''}.png"
+        ).scale_to_fit_width(w)
         Group(some_left_img, some_right_img).arrange(RIGHT)
         some_left_img.to_edge(UP)
         some_right_img.to_edge(UP)
@@ -1631,7 +1653,7 @@ class Debriefing(Scene):
 
         self.play(FadeIn(arrow_group))
         self.wait()
-        self.play(Write(quote_tex), run_time = 5)
+        self.play(Write(quote_tex), run_time=5)
         self.wait()
         self.play(FadeOut(arrow_group), FadeOut(quote_tex))
         self.wait()
@@ -1672,12 +1694,11 @@ class Debriefing(Scene):
             .to_edge(UP)
             .shift(1 * DOWN)
         )
-        Group(*voting_data[0]).shift(0.3*UP)
+        Group(*voting_data[0]).shift(0.3 * UP)
 
         self.play(
             Succession(
-                *[FadeIn(Group(*row[:2])) for row in voting_data],
-                lag_ratio = 0.25
+                *[FadeIn(Group(*row[:2])) for row in voting_data], lag_ratio=0.25
             )
         )
         self.wait()
@@ -1744,12 +1765,13 @@ class Debriefing(Scene):
                 Tex("97\,488"),
             )
             .arrange_in_grid(cols=2, cell_alignment=RIGHT)
-            .shift(2 * DOWN).to_edge(LEFT)
+            .shift(2 * DOWN)
+            .to_edge(LEFT)
         )
 
         self.play(arrive_from(bush_gore_table, LEFT))
         self.wait(0.3)
-        self.play(bush_gore_table.animate.shift(5*LEFT))
+        self.play(bush_gore_table.animate.shift(5 * LEFT))
         self.wait()
 
         self.play(FadeOut(voting_group), FadeOut(arrow))
@@ -1801,7 +1823,7 @@ class Debriefing(Scene):
         ).arrange_in_grid(cols=5)
         Group(*shame_table[20:]).shift(1.2 * DOWN)
         Group(*shame_table[:20]).shift(1.5 * UP)
-        shame_tex = Tex("Shame.", font_size=300).shift(0.1*DOWN)
+        shame_tex = Tex("Shame.", font_size=300).shift(0.1 * DOWN)
 
         self.play(
             AnimationGroup(
@@ -1828,15 +1850,18 @@ class Outro(MovingCameraScene):
 
         zoom = 0.19
         where = whiteboard.get_center() + 0.5 * UP
-        shame_img = ImageMobject("img/shame.png").scale_to_fit_width(config["frame_width"] * zoom).move_to(where)
+        shame_img = (
+            ImageMobject("img/shame.png")
+            .scale_to_fit_width(config["frame_width"] * zoom)
+            .move_to(where)
+        )
         self.add(shame_img)
         self.camera.frame.save_state()
         self.camera.frame.scale(zoom).move_to(where)
-        self.play(
-            self.camera.frame.animate.restore()
-        )
+        self.play(self.camera.frame.animate.restore())
         self.wait()
 
+        return
         # [tady se zase může “oddálit tabule”]
         # So, my dear monkeys, the short answer is that voting is complicated. But, as a practical choice, I would recommend you to use…
 
@@ -1878,7 +1903,12 @@ class Outro(MovingCameraScene):
         anims = []
         for i in range(len(monkeys_img)):
             start = monkeys_voting_img[i][0][1].get_center()
-            end = explorer.get_center() + 0.5 * RIGHT + 0.2 * DOWN + random.uniform(0, 0.2)*RIGHT
+            end = (
+                explorer.get_center()
+                + 0.5 * RIGHT
+                + 0.2 * DOWN
+                + random.uniform(0, 0.2) * RIGHT
+            )
             midpoint = (start + end) / 2
             midpoint[1] = max(start[1], end[1])
             midpoint += 1 * UP
@@ -1898,11 +1928,15 @@ class Outro(MovingCameraScene):
             # self.add(path)
             anims.append(MoveAlongPath(monkeys_voting_img[i][0][1], path))
 
-            #print(start, midpoint, end)
+            # print(start, midpoint, end)
 
         random.shuffle(anims)
 
-        explorer_bag = ImageMobject(f"img/explorer_bag{'_small' if DRAFT else ''}.png").scale_to_fit_width(explorer.width).move_to(explorer.get_center())
+        explorer_bag = (
+            ImageMobject(f"img/explorer_bag{'_small' if DRAFT else ''}.png")
+            .scale_to_fit_width(explorer.width)
+            .move_to(explorer.get_center())
+        )
 
         self.play(
             *anims,
@@ -1910,10 +1944,7 @@ class Outro(MovingCameraScene):
                 Interpol(monkeys_voting_img[i][0][0], monkeys_img[i])
                 for i in range(len(monkeys_img))
             ],
-            AnimationGroup(
-            FadeIn(explorer_bag),
-            run_time = 0.0001
-            )
+            AnimationGroup(FadeIn(explorer_bag), run_time=0.0001),
         )
         # self.play(
         #     *[FadeOut(monkeys_voting_img[i][0][1]) for i in range(len(monkeys_img))]
@@ -1960,7 +1991,11 @@ class Outro(MovingCameraScene):
         # self.wait()
 
         self.play(
-            monkeys_voting_img[4][0][1].animate.move_to(explorer.get_center() + 0.5 * RIGHT + 0.2 * DOWN + 0.5 * LEFT + 1 * UP).scale(1.3)
+            monkeys_voting_img[4][0][1]
+            .animate.move_to(
+                explorer.get_center() + 0.5 * RIGHT + 0.2 * DOWN + 0.5 * LEFT + 1 * UP
+            )
+            .scale(1.3)
         )
         self.play(
             Flash(
@@ -2050,4 +2085,3 @@ class Outro(MovingCameraScene):
         # I had to leave the island pretty quickly then. The rumor has it the monkeys are still out there, arguing. But now about which voting system is the best one…
 
         # [závěrečné poděkování patronům a some, možná midjourney bloopers? možná odkázat na roughgardenovy lecture notes?]
-
