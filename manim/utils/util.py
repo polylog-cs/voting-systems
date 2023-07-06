@@ -9,7 +9,7 @@ from collections import Counter
 from manim import *
 from .util_general import *
 
-DRAFT = False
+DRAFT = True
 
 
 thm_scale = 0.8
@@ -187,7 +187,7 @@ class Fruit(VMobject):
     def fadeout(self):
         self.disabled = True
         self.save_state()
-        return self.animate.fade(0.9)
+        return self.animate.fade(0.8)
 
     def fadein(self):
         self.disabled = False
@@ -493,6 +493,12 @@ class VotingOrdering(VotingResults):
         anims = []
         for _, f in self.at(ixs):
             anims.append(f.highlight())
+        return anims
+
+    def fadeout(self, ixs):
+        anims = []
+        for _, f in self.at(ixs):
+            anims.append(f.fadeout())
         return anims
 
 

@@ -697,11 +697,14 @@ class Proof1(Scene):
 
         # The fact that this can happen is called Condorcet paradox and I will use the word Condorcet cycle for any such scenario, that is, any scenario with three groups of voters with cyclic preferences where also each group has less than half of all the voters.
 
+        trash = []
+
         def wind_around(pref):
             anims = []
             for l in pref.ordering:
                 i = ord(l) - ord("A")
-                anims.append(pref.at(l)[0].animate.become(condorcet_group[i].copy()))
+                trash.append(condorcet_group[i].copy())
+                anims.append(pref.at(l)[0].animate.become(trash[-1]))
 
             def arrow_updater(start, end, start_target):
                 done = False
@@ -754,10 +757,16 @@ class Proof1(Scene):
             )
         )
 
-        self.remove(*table.group)
-
         for mobj in self.mobjects:
             mobj.clear_updaters()
+
+        for o in table.group:
+            self.remove(o.arrowed)
+        for o in trash:
+            self.remove(o)
+        self.remove(self.mobjects[-1])
+
+        print(self.mobjects)
 
         for a in range(3):
             b = (a + 1) % 3
@@ -1061,10 +1070,14 @@ class Reasonable(Scene):
 
         line.save_state()
         table.save_state()
+        table.results.winner.save_state()
+        table.arrow.save_state()
 
         r_tex = Tex(r"Reasonable = ??").next_to(gs_group, DOWN).shift(1 * DOWN)
         self.play(
-            Group(line, table, table.results).animate.shift(2 * DOWN),
+            Group(line, table, table.results.winner, table.arrow).animate.shift(
+                2 * DOWN
+            ),
         )
         self.play(
             FadeIn(r_tex),
@@ -1084,7 +1097,11 @@ class Reasonable(Scene):
         self.play(FadeOut(gs_new_tex))
         self.wait()
         self.play(
-            FadeIn(gs_tex), line.animate.next_to(gs_tex, DOWN), table.animate.restore()
+            FadeIn(gs_tex),
+            line.animate.next_to(gs_tex, DOWN),
+            table.animate.restore(),
+            table.arrow.animate.restore(),
+            table.results.winner.animate.restore(),
         )
         self.wait()
 
@@ -1136,7 +1153,9 @@ class ArrowThm(Scene):
 
         # this decision should not depend on whatever the voters’ opinion on the avocado is.
 
-        self.play(*table.gray("C"))  # TODO gray also the result
+        self.play(
+            *table.fadeout("C"), *table.results.fadeout("C")
+        )  # TODO gray also the result
         self.wait()
 
         # In other words, in all of these situations, the banana has to be above the coconut.
@@ -1437,15 +1456,18 @@ class Approval(Scene):
             .shift(2 * LEFT)
         )
 
-        self.play(FadeIn(*[g[0] for g in videos_group]))
+        text_group = Group(*(g[1] for g in videos_group))
+        videos_group = Group(*[g[0] for g in videos_group])
+
+        self.play(FadeIn(videos_group))
         self.wait()
 
         self.play(
-            Succession(*[FadeIn(g[1]) for g in videos_group], lag_ratio=0.5),
+            AnimationGroup(
+                *[FadeIn(t) for t in text_group], lag_ratio=0.5, group=text_group
+            ),
         )
         self.wait()
-
-        videos_group = Group(*[g[0] for g in videos_group])
 
         arrow = (
             Tex(r"$\overset{?}{\rightarrow}$")
@@ -1481,7 +1503,7 @@ class Approval(Scene):
 
         self.play(
             FadeOut(arrow),
-            *[FadeOut(g[1]) for g in videos_group],
+            *(FadeOut(t) for t in text_group),
             *[FadeOut(o) for o in (set(likes + dislikes) & set(self.mobjects))],
         )
         self.play(
@@ -1862,7 +1884,6 @@ class Outro(MovingCameraScene):
         self.play(self.camera.frame.animate.restore())
         self.wait()
 
-        return
         # [tady se zase může “oddálit tabule”]
         # So, my dear monkeys, the short answer is that voting is complicated. But, as a practical choice, I would recommend you to use…
 
