@@ -9,8 +9,8 @@ from collections import Counter
 from manim import *
 from .util_general import *
 
-DRAFT = True
-
+DRAFT = False
+SMALL_PICTURES = True
 
 thm_scale = 0.8
 gs_title = Tex("Gibbard-Satterthwaite Theorem:", color=text_color)
@@ -25,12 +25,12 @@ gs_group = (
     .to_edge(LEFT)
 )
 gs_new_tex = Tex(
-    r"{{\raggedright For any number of voters and any number of candidates, consider any voting system that satisfies: \\ }}"
+    r"{{\raggedright \parbox{1000em}{For any number of voters and any number of candidates, consider any voting system that satisfies:} \\ }}"
     + r"{{\raggedright \;\;\;\;\; 1) The system is not a dictatorship of one voter. \\}}"
-    + r"{{\raggedright \;\;\;\;\; 2) At least three candidates are elected by the system in at least one scenario. \\}}"
-    + r"{{\raggedright Then there is at least one scenario where the system incentivizes strategic voting. }}",
+    + r"{{\raggedright \;\;\;\;\; \parbox{1000em}{2) At least three candidates are elected by the system in at least one scenario. } \\}}"
+    + r"{{\raggedright \parbox{1000em}{Then there is at least one scenario where the system incentivizes strategic voting. } }}",
     color=text_color,
-).scale(thm_scale * 0.85)
+).scale(thm_scale * 0.8)
 
 reasonable1_tex = Tex("{{Reasonable system: }}", color=TEXT_COLOR)
 reasonable2_tex = Tex(
@@ -127,7 +127,7 @@ def intro_images(intro=True):
     orderings = [
         ordering("ABC", background=BACKGROUND_COLOR)
         .next_to(monkeys_img[3], RIGHT)
-        .shift(0.4 * UP),
+        .shift(0.4 * UP + 1*RIGHT),
         ordering("BCA", background=BACKGROUND_COLOR)
         .next_to(monkeys_img[5], RIGHT)
         .shift(0.4 * UP),
@@ -137,14 +137,14 @@ def intro_images(intro=True):
     ]
 
     explorer = (
-        ImageMobject(f"img/{'explorer' if DRAFT == False else 'explorer_small'}.png")
+        ImageMobject(f"img/{'explorer' if DRAFT == False and SMALL_PICTURES == False else 'explorer_small'}.png")
         .scale_to_fit_height(5)
         .to_corner(DR)
         .shift(2 * LEFT + 0.4 * DOWN)
     )  # TODO pridat polylogo na laptop
 
     background = ImageMobject(
-        f"img/{'background_a_bit_smaller.jpg' if DRAFT == False else 'background.png'}"
+        f"img/{'background_a_bit_smaller.jpg' if DRAFT == False and SMALL_PICTURES == False else 'background.png'}"
     ).scale_to_fit_height(config.frame_height)
 
     whiteboard = (
