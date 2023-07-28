@@ -1252,7 +1252,7 @@ class ArrowThm(Scene):
         self.add(gs_group)
         arrow_title = Tex(r"Arrow's theorem:")
         arrow_tex = Tex(
-            r"{{\parbox{1000em}{Any reasonable voting system doesn't satisfy the }}{{independence of irrelevant alternatives.} }}"
+            r"{{\parbox{1000em}{No reasonable voting system satisfies the }}{{independence of irrelevant alternatives.} }}"
         ).scale(thm_scale * 0.85)
         arrow_full = (
             Group(arrow_title, arrow_tex)
