@@ -3,6 +3,8 @@ from utils.util import *
 
 # TODO jiny pozadi
 
+HIGHLIGHT = ORANGE2
+
 
 class Intro(MovingCameraScene):
     def construct(self):
@@ -230,13 +232,13 @@ class Intro(MovingCameraScene):
 
         # So now it’s even coconut that won. These two monkeys are pretty sly. They really don’t like banana. They also realized that their favorite, avocado, cannot win against banana in the second round. So, they rather voted for coconut because that’s their second choice.
 
-        rec_four = SurroundingRectangle(Group(*monkeys_img[:4]), color=RED)
+        rec_four = SurroundingRectangle(Group(*monkeys_img[:4]), color=HIGHLIGHT)
         rec = rec_four.copy()
         self.play(FadeIn(rec))
         self.wait()
 
         rec_other = [
-            SurroundingRectangle(orderings[0][1][i], color=RED) for i in range(3)
+            SurroundingRectangle(orderings[0][1][i], color=HIGHLIGHT) for i in range(3)
         ]
         self.play(Transform(rec, rec_other[2]))
         self.wait()
@@ -354,7 +356,7 @@ class Statement1(Scene):
 
         # First, we need to define what a voting system is.
 
-        border = SurroundingRectangle(gs_tex[2], color=RED)
+        border = SurroundingRectangle(gs_tex[2], color=HIGHLIGHT)
         self.play(FadeIn(border))
         self.wait()
 
@@ -447,7 +449,7 @@ class Statement1(Scene):
         self.play(FadeIn(Group(lines, quest_tex)))
         self.wait()
 
-        table = VotingTable(["AB"]).align_to(lines, RIGHT).scale(1.5)
+        table = VotingTable(["AB"]).scale(1.5).move_to(lines).align_to(lines, RIGHT)
 
         comparison = (
             VGroup(
@@ -475,7 +477,7 @@ class Statement2(Scene):
 
         # gs_tex[2].set_color(GREEN),
         self.add(gs_tex)
-        border = SurroundingRectangle(gs_tex[4], color=RED)
+        border = SurroundingRectangle(gs_tex[4], color=HIGHLIGHT)
         self.play(FadeIn(border))
         self.wait()
 
@@ -500,7 +502,7 @@ class Statement2(Scene):
         self.play(FadeIn(table))
         self.wait()
 
-        voter_border = SurroundingRectangle(monkeys_img[i_voter], color=RED)
+        voter_border = SurroundingRectangle(monkeys_img[i_voter], color=HIGHLIGHT)
         self.play(FadeIn(voter_border))
         self.wait()
 
@@ -578,7 +580,7 @@ class Statement2(Scene):
         self.wait()
 
         ar = (
-            ImageMobject("img/arrow.png")
+            load_svg("img/arrow.svg")
             .scale_to_fit_width(1)
             .next_to(order.group[0], LEFT)
         )
@@ -603,10 +605,10 @@ class Statement2(Scene):
 
         # What’s important, our voter actually prefers Z over Y, so it pays off to submit this dishonest ballot. Whenever this happens, we say that the voter is incentivized to vote strategically.
 
-        # self.play(Circumscribe(order, color=RED))
+        # self.play(Circumscribe(order, color=HIGHLIGHT))
         # self.wait()
 
-        border2 = SurroundingRectangle(gs_tex[3], color=RED)
+        border2 = SurroundingRectangle(gs_tex[3], color=HIGHLIGHT)
         self.play(
             *[FadeOut(o) for o in self.mobjects if o != gs_tex and o != border],
         )
@@ -627,14 +629,14 @@ class Statement2(Scene):
 
         # So the definition is a bit different than what happened earlier because there, the whole group of monkeys coordinated. Also, the theorem is not saying that in every possible scenario, there is somebody who has this incentive. But, for any reasonable voting system we can find at least one scenario where strategic voting occurs.
 
-        # self.play(Circumscribe(gs_tex[3], color=RED), run_time=2)
+        # self.play(Circumscribe(gs_tex[3], color=HIGHLIGHT), run_time=2)
         # self.wait()
         # self.play(gs_tex[3].animate.set_color(GREEN))
         # self.wait()
 
         # And this brings us to the word “reasonable”. The problem is: Think of the dictatorship voting system where the winner is always the top preference of voter number 3. By that I mean that system always outputs the fruit in the highlighted square. This voting system actually satisfies our definition of a voting system. Also, you can check that there is no scenario in which strategic voting helps anybody.
 
-        border2 = SurroundingRectangle(gs_tex[1], color=RED)
+        border2 = SurroundingRectangle(gs_tex[1], color=HIGHLIGHT)
         self.play(Transform(border, border2))
         self.wait()
 
@@ -655,7 +657,7 @@ class Statement2(Scene):
         self.play(FadeIn(dictator))
         self.wait()
 
-        border_fruit = SurroundingRectangle(table[2].group[0], color=RED)
+        border_fruit = SurroundingRectangle(table[2].group[0], color=HIGHLIGHT)
         self.play(FadeIn(border_fruit))
         self.wait()
         self.play(table.results_show("A"))
@@ -928,7 +930,7 @@ class Proof2(MovingCameraScene):
         self.next_section(skip_animations=False)
         # Remember, our goal is to demonstrate that for any reasonable voting system, there exists a scenario where a certain voter has an incentive to vote strategically. It turns out that any Condorcet cycle is almost, but not quite, such a scenario.
 
-        self.play(Circumscribe(gs_tex, color=RED))
+        self.play(Circumscribe(gs_tex, color=HIGHLIGHT))
         self.wait()
 
         tables = VGroup(*[VotingTable(str).shift(LEFT) for str in proof_table_strings])
@@ -947,7 +949,7 @@ class Proof2(MovingCameraScene):
 
         # But now let’s look at this group of voters for whom the coconut is the bottom choice. Intuitively, these voters have the biggest incentive to try some kind of strategic voting because they are most unhappy with the result.
 
-        border = SurroundingRectangle(Group(*table[:4]), color=RED)
+        border = SurroundingRectangle(Group(*table[:4]), color=HIGHLIGHT)
         self.play(FadeIn(border))
         self.wait()
 
@@ -964,7 +966,7 @@ class Proof2(MovingCameraScene):
 
         border.generate_target()
         border.target = SurroundingRectangle(
-            Group(table[0].group[1], table[5].group[0]), color=RED
+            Group(table[0].group[1], table[5].group[0]), color=HIGHLIGHT
         )
         border.save_state()
 
@@ -1000,7 +1002,7 @@ class Proof2(MovingCameraScene):
         # So, if all of these voters coordinate and vote strategically, they can achieve a result that they like more than what happens when they tell the truth. This is by the way exactly what the four sly monkeys did at the beginning when we tried to use the two-round system to elect the winner.
         # We are already very close to proving the theorem. The only problem is that we want to find a scenario where only one voter has the incentive to vote strategically. Right now, that is not the case. Only if this whole group can coordinate, it pays off.
 
-        self.play(Indicate(border, color=RED))
+        self.play(Indicate(border, color=HIGHLIGHT))
         self.wait()
 
         self.play(FadeOut(border), FadeOut(gs_tex))
@@ -1015,11 +1017,16 @@ class Proof2(MovingCameraScene):
         tables.arrange(DOWN, buff=0.5)
         tables.move_to(ORIGIN)
 
-        self.play(Transform(table, tables[0]))
-        # self.play(Circumscribe(Group(table[0].group[0], table[5].group[1]), color=RED))
+        scale = 2.5
+        self.play(
+            Transform(table, tables[0]),
+            self.camera.frame.animate.scale(1 / scale).move_to(tables[0:2]),
+        )
+        # self.play(Circumscribe(Group(table[0].group[0], table[5].group[1]), color=HIGHLIGHT))
         self.wait()
 
         for i, table in enumerate(tables[:-1]):
+            self.play(self.camera.frame.animate.move_to(tables[i : i + 2]))
             self.add(tables[i])
             table = tables[i].copy()
             self.play(table.animate.next_to(tables[i], DOWN, buff=MED_LARGE_BUFF))
@@ -1028,6 +1035,7 @@ class Proof2(MovingCameraScene):
             # self.play(table.animate.shift(shift), tables[: i + 1].animate.shift(shift))
             self.remove(table)
 
+        self.play(self.camera.frame.animate.move_to(tables).scale(scale))
         self.play(
             tables[0].winner_show("C"),
         )
@@ -1038,7 +1046,7 @@ class Proof2(MovingCameraScene):
         self.wait()
 
         self.add(tables[0].results)
-        self.play(Circumscribe(tables[0], color=RED))
+        self.play(Circumscribe(tables[0], color=HIGHLIGHT))
         self.wait()
 
         self.play(*[t.winner_show("?") for t in tables[1:-1]])
@@ -1057,7 +1065,7 @@ class Proof2(MovingCameraScene):
 
         # So let’s look at the two scenarios where the winner changes for the first time, from the coconut to some other candidate.
 
-        border = SurroundingRectangle(Group(*tables[2:4]), color=RED)
+        border = SurroundingRectangle(Group(*tables[2:4]), color=HIGHLIGHT)
 
         self.play(FadeIn(border))
         self.wait()
@@ -1074,7 +1082,9 @@ class Proof2(MovingCameraScene):
         self.remove(*self.mobjects)
 
         border.generate_target()
-        border.target = SurroundingRectangle(Group(*tables.target[2:4]), color=RED)
+        border.target = SurroundingRectangle(
+            Group(*tables.target[2:4]), color=HIGHLIGHT
+        )
 
         winner_groups = []
         for i in range(5):
@@ -1099,8 +1109,8 @@ class Proof2(MovingCameraScene):
         self.play(FadeOut(border))
 
         borders = [
-            SurroundingRectangle(tables[2][2], color=RED),
-            SurroundingRectangle(tables[3][2], color=RED),
+            SurroundingRectangle(tables[2][2], color=HIGHLIGHT),
+            SurroundingRectangle(tables[3][2], color=HIGHLIGHT),
         ]
 
         self.play(FadeIn(Group(*borders)))
@@ -1137,7 +1147,7 @@ class Proof2(MovingCameraScene):
         )
         self.wait()
 
-        self.play(Circumscribe(tables[2].results.winner, color=RED))
+        self.play(Circumscribe(tables[2].results.winner, color=HIGHLIGHT))
         self.wait()
 
         bubble2 = (
@@ -1158,10 +1168,10 @@ class Proof2(MovingCameraScene):
         )
         self.wait()
 
-        self.play(Circumscribe(tables[3].results.winner, color=RED))
+        self.play(Circumscribe(tables[3].results.winner, color=HIGHLIGHT))
         self.wait()
 
-        self.play(Circumscribe(tables[2], color=RED))
+        self.play(Circumscribe(tables[2], color=HIGHLIGHT))
         self.wait()
 
         # Let’s also focus on this voter. Do you see how to finish the proof? Well, let’s imagine that the top scenario contains the honest preferences of all the voters. If this voter votes honestly, X is the winner. But what if they vote strategically and cast a ballot with ZYX instead of YZX? Well, we know that then the outcome of the voting system changes from X to some other candidate. But look, X is the worst option for our voter, so whatever the change, the voter will prefer it!
@@ -1249,7 +1259,7 @@ class Reasonable(Scene):
         )  # line.animate.next_to(gs_new_tex, DOWN))
         self.wait()
 
-        self.play(Circumscribe(Group(*gs_new_tex[1:3]), color=RED))
+        self.play(Circumscribe(Group(*gs_new_tex[1:3]), color=HIGHLIGHT))
         self.wait()
 
         self.play(FadeOut(gs_new_tex))
@@ -1386,8 +1396,8 @@ class ArrowThm(Scene):
 
         # For me, the biggest insight of those two theorems is simply noticing that there is something to prove. Strategic voting is not just a sociological fact, but it is a fundamental flaw of every voting system, and so is the lack of independence of irrelevant alternatives. Or is it?
 
-        border = SurroundingRectangle(gs_tex[4], color=RED)
-        border2 = SurroundingRectangle(arrow_tex[1], color=RED)
+        border = SurroundingRectangle(gs_tex[4], color=HIGHLIGHT)
+        border2 = SurroundingRectangle(arrow_tex[1], color=HIGHLIGHT)
 
         self.play(FadeIn(border))
         self.wait()
@@ -1767,7 +1777,7 @@ class Approval(Scene):
 
         i_like = 3
 
-        self.play(videos_group[i_like][1].animate.set_color(RED))
+        self.play(videos_group[i_like][1].animate.set_color(HIGHLIGHT))
         self.wait()
 
         self.play(
@@ -1897,7 +1907,7 @@ class Debriefing(Scene):
         )
         self.wait()
 
-        self.play(Circumscribe(Group(*voting_data[1][0:2]), color=RED))
+        self.play(Circumscribe(Group(*voting_data[1][0:2]), color=HIGHLIGHT))
         self.wait()
 
         # You might be wondering, "Okay, but which voting system did they use to compile this list?" and it was, well, approval voting itself… [reveal the right column of the table - approval votes for each option].
@@ -1916,13 +1926,13 @@ class Debriefing(Scene):
         self.play(
             Circumscribe(
                 Group(*[voting_data[i][2] for i in range(1, len(voting_data))]),
-                color=RED,
+                color=HIGHLIGHT,
             )
         )
         self.wait()
 
         arrow = (
-            ImageMobject("img/arrow.png")
+            load_svg("img/arrow.svg")
             .scale_to_fit_width(1.5)
             .next_to(voting_data[1][0], LEFT, buff=0.5)
         )
