@@ -7,7 +7,7 @@ from utils.util import *
 class Intro(MovingCameraScene):
     def construct(self):
         default()
-        self.next_section(skip_animations=True)
+        self.next_section(skip_animations=False)
         (
             monkeys_img,
             monkeys_voting_img,
@@ -179,7 +179,6 @@ class Intro(MovingCameraScene):
             *[FadeOut(monkeys_protest[i][1].set_z_index(9999)) for i in range(4)],
         )
         self.wait()
-        return
 
         # Why?
         # We made a mistake in the first round, can we run the election one more time? Please!
@@ -789,6 +788,9 @@ class Proof1(Scene):
             def arrow_updater(start, end, start_target):
                 done = False
 
+                orig = start.get_center()
+                target = start_target.get_center()
+
                 def updater(arrow):
                     # nonlocal done
                     # if done:
@@ -796,10 +798,15 @@ class Proof1(Scene):
                     # if (start.get_center() == start_target.get_center()).all():
                     #    done = True
                     #    update_label(arrow)
+                    alpha = np.linalg.norm(
+                        start.get_center() - target
+                    ) / np.linalg.norm(orig - target)
                     arrow.become(
                         Arrow(
                             start=start.get_center(), end=end.get_center(), buff=0.8 * w
-                        ).set_z_index(arrow.z_index)
+                        )
+                        .set_z_index(arrow.z_index)
+                        .fade((1 - alpha) ** 2)
                     )
 
                 return updater
@@ -833,26 +840,26 @@ class Proof1(Scene):
         for i, o in enumerate(table.group):
             for arrow in o.arrowed.arrows:
                 arrow.set_z_index(2000 - i)
-        self.play(
-            AnimationGroup(
-                *(
-                    AnimationGroup(*wind_around(o.arrowed), run_time=1.5)
-                    for o in table.group
-                ),
-                lag_ratio=1,
+        for l, r, f in [(0, 4, 2), (4, 6, 0), (6, 9, 1)]:
+            f = 2 * f + 3
+            self.play(FadeOut(condorcet_group[f]))
+            self.play(
+                AnimationGroup(
+                    *(
+                        AnimationGroup(*wind_around(o.arrowed), run_time=1.5)
+                        for o in table.group[l:r]
+                    ),
+                    lag_ratio=1,
+                )
             )
-        )
-
-        for mobj in self.mobjects:
-            mobj.clear_updaters()
-
-        for o in table.group:
-            self.remove(o.arrowed)
-        for o in trash:
-            self.remove(o)
-        self.remove(self.mobjects[-1])
-
-        print(self.mobjects)
+            for mobj in self.mobjects:
+                mobj.clear_updaters()
+            for o in table.group[l:r]:
+                self.remove(o.arrowed)
+            for o in trash:
+                self.remove(o)
+            self.remove(self.mobjects[-1])
+            self.play(FadeIn(condorcet_group[f]))
 
         for a in range(3):
             b = (a + 1) % 3
@@ -893,6 +900,18 @@ class Proof1(Scene):
 
         self.play(FadeIn(cycle_group))
         self.wait()
+
+        shift = 3 * LEFT + UP
+        self.play(
+            FadeOut(paradox_group, cycle_group, table),
+            condorcet_group.animate.shift(shift),
+        )
+        implies_counterexample = (
+            Tex(r"$\Rightarrow$ strategic voting").scale(1.5).next_to(condorcet_group)
+        )
+        self.wait()
+        self.play(FadeIn(implies_counterexample), run_time=1.5)
+        self.wait(3)
 
         # Ultimately, condorcet paradox is the reason why voting is straightforward with two candidates, but becomes very tricky if you have at least three of them.
 
