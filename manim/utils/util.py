@@ -9,7 +9,7 @@ from collections import Counter
 from manim import *
 from .util_general import *
 
-DRAFT = False
+DRAFT = True
 SMALL_PICTURES = True
 
 thm_scale = 0.8
@@ -18,12 +18,9 @@ gs_tex = Tex(
     "{{Any }}{{reasonable }}{{voting system }}{{sometimes }}{{incentivizes strategic voting. }}",
     color=text_color,
 ).scale(thm_scale)
-gs_group = (
-    VGroup(gs_title, gs_tex)
-    .arrange_in_grid(cols=1, cell_alignment=LEFT)
-    .to_edge(UP, buff=0.5)
-    .to_edge(LEFT)
-)
+gs_tex.to_edge(UP, buff=0.5)
+gs_title.next_to(gs_tex, UP, buff=0.5)
+gs_group = VGroup(gs_title, gs_tex)
 gs_new_tex = Tex(
     r"{{\raggedright \parbox{1000em}{For any number of voters and any number of candidates, consider any voting system that satisfies:} \\ }}"
     + r"{{\raggedright \;\;\;\;\; 1) The system is not a dictatorship of one voter. \\}}"
@@ -127,7 +124,7 @@ def intro_images(intro=True):
     orderings = [
         ordering("ABC", background=BACKGROUND_COLOR)
         .next_to(monkeys_img[3], RIGHT)
-        .shift(0.4 * UP + 1*RIGHT),
+        .shift(0.4 * UP + 1 * RIGHT),
         ordering("BCA", background=BACKGROUND_COLOR)
         .next_to(monkeys_img[5], RIGHT)
         .shift(0.4 * UP),
@@ -137,7 +134,9 @@ def intro_images(intro=True):
     ]
 
     explorer = (
-        ImageMobject(f"img/{'explorer' if DRAFT == False and SMALL_PICTURES == False else 'explorer_small'}.png")
+        ImageMobject(
+            f"img/{'explorer' if DRAFT == False and SMALL_PICTURES == False else 'explorer_small'}.png"
+        )
         .scale_to_fit_height(5)
         .to_corner(DR)
         .shift(2 * LEFT + 0.4 * DOWN)

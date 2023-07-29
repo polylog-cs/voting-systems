@@ -7,7 +7,7 @@ from utils.util import *
 class Intro(MovingCameraScene):
     def construct(self):
         default()
-        self.next_section(skip_animations=False)
+        self.next_section(skip_animations=True)
         (
             monkeys_img,
             monkeys_voting_img,
@@ -148,6 +148,7 @@ class Intro(MovingCameraScene):
         # The monkeys who voted for avocado: “We protest!”
         # [možná drží banner na kterém je napsáno protest]
 
+        self.next_section(skip_animations=False)
         monkeys_votes_img = (
             [monkeys_voting_img[i][1] for i in ranges[0]]
             + [monkeys_voting_img[i][0] for i in ranges[1]]
@@ -155,11 +156,11 @@ class Intro(MovingCameraScene):
         )
 
         protest_tex = [
-            Tex(str, color=RED)
-            .scale(0.8)
+            Tex(str, color=BASE02)
+            .scale(0.55)
             .move_to(monkeys_voting_img[i][0][0])
-            .shift(0.5 * LEFT + 0.4 * UP)
-            for i, str in enumerate(["pro", "te", "st", "We"])
+            .shift(0.5 * LEFT + 0.38 * UP)
+            for i, str in enumerate(["PRO", "TE", "ST", "WE"])
         ]
         monkeys_protest = [
             VGroup(monkeys_voting_img[i][0][0], protest_tex[i]) for i in range(4)
@@ -175,9 +176,10 @@ class Intro(MovingCameraScene):
 
         self.play(
             *[Interpol(monkeys_protest[i][0], monkeys_img[i]) for i in range(4)],
-            *[FadeOut(monkeys_protest[i][1]) for i in range(4)],
+            *[FadeOut(monkeys_protest[i][1].set_z_index(9999)) for i in range(4)],
         )
         self.wait()
+        return
 
         # Why?
         # We made a mistake in the first round, can we run the election one more time? Please!
@@ -336,17 +338,17 @@ class Statement1(Scene):
         default()
         # Unfortunately, the answer is no and because I took my whiteboard with me, I will explain why. I will prove to you the Gibbard-Satterthwaite theorem which says that any reasonable voting system sometimes incentivizes strategic voting.
         # gs_group.move_to(ORIGIN)
+        gs_down = gs_group.copy().shift(0.7 * DOWN)
         self.play(
-            FadeIn(gs_title),
+            FadeIn(gs_down[0]),
         )
         self.wait()
         self.play(
-            FadeIn(gs_tex),
+            FadeIn(gs_down[1]),
         )
-        gs_up = gs_group.copy().to_edge(UP, buff=-0.2)
-        gs_up[0].fade(1)
+        gs_group[0].fade(1)
         self.wait()
-        self.play(gs_group.animate.become(gs_up))
+        self.play(gs_down.animate.become(gs_group))
         self.wait()
 
         # I think that the most challenging aspect of the theorem is to understand what it is actually saying, so let’s try to slowly unpack this sentence.
@@ -383,13 +385,16 @@ class Statement1(Scene):
             col.scale(monkey_scale).next_to(monkey, UP)
 
         self.play(
-            Succession(
+            AnimationGroup(
                 # FadeOut(ord),
                 # special_monkey.animate.scale(0.5).move_to(
                 #     special_monkey.saved_state.get_center()
                 # ),
-                *[FadeIn(Group(table[i], monkeys_img[i])) for i in range(9)],
-                lag_ratio=0.3,
+                *[
+                    FadeIn(Group(table[i], monkeys_img[i]), run_time=0.5)
+                    for i in range(9)
+                ],
+                lag_ratio=0.6,
             )
         )
         self.wait()
@@ -470,9 +475,7 @@ class Statement2(Scene):
         default()
 
         # gs_tex[2].set_color(GREEN),
-        self.add(
-            gs_tex.to_edge(UP, buff=0.5),
-        )
+        self.add(gs_tex)
         border = SurroundingRectangle(gs_tex[4], color=RED)
         self.play(FadeIn(border))
         self.wait()
@@ -593,8 +596,6 @@ class Statement2(Scene):
         self.play(order2_copy.rearrange("BAC"), table.results_show("A", DOWN))
         self.play(order2_copy.rearrange("ABC"), table.results_show("C"))
         self.play(order2_copy.rearrange("BAC"), table.results_show("A", DOWN))
-        self.play(order2_copy.rearrange("ABC"), table.results_show("C"))
-        self.play(order2_copy.rearrange("BAC"), table.results_show("A", DOWN))
 
         # self.play(FadeOut(order2_copy))
         # self.wait()
@@ -645,7 +646,7 @@ class Statement2(Scene):
 
         dictator = (
             ImageMobject(
-                "img/dictator.jpg"
+                "img/dictator-small.png"
                 if DRAFT == True or SMALL_PICTURES == True
                 else "img/dictator.png"
             )
@@ -713,9 +714,7 @@ class Statement2(Scene):
 class Proof1(Scene):
     def construct(self):
         default()
-        self.add(
-            gs_tex.to_edge(UP, buff=0.5),
-        )
+        self.add(gs_tex)
 
         # Ok, let’s first try to understand why in our scenario with monkeys it was so hard to choose the best fruit. Why is it that there were always so many monkeys unhappy about the result? Well, if you look at the rankings of the monkeys, you can see that there is some kind of cycle here. Some monkeys prefer avocado over banana over coconut, some prefer banana over coconut over avocado, and some prefer coconut over avocado over banana.
 
@@ -906,9 +905,7 @@ class Proof1(Scene):
 class Proof2(MovingCameraScene):
     def construct(self):
         default()
-        self.add(
-            gs_tex.to_edge(UP, buff=0.5),
-        )
+        self.add(gs_tex)
         self.next_section(skip_animations=False)
         # Remember, our goal is to demonstrate that for any reasonable voting system, there exists a scenario where a certain voter has an incentive to vote strategically. It turns out that any Condorcet cycle is almost, but not quite, such a scenario.
 
@@ -973,7 +970,9 @@ class Proof2(MovingCameraScene):
             if x == 2:
                 break
 
-            self.play(*table.rearrange("BAC", indexes=range(4)), table.winner_show("B"))
+            self.play(
+                *table.rearrange("BAC", indexes=range(4)), table.winner_show("B", DOWN)
+            )
             self.wait(0.2)
 
         self.play(table.results_hide())
@@ -1260,9 +1259,8 @@ class ArrowThm(Scene):
         ).scale(thm_scale * 0.85)
         arrow_full = (
             Group(arrow_title, arrow_tex)
-            .arrange_in_grid(cols=1, cell_alignment=LEFT)
+            .arrange(DOWN)
             .next_to(gs_group, DOWN, buff=0.5)
-            .to_edge(LEFT)
         )
 
         self.play(FadeIn(arrow_title))
