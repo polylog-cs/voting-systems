@@ -260,14 +260,16 @@ class Intro(MovingCameraScene):
         bubbles = [
             SVGMobject("img/bubble_think_full.svg")
             .scale_to_fit_height(sc * monkeys_img[i].height)
-            .next_to(monkeys_img[i], LEFT)
+            .next_to(monkeys_img[i], LEFT, buff=SMALL_BUFF)
             .shift(1 * UP),
             SVGMobject("img/bubble_say_full.svg")
             .scale_to_fit_height(sc * monkeys_img[i].height)
-            .next_to(monkeys_img[i], RIGHT)
+            .next_to(monkeys_img[i], RIGHT, buff=SMALL_BUFF)
             .shift(1 * UP),
         ]
-        bubbles[0] = Group(bubbles[0], FRUITS["A"].move_to(bubbles[0].get_center()))
+        bubbles[0] = Group(
+            bubbles[0], FRUITS["A"].move_to(bubbles[0].get_center() + 0.07 * LEFT)
+        )
         bubbles[1] = Group(bubbles[1], FRUITS["B"].move_to(bubbles[1].get_center()))
 
         self.play(FadeIn(bubbles[0]))
@@ -525,7 +527,7 @@ class Statement2(Scene):
         )  # align_to(voter, DOWN).shift(0.5*DOWN)
 
         h = 3
-        sht = 1.3 * UP  # + 1 * RIGHT
+        sht = 1.2 * UP  # + 1 * RIGHT
         bubble = (
             load_svg("img/bubble_think.svg")
             .scale_to_fit_height(h)
@@ -539,7 +541,7 @@ class Statement2(Scene):
         self.play(
             MoveToTarget(voter),
             order.animate.scale(1 / monkey_scale).move_to(
-                bubble.get_center() + bubble.width / 10 * LEFT + bubble.height / 10 * UP
+                bubble.get_center() + bubble.width / 10 * LEFT + bubble.height / 20 * UP
             ),
         )
         self.play(FadeIn(bubble))
@@ -562,11 +564,17 @@ class Statement2(Scene):
 
         bubble2 = (
             load_svg("img/bubble_say.svg")
-            .scale_to_fit_height(0.9 * h)
+            .scale_to_fit_height(h)
             .next_to(voter, RIGHT)
             .shift(sht)
         )
-        order2 = table[i_voter].copy().rearrange("BAC", False).move_to(bubble2)
+        order2 = (
+            table[i_voter]
+            .copy()
+            .rearrange("BAC", False)
+            .move_to(bubble2.get_center())
+            .align_to(order, UP)
+        )
         self.play(FadeIn(bubble2), FadeIn(order2))
         self.wait()
         order2_copy = order2.copy()
