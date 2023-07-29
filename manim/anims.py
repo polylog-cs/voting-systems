@@ -601,10 +601,11 @@ class Statement2(Scene):
 
         # TODO other monkeys
 
-        self.play(order2_copy.rearrange("ABC"), table.results_show("C"))
-        self.play(order2_copy.rearrange("BAC"), table.results_show("A", DOWN))
-        self.play(order2_copy.rearrange("ABC"), table.results_show("C"))
-        self.play(order2_copy.rearrange("BAC"), table.results_show("A", DOWN))
+        for _ in range(2):
+            self.play(order2_copy.rearrange("ABC"), table.results_show("C"))
+            self.wait()
+            self.play(order2_copy.rearrange("BAC"), table.results_show("A", DOWN))
+            self.wait()
 
         # self.play(FadeOut(order2_copy))
         # self.wait()
