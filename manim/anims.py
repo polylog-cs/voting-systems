@@ -369,6 +369,7 @@ class Statement1(Scene):
             .arrange()
             .to_edge(LEFT, buff=1)
             .to_edge(DOWN)
+            .shift(0.5 * UP)
         )
 
         # special_monkey = monkeys_img[0]
@@ -493,6 +494,7 @@ class Statement2(Scene):
             .arrange()
             .to_edge(LEFT, buff=1)
             .to_edge(DOWN)
+            .shift(0.5 * UP)
         )
         self.play(FadeIn(monkeys_img))
 
@@ -650,7 +652,7 @@ class Statement2(Scene):
         self.wait()
 
         table = VotingTable(example_table_str)
-        table.move_to(ORIGIN)
+        table.move_to(0.5 * UP)
         self.play(FadeIn(table))
         self.wait()
 

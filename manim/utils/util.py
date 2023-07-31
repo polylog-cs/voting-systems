@@ -186,7 +186,7 @@ class Fruit(VMobject):
     def fadeout(self):
         self.disabled = True
         self.save_state()
-        return self.animate.fade(0.8)
+        return self.animate.fade(0.85).scale(0.6)
 
     def fadein(self):
         self.disabled = False
@@ -245,7 +245,7 @@ def get_crowned_fruit(label, surround=False):
     )
     if surround:
         background = SurroundingRectangle(
-            fruit_group[:2], fill_opacity=0.7, color=BACKGROUND_COLOR, corner_radius=0.3
+            fruit_group[:2], fill_opacity=0.7, color=BACKGROUND_COLOR, corner_radius=0.2
         )
         fruit_group = VGroup(background, fruit_group)
     return fruit_group
@@ -674,4 +674,10 @@ for method in VotingTable.BROADCAST_METHODS:
 class Interpol(AnimationGroup):
     def __init__(self, mobject_old, mobject_new, **kwargs):
         # Call the parent constructor with the animations
-        super().__init__(FadeOut(mobject_old), FadeIn(mobject_new), **kwargs)
+        super().__init__(
+            FadeOut(mobject_old),
+            FadeIn(mobject_new),
+            **kwargs,
+            lag_ratio=-0.2,
+            run_time=0.5,
+        )
