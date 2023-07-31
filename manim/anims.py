@@ -1582,6 +1582,7 @@ class Approval(Scene):
             .arrange()
             .to_edge(LEFT, buff=1)
             .to_edge(DOWN)
+            .shift(0.5 * UP)
         )
 
         table = VotingTable(example_table_str).scale(1.5).shift(0.5 * DOWN)
@@ -1864,7 +1865,7 @@ class Debriefing(Scene):
         quote_tex = Tex(
             r"Most systems are not going to work badly all of the time. \\ All I proved is that all can work badly \emph{at} times."
         )
-        Group(quote_tex, arrow_group).arrange(DOWN, buff=1)
+        Group(quote_tex, arrow_group).arrange(DOWN, buff=0.7).shift(0.5 * UP)
 
         self.play(FadeIn(arrow_group))
         self.wait()

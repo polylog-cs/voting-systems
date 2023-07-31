@@ -143,7 +143,7 @@ def intro_images(intro=True):
     )  # TODO pridat polylogo na laptop
 
     background = ImageMobject(
-        f"img/{'background_a_bit_smaller.jpg' if DRAFT == False and SMALL_PICTURES == False else 'background.png'}"
+        f"img/{'background-small.png' if DRAFT == False and SMALL_PICTURES == False else 'background.png'}"
     ).scale_to_fit_height(config.frame_height)
 
     whiteboard = (
