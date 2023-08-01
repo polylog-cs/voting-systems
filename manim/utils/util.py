@@ -207,7 +207,6 @@ FRUITS = [
         "D",
         VGroup(
             load_svg("img/fruit/avocado.svg"),
-            Tex(r"/"),
             load_svg("img/fruit/banana.svg"),
         )
         .arrange(RIGHT)

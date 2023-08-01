@@ -763,8 +763,12 @@ class Proof1(Scene):
             )
             dir = end - start
             dir /= (dir * dir).sum() ** 0.5
+            if i == 1:
+                shift = 0.4
+            else:
+                shift = 0.6
             arrow.label = (
-                Dot().move_to(arrow).shift(0.6 * rotate_vector(dir, -np.radians(90)))
+                Dot().move_to(arrow).shift(shift * rotate_vector(dir, -np.radians(90)))
             )
             arrow.a, arrow.b = 0, 0
             condorcet_group.add(arrow, arrow.label)
@@ -1292,7 +1296,7 @@ class ArrowThm(Scene):
         default()
         # There is one more related theorem I want to mention – Arrow’s theorem.
 
-        self.add(gs_group)
+        self.add(gs_group.to_edge(UP, buff=0.5))
         arrow_title = Tex(r"Arrow's Theorem:")
         arrow_tex = Tex(
             r"{{\parbox{1000em}{No reasonable voting system satisfies the }}{{independence of irrelevant alternatives.} }}"
@@ -1319,9 +1323,6 @@ class ArrowThm(Scene):
         # (animace s tabulkou, outcome se změní z vítěze na order)
 
         # Arrow’s theorem says that if there are at least three candidates, any reasonable voting system for ordering them will not satisfy the so-called independence of irrelevant alternatives.
-
-        self.play(FadeIn(arrow_tex))
-        self.wait()
 
         # This is a condition that says that if you look at how the voting system orders any two candidates, for example here it decides that banana is above coconut
 
@@ -1386,6 +1387,9 @@ class ArrowThm(Scene):
 
         # Both Arrow and Gibbard-Satterthwaite theorems are good examples showing that while we often like to think that important mathematical theorems are simply-looking statements that turn out to be insanely complicated to prove, it is not always like that.
         # (možná někde problikne statement Fermata nebo P vs NP?)
+
+        self.play(FadeIn(arrow_tex))
+        self.wait()
 
         self.play(table.results_hide(), FadeOut(table), FadeOut(ar))
         self.wait()
@@ -1885,7 +1889,11 @@ class Debriefing(Scene):
         self.next_section(skip_animations=False)
 
         voting_data = [
-            [Tex("Position"), Tex("Method"), Tex("Approval votes")],
+            [
+                Tex(r"\textbf{Position}"),
+                Tex(r"\textbf{Method}"),
+                Tex(r"\textbf{Approval votes}"),
+            ],
             [Tex("1"), Tex("Approval voting"), Tex("15")],
             [Tex("2"), Tex(r"Alternative vote\\ (Instant runoff)"), Tex("10")],
             [Tex("3"), Tex("Copeland's method"), Tex("9")],
@@ -1910,13 +1918,12 @@ class Debriefing(Scene):
             Group(*[o for l in voting_data for o in l])
             .scale(1)
             .arrange_in_grid(cols=3)
-            .to_edge(UP)
-            .shift(1 * DOWN)
+            .to_edge(UP, buff=0.5)
         )
-        Group(*voting_data[0]).shift(0.3 * UP)
+        Group(*voting_data[0]).shift(0.2 * UP)
 
         self.play(
-            Succession(
+            AnimationGroup(
                 *[FadeIn(Group(*row[:2])) for row in voting_data], lag_ratio=0.25
             )
         )
@@ -1953,18 +1960,10 @@ class Debriefing(Scene):
         )
         self.play(FadeIn(arrow))
         self.wait()
-        self.play(
-            voting_group.animate.shift(
-                voting_data[1][0].get_center() - voting_data[2][0].get_center()
-            )
-        )
+        self.play(arrow.animate.next_to(voting_data[2][0], LEFT, buff=0.5))
         self.wait()
 
-        self.play(
-            voting_group.animate.shift(
-                voting_data[2][0].get_center() - voting_data[5][0].get_center()
-            )
-        )
+        self.play(arrow.animate.next_to(voting_data[5][0], LEFT, buff=0.5))
         self.wait()
 
         self.play(
@@ -1985,7 +1984,7 @@ class Debriefing(Scene):
                 Tex("97\,488"),
             )
             .arrange_in_grid(cols=2, cell_alignment=RIGHT)
-            .shift(2 * DOWN)
+            .shift(2.8 * DOWN)
             .to_edge(LEFT)
         )
 
