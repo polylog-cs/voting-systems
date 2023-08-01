@@ -108,7 +108,6 @@ class Intro(MovingCameraScene):
             FadeOut(winner_img[0]),
         )
         self.wait()
-        return
 
         # Ok, avocado won. You are welcome.
         # monkeys who voted coconut: “But what about the second round? “
@@ -2084,7 +2083,7 @@ class Outro(MovingCameraScene):
 
         self.camera.frame.save_state()
         self.play(
-            self.camera.frame.animate.scale(0.3).move_to(
+            self.camera.frame.animate.scale(0.4).move_to(
                 explorer.get_center() + 1.5 * UP
             )
         )
@@ -2133,7 +2132,6 @@ class Outro(MovingCameraScene):
             a = 2 * end[1] - 4 * midpoint[1] + 2 * start[1]
             b = 4 * midpoint[1] - 3 * start[1] - end[1]
             c = start[1]
-            print(a, b, c)
 
             path = ParametricFunction(
                 lambda t: np.array(
@@ -2143,7 +2141,9 @@ class Outro(MovingCameraScene):
             )
 
             # self.add(path)
-            anims.append(MoveAlongPath(monkeys_voting_img[i][0][1], path))
+            anims.append(
+                MoveAlongPath(monkeys_voting_img[i][0][1].set_z_index(999), path)
+            )
 
             # print(start, midpoint, end)
 
@@ -2151,10 +2151,11 @@ class Outro(MovingCameraScene):
 
         explorer_bag = (
             ImageMobject(
-                f"img/explorer_bag{'_small' if DRAFT == True or SMALL_PICTURES == True else ''}.png"
+                f"img/explorer_bag{'_small' if DRAFT or SMALL_PICTURES else ''}.png"
             )
             .scale_to_fit_width(explorer.width)
             .move_to(explorer.get_center())
+            .set_z_index(1042)
         )
 
         self.play(
@@ -2261,43 +2262,62 @@ class Outro(MovingCameraScene):
 
         # TODO risa podivat se jestli zbude cas
 
-        # anims = []
-        # for it in range(10):
-        #     fruit = random.choice(["A", "C"])
-        #     if fruit == "A":
-        #         start = (4 + random.uniform(-1, 1))*LEFT + (1 + random.uniform(-1, 1))*DOWN
-        #         lent = 14+ random.uniform(-1, 1)
-        #         path = ParametricFunction(
-        #             lambda t: np.array([t, -0.5 * t**2, 0]), t_range = [-1, 1]
-        #         )
-        #     else:
-        #         start = (4 + random.uniform(-1, 1))*LEFT + (-2 + random.uniform(-1, 1))*UP
-        #         lent = 13+ random.uniform(-1, 1)
-        #         path = ParametricFunction(
-        #             lambda t: np.array([t, -0.5 * t**2, 0]), t_range = [-1, 1.5]
-        #         )
-        #     path.scale_to_fit_width(lent)#.stretch_to_fit_height(0.3* (end-start))
-        #     path.next_to(Dot().move_to(start), RIGHT)
-        #     self.add(path)
-        #     f = FRUITS[fruit].copy().move_to(-10*LEFT)
-        #     anims.append(
-        #         Succession(
-        #             Wait(it * 0.5),
-        #             AnimationGroup(
-        #                 MoveAlongPath(f, path),
-        #                 rate_func = linear,
-        #                 run_time = 2
-        #             )
-        #         )
-        #     )
+        anims = []
+        monkey_angry_pos = [monkeys_img[i].get_center() for i in [0, 1, 2, 3, 6, 7, 8]]
+        symrand = lambda s: random.uniform(-1, 1) * s
+        symrand2d = lambda s: symrand(s) * RIGHT + symrand(s) * UP
+        for it in range(15):
+            fruit = random.choice("ABC")
+            start = random.choice(monkey_angry_pos) + symrand2d(0.5)
+            v0 = 30 + symrand(5)
+            g = 50
+            target = (explorer.get_center() + 2 * UP + symrand2d(1)) - start
+            x, y = target[0], target[1]
+            angle = np.arctan(
+                (v0**2 - (v0**4 - g * (g * x**2 + 2 * y * v0**2)) ** 0.5)
+                / (g * x)
+            )
+            parametric = lambda t: start + np.array(
+                [
+                    v0 * t * np.cos(angle),
+                    v0 * t * np.sin(angle) - 0.5 * g * t**2,
+                    0,
+                ]
+            )
+            path = ParametricFunction(
+                parametric,
+                t_range=[0, 1],
+            )
+            # self.add(path, Dot(target + start), Dot(start))
+            f = FRUITS[fruit].copy().move_to(-10 * LEFT)
+            if it < 3:
+                time = [0, 1.5, 2.5][it]
+            else:
+                time = 2 + 0.4 * it
+            anims.append(
+                Succession(
+                    Wait(time), MoveAlongPath(f, path, rate_func=linear, run_time=2)
+                )
+            )
 
-        # self.play(
-        #     *anims,
-        #     AnimationGroup(
-        #         self.camera.frame.animate.scale(0.3).move_to(explorer.get_center() + 2*UP + 1*LEFT),
-        #         run_time = 10
-        #     )
-        # )
+        background_above = (
+            ImageMobject(f"img/background-above.png")
+            .scale_to_fit_width(config.frame_width)
+            .next_to(background, UP, buff=0)
+        )
+        self.add(background_above)
+        self.play(
+            *anims,
+            Succession(
+                Wait(2),
+                AnimationGroup(
+                    self.camera.frame.animate.align_to(background_above, UP),
+                    run_time=10,
+                ),
+            ),
+        )
+
+        self.wait()
 
         # [oddálí se záběr, vidíme jen ostrov uprostřed oceánu]
 
@@ -2309,27 +2329,45 @@ class Outro(MovingCameraScene):
 class Thanks(Scene):
     def construct(self):
         default()
+        Tex.set_default(color=WHITE)
+        background_above = (
+            ImageMobject(f"img/background-above.png")
+            .scale_to_fit_width(config.frame_width)
+            .to_edge(UP, buff=0)
+        )
+        self.add(background_above)
         s = [
             Tex(
                 r"Video by Richard Hladík, Filip Hlásek, Václav Rozhoň, and Václav Volhejn"
-            ).scale(1),
-            Tex(r"inspired by a short story by Mirek Olšák").scale(1),
+            ).scale(0.8),
+            Tex(r"Inspired by a short story by Mirek Olšák").scale(0.8),
             Tex(
                 "Big thanks to the organizers of SoME2, the amazing Manim Community, "
-            ).scale(1),
-            Tex("Jan Petr, Hanka Rozhoňová, ").scale(1),
-            Tex("and our amazing Patrons: ").scale(1),
-            Tex(r"sjbtrn and Tomáš Sláma").scale(1.2),
-            Tex(
-                r"See video description for links \\ and some more related math. "
-            ).scale(2),
+            ).scale(0.8),
+            Tex("Jan Petr, Hanka Rozhoňová, ").scale(0.8),
+            Tex("and our amazing Patrons: ").scale(0.8),
+            Tex(r"sjbtrn and Tomáš Sláma").scale(1),
         ]
-        texs = Group(*s).scale(0.7).arrange_in_grid(cols=1, cell_alignment=LEFT)
+        texs = Group(*s).arrange_in_grid(cols=1, cell_alignment=LEFT)
 
-        Group(texs[1], texs[3], texs[5]).shift(0.5 * RIGHT)
-        texs[-1].move_to(ORIGIN).to_edge(DOWN, buff=1)
+        see_description = Tex(
+            r"See video description for links \\ and some more related math."
+        ).scale(1.5)
+
+        Group(texs[3], texs[5]).shift(0.5 * RIGHT)
+        see_description.move_to(ORIGIN).to_edge(DOWN, buff=1)
+
+        cred = texs[:2]
+        cred.move_to(3 * UP)
+
+        thanks = texs[2:]
+        thanks.move_to(2.3 * DOWN)
 
         self.play(FadeIn(texs))
-        self.wait()
+        self.wait(2)
         self.play(FadeOut(texs))
+        self.wait(0.5)
+        self.play(FadeIn(see_description))
+        self.wait(2)
+        self.play(FadeOut(see_description))
         self.wait()
