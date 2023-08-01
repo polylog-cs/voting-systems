@@ -1845,8 +1845,10 @@ class Debriefing(Scene):
         self.add(some_left_img, some_leftleft_img, some_right_img)
 
         self.play(
-            some_left_img.animate.to_edge(DOWN),
-            some_right_img.animate.to_edge(DOWN),
+            some_left_img.animate(rate_func=ease_in_out_quadlinear(0.15)).to_edge(DOWN),
+            some_right_img.animate(rate_func=ease_in_out_quadlinear(0.15)).to_edge(
+                DOWN
+            ),
             run_time=10,
         )
         self.wait()

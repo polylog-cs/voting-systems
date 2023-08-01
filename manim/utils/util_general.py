@@ -136,3 +136,22 @@ def load_svg(*args, **kwargs) -> SVGMobject:
         .set_sheen_direction((0, 0, 0))
         .set_sheen_factor(0)
     )
+
+
+def ease_in_out_quadlinear(a=0.1):
+    def true_start(t):
+        return (0.5 * t**2 / a) / (1 - a)
+
+    def start(t):
+        return true_start(t) ** 2 / true_start(a)
+
+    def end(t):
+        return 1 - start(1 - t)
+
+    def mid(t):
+        return (t - 0.5 * a) / (1 - a)
+
+    def ease(t):
+        return start(t) * (t <= a) + mid(t) * (a < t < (1 - a)) + end(t) * (t >= 1 - a)
+
+    return ease
