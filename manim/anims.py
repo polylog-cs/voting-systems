@@ -1333,9 +1333,7 @@ class ArrowThm(Scene):
 
         # this decision should not depend on whatever the voters’ opinion on the avocado is.
 
-        self.play(
-            *table.fadeout("C"), *table.results.fadeout("C")
-        )  # TODO gray also the result
+        self.play(*table.fadeout("C"), *table.results.fadeout("C"))
         self.wait()
 
         # In other words, in all of these situations, the banana has to be above the coconut.
@@ -1358,13 +1356,15 @@ class ArrowThm(Scene):
 
         # TODO pridat neco takovehleho
 
-        # ar = CurvedArrow(
-        #     table.results[0].get_center() + 0.5*RIGHT,
-        #     table.results[1].get_center() + 0.5*RIGHT,
-        #     radius=2
-        # )
-        # self.play(FadeIn(ar))
-        # self.wait()
+        mkarrow = lambda: CurvedArrow(
+            table.results.at("A")[0][1].get_center() + 0.5 * RIGHT,
+            table.results.at("B")[0][1].get_center() + 0.5 * RIGHT,
+            angle=-TAU / 4,
+        )
+        ar = mkarrow()
+        ar.add_updater(lambda obj: obj.become(mkarrow()))
+        self.play(FadeIn(ar))
+        self.wait()
 
         for _ in range(2):
             l = list(range(len(example_table_str))) + list(
@@ -1379,6 +1379,7 @@ class ArrowThm(Scene):
                     )
                 self.play(*anims)
 
+        ar.clear_updaters()
         self.wait()
 
         # The first part of our proof can actually be used to prove a version of Arrow’s theorem, but if you use the textbook definition of a reasonable voting system, the proof again becomes a bit tedious.
@@ -1386,7 +1387,7 @@ class ArrowThm(Scene):
         # Both Arrow and Gibbard-Satterthwaite theorems are good examples showing that while we often like to think that important mathematical theorems are simply-looking statements that turn out to be insanely complicated to prove, it is not always like that.
         # (možná někde problikne statement Fermata nebo P vs NP?)
 
-        self.play(table.results_hide(), FadeOut(table))
+        self.play(table.results_hide(), FadeOut(table), FadeOut(ar))
         self.wait()
 
         fermat_tex = Tex(

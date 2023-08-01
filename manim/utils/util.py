@@ -186,7 +186,7 @@ class Fruit(VMobject):
     def fadeout(self):
         self.disabled = True
         self.save_state()
-        return self.animate.fade(0.85).scale(0.6)
+        return self.animate.fade(0.84).scale(0.61)
 
     def fadein(self):
         self.disabled = False
