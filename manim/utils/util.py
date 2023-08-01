@@ -99,17 +99,17 @@ def intro_images(intro=True):
         for i in range(len(example_table_str))
     ]
 
-    monkeys_img[0].to_corner(DL).shift(0.1 * DOWN + 0.2 * RIGHT)
+    monkeys_img[0].to_corner(DL).shift(0.3 * UP + 0.15 * RIGHT)
     monkeys_img[1].next_to(monkeys_img[0], RIGHT).shift(0.1 * DOWN)
     monkeys_img[2].next_to(monkeys_img[1], RIGHT).shift(0.15 * UP)
     monkeys_img[3].next_to(monkeys_img[0], UR)
 
-    monkeys_img[4].to_edge(DOWN).shift(1.5 * LEFT)
-    monkeys_img[5].next_to(monkeys_img[4], RIGHT).shift(0.2 * DOWN)
+    monkeys_img[4].to_edge(DOWN).shift(1.5 * LEFT).shift(0.4 * UP)
+    monkeys_img[5].next_to(monkeys_img[4], RIGHT).shift(0.1 * DOWN)
 
-    monkeys_img[6].shift(4 * LEFT + 2 * UP).shift(0.2 * UP + 0.5 * RIGHT)
-    monkeys_img[7].next_to(monkeys_img[6], RIGHT).shift(-0.1 * RIGHT + 0.2 * DOWN)
-    monkeys_img[8].next_to(monkeys_img[7], RIGHT).shift(0.2 * LEFT + 0.1 * DOWN)
+    monkeys_img[6].shift(5.5 * LEFT + 1.3 * UP)
+    monkeys_img[7].next_to(monkeys_img[6], RIGHT).shift(0.2 * LEFT + 0.4 * UP)
+    monkeys_img[8].next_to(monkeys_img[7], RIGHT).shift(0.2 * LEFT + 0.3 * UP)
 
     monkeys_voting_img = [
         [
@@ -124,7 +124,7 @@ def intro_images(intro=True):
     orderings = [
         ordering("ABC", background=BACKGROUND_COLOR)
         .next_to(monkeys_img[3], RIGHT)
-        .shift(0.4 * UP + 1 * RIGHT),
+        .shift(0.3 * UP + 0.5 * RIGHT),
         ordering("BCA", background=BACKGROUND_COLOR)
         .next_to(monkeys_img[5], RIGHT)
         .shift(0.4 * UP),
@@ -135,15 +135,15 @@ def intro_images(intro=True):
 
     explorer = (
         ImageMobject(
-            f"img/{'explorer' if DRAFT == False and SMALL_PICTURES == False else 'explorer_small'}.png"
+            f"img/{'explorer_small' if DRAFT or SMALL_PICTURES else 'explorer'}.png"
         )
         .scale_to_fit_height(5)
         .to_corner(DR)
-        .shift(2 * LEFT + 0.4 * DOWN)
-    )  # TODO pridat polylogo na laptop
+        .shift(1.5 * LEFT + 0.4 * DOWN)
+    )
 
     background = ImageMobject(
-        f"img/{'background-small.png' if DRAFT == False and SMALL_PICTURES == False else 'background.png'}"
+        f"img/{'background-small' if DRAFT or SMALL_PICTURES else 'background'}.png"
     ).scale_to_fit_height(config.frame_height)
 
     whiteboard = (
@@ -502,7 +502,6 @@ class VotingOrdering(VotingResults):
 
 
 class VotingTable(VMobject):
-    num_of_voters = 9  # TODO
     scale_factor = 1
     # Those get generated automagically by the code below this class definition
     BROADCAST_METHODS = [

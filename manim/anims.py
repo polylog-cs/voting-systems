@@ -108,6 +108,7 @@ class Intro(MovingCameraScene):
             FadeOut(winner_img[0]),
         )
         self.wait()
+        return
 
         # Ok, avocado won. You are welcome.
         # monkeys who voted coconut: “But what about the second round? “
@@ -1237,10 +1238,10 @@ class Reasonable(Scene):
 
         # But X is also the bottom choice for almost half of the voters so isn’t Y also a good candidate for the winner? There are in fact some popular voting systems [ See Borda count] that would elect Y in this scenario.
 
-        self.play(*table.highlight("A", indexes=range(5, table.num_of_voters)))
+        self.play(*table.highlight("A", indexes=range(5, len(table.group))))
         self.wait()
 
-        self.play(*table.highlight("B", indexes=range(0, table.num_of_voters)))
+        self.play(*table.highlight("B", indexes=range(0, len(table.group))))
         self.wait()
         # self.play(*table.highlight("B", indexes=range(5)))
         # self.wait()
