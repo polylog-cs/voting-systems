@@ -3,6 +3,7 @@ import itertools
 import random
 import math
 from manim import *
+from .util import *
 
 ############### DEFAULT OPTIONS
 
@@ -122,6 +123,8 @@ config.background_color = BASE2
 BACKGROUND_COLOR_LIGHT = BASE2
 BACKGROUND_COLOR_DARK = BASE02
 BACKGROUND_COLOR = BACKGROUND_COLOR_LIGHT
+
+HIGHLIGHT = ORANGE2
 
 config.max_files_cached = 1000
 

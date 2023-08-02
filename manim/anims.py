@@ -3,12 +3,13 @@ from utils.util import *
 
 # TODO jiny pozadi
 
-HIGHLIGHT = ORANGE2
 
 
 class Intro(MovingCameraScene):
     def construct(self):
         default()
+        thm_scale, gs_title, gs_tex, gs_group, gs_new_tex, reasonable1_tex, reasonable2_tex, reasonable_group = init()
+
         self.next_section(skip_animations=False)
         (
             monkeys_img,
@@ -268,9 +269,9 @@ class Intro(MovingCameraScene):
             .shift(1 * UP),
         ]
         bubbles[0] = Group(
-            bubbles[0], FRUITS["A"].move_to(bubbles[0].get_center() + 0.07 * LEFT)
+            bubbles[0], FRUITS["A"].copy().move_to(bubbles[0].get_center() + 0.07 * LEFT)
         )
-        bubbles[1] = Group(bubbles[1], FRUITS["B"].move_to(bubbles[1].get_center()))
+        bubbles[1] = Group(bubbles[1], FRUITS["B"].copy().move_to(bubbles[1].get_center()))
 
         self.play(FadeIn(bubbles[0]))
         self.wait()
@@ -295,6 +296,7 @@ class Intro(MovingCameraScene):
 class Polylogo(Scene):
     def construct(self):
         default()
+        thm_scale, gs_title, gs_tex, gs_group, gs_new_tex, reasonable1_tex, reasonable2_tex, reasonable_group = init()
         authors = Tex(  # napsat autory nakonec jestli nebudou tady
             r"\textbf{Richard Hladík, Filip Hlásek, Václav Rozhoň, Václav Volhejn}",
             color=text_color,
@@ -339,9 +341,11 @@ class Polylogo(Scene):
 class Statement1(Scene):
     def construct(self):
         default()
+        thm_scale, gs_title, gs_tex, gs_group, gs_new_tex, reasonable1_tex, reasonable2_tex, reasonable_group = init()
+
         # Unfortunately, the answer is no and because I took my whiteboard with me, I will explain why. I will prove to you the Gibbard-Satterthwaite theorem which says that any reasonable voting system sometimes incentivizes strategic voting.
         # gs_group.move_to(ORIGIN)
-        gs_down = gs_group.copy().shift(0.7 * DOWN)
+        gs_down = gs_group.copy().shift(1.7 * DOWN)
         self.play(
             FadeIn(gs_down[0]),
         )
@@ -353,7 +357,6 @@ class Statement1(Scene):
         self.wait()
         self.play(gs_down.animate.become(gs_group))
         self.wait()
-
         # I think that the most challenging aspect of the theorem is to understand what it is actually saying, so let’s try to slowly unpack this sentence.
 
         # First, we need to define what a voting system is.
@@ -367,7 +370,7 @@ class Statement1(Scene):
         monkeys_img = (
             Group(*[img_monkey(pref[0], width=1.1) for pref in example_table_str])
             .arrange()
-            .to_edge(LEFT, buff=1)
+            #.to_edge(LEFT, buff=1)
             .to_edge(DOWN)
             .shift(0.5 * UP)
         )
@@ -383,7 +386,7 @@ class Statement1(Scene):
         # self.wait()
 
         table = VotingTable(example_table_str).scale(1.5).shift(2 * LEFT + 0.5 * DOWN)
-        monkey_scale = 0.4
+        monkey_scale = 0.6
         for col, monkey in zip(table.group, monkeys_img):
             col.save_state()
             col.scale(monkey_scale).next_to(monkey, UP)
@@ -477,7 +480,7 @@ class Statement1(Scene):
 class Statement2(Scene):
     def construct(self):
         default()
-
+        thm_scale, gs_title, gs_tex, gs_group, gs_new_tex, reasonable1_tex, reasonable2_tex, reasonable_group = init()
         # gs_tex[2].set_color(GREEN),
         self.add(gs_tex)
         border = SurroundingRectangle(gs_tex[4], color=HIGHLIGHT)
@@ -492,18 +495,28 @@ class Statement2(Scene):
         monkeys_img = (
             Group(*[img_monkey(pref[0], width=1) for pref in example_table_str])
             .arrange()
-            .to_edge(LEFT, buff=1)
+            #.to_edge(LEFT, buff=1)
             .to_edge(DOWN)
             .shift(0.5 * UP)
         )
-        self.play(FadeIn(monkeys_img))
+        # self.play(
+        #     FadeIn(monkeys_img)
+        #     )
 
-        monkey_scale = 0.7
+        monkey_scale = 0.6
         for col, monkey in zip(table.group, monkeys_img):
             col.save_state()
             col.scale(monkey_scale).next_to(monkey, UP)
 
-        self.play(FadeIn(table))
+        self.play(
+            AnimationGroup(
+                *[
+                    FadeIn(Group(table[i], monkeys_img[i]), run_time=0.5)
+                    for i in range(9)
+                ],
+                lag_ratio=0.6,
+            )
+        )
         self.wait()
 
         voter_border = SurroundingRectangle(monkeys_img[i_voter], color=HIGHLIGHT)
@@ -619,15 +632,15 @@ class Statement2(Scene):
         # self.play(Circumscribe(order, color=HIGHLIGHT))
         # self.wait()
 
-        border2 = SurroundingRectangle(gs_tex[3], color=HIGHLIGHT)
+        #border2 = SurroundingRectangle(gs_tex[3], color=HIGHLIGHT)
         self.play(
             *[FadeOut(o) for o in self.mobjects if o != gs_tex and o != border],
         )
         self.wait()
-        self.play(
-            Transform(border, border2),
-        )
-        self.wait()
+        # self.play(
+        #     Transform(border, border2),
+        # )
+        # self.wait()
 
         # self.play(
         #     FadeOut(border),
@@ -652,7 +665,7 @@ class Statement2(Scene):
         self.wait()
 
         table = VotingTable(example_table_str)
-        table.move_to(0.5 * UP)
+        table.move_to(0.5 * UP).shift(1*LEFT)
         self.play(FadeIn(table))
         self.wait()
 
@@ -726,6 +739,7 @@ class Statement2(Scene):
 class Proof1(Scene):
     def construct(self):
         default()
+        thm_scale, gs_title, gs_tex, gs_group, gs_new_tex, reasonable1_tex, reasonable2_tex, reasonable_group = init()
         self.add(gs_tex)
 
         # Ok, let’s first try to understand why in our scenario with monkeys it was so hard to choose the best fruit. Why is it that there were always so many monkeys unhappy about the result? Well, if you look at the rankings of the monkeys, you can see that there is some kind of cycle here. Some monkeys prefer avocado over banana over coconut, some prefer banana over coconut over avocado, and some prefer coconut over avocado over banana.
@@ -764,9 +778,9 @@ class Proof1(Scene):
             dir = end - start
             dir /= (dir * dir).sum() ** 0.5
             if i == 1:
-                shift = 0.4
+                shift = 0.5
             else:
-                shift = 0.6
+                shift = 0.7
             arrow.label = (
                 Dot().move_to(arrow).shift(shift * rotate_vector(dir, -np.radians(90)))
             )
@@ -924,7 +938,7 @@ class Proof1(Scene):
             condorcet_group.animate.shift(shift),
         )
         implies_counterexample = (
-            Tex(r"$\Rightarrow$ strategic voting").scale(1.5).next_to(condorcet_group)
+            Tex(r"$\Rightarrow$ \;\; strategic voting").scale(1.5).next_to(condorcet_group, buff = 1)
         )
         self.wait()
         self.play(FadeIn(implies_counterexample), run_time=1.5)
@@ -934,6 +948,22 @@ class Proof1(Scene):
 
         # TODO animace kde se ztratí kokos a cyklus změní na šipku?
 
+
+        border = SurroundingRectangle(Group(gs_tex[0:3]), color=HIGHLIGHT)
+        self.play(FadeIn(border))
+        self.wait()
+
+        border2 = SurroundingRectangle(gs_tex[3], color=HIGHLIGHT)
+        self.play(Transform(border, border2))
+        self.wait()
+
+        border2 = SurroundingRectangle(gs_tex[4], color=HIGHLIGHT)
+        self.play(Transform(border, border2))
+        self.wait()
+
+        self.play(Circumscribe(condorcet_group, color = HIGHLIGHT))
+        self.wait()
+
         self.play(*[FadeOut(o) for o in self.mobjects if o != gs_tex])
         self.wait()
 
@@ -941,12 +971,13 @@ class Proof1(Scene):
 class Proof2(MovingCameraScene):
     def construct(self):
         default()
+        thm_scale, gs_title, gs_tex, gs_group, gs_new_tex, reasonable1_tex, reasonable2_tex, reasonable_group = init()
         self.add(gs_tex)
         self.next_section(skip_animations=False)
         # Remember, our goal is to demonstrate that for any reasonable voting system, there exists a scenario where a certain voter has an incentive to vote strategically. It turns out that any Condorcet cycle is almost, but not quite, such a scenario.
 
-        self.play(Circumscribe(gs_tex, color=HIGHLIGHT))
-        self.wait()
+        # self.play(Circumscribe(gs_tex, color=HIGHLIGHT))
+        # self.wait()
 
         tables = VGroup(*[VotingTable(str).shift(LEFT) for str in proof_table_strings])
         table = tables[0].copy()
@@ -1011,11 +1042,38 @@ class Proof2(MovingCameraScene):
             )
             self.wait(0.2)
 
-        self.play(table.results_hide())
+        #self.play(table.results_hide())
         self.wait()
 
         # So, if all of these voters coordinate and vote strategically, they can achieve a result that they like more than what happens when they tell the truth. This is by the way exactly what the four sly monkeys did at the beginning when we tried to use the two-round system to elect the winner.
+
         # We are already very close to proving the theorem. The only problem is that we want to find a scenario where only one voter has the incentive to vote strategically. Right now, that is not the case. Only if this whole group can coordinate, it pays off.
+
+        border.generate_target()
+        border.save_state()
+        border.target = SurroundingRectangle(table[2], color=HIGHLIGHT)
+
+        self.play(MoveToTarget(border))
+        self.wait()
+
+        for x in range(3):
+            self.play(*table.rearrange("ABC", indexes=[2]), table.winner_show("C"))
+            self.wait(0.2)
+
+            if x == 2:
+                break
+
+            self.play(
+                *table.rearrange("BAC", indexes=[2]), table.winner_show("B", DOWN)
+            )
+            self.wait(0.2)
+
+        self.play(table.results_hide())
+        self.wait()
+
+
+        self.play(border.animate.restore())
+        self.wait()
 
         self.play(Indicate(border, color=HIGHLIGHT))
         self.wait()
@@ -1051,6 +1109,8 @@ class Proof2(MovingCameraScene):
             self.remove(table)
 
         self.play(self.camera.frame.animate.move_to(tables).scale(scale))
+        self.wait()
+
         self.play(
             tables[0].winner_show("C"),
         )
@@ -1061,8 +1121,8 @@ class Proof2(MovingCameraScene):
         self.wait()
 
         self.add(tables[0].results)
-        self.play(Circumscribe(tables[0], color=HIGHLIGHT))
-        self.wait()
+        # self.play(Circumscribe(tables[0], color=HIGHLIGHT))
+        # self.wait()
 
         self.play(*[t.winner_show("?") for t in tables[1:-1]])
         self.wait()
@@ -1194,7 +1254,7 @@ class Proof2(MovingCameraScene):
         self.play(*[FadeOut(o) for o in self.mobjects])
         self.wait()
 
-        table = VotingTable(example_table_str)
+        table = VotingTable(example_table_str).shift(1*LEFT)
         self.play(FadeIn(table))
         self.wait()
 
@@ -1204,7 +1264,7 @@ class Proof2(MovingCameraScene):
         self.play(table[0].rearrange("BAC"))
         self.play(table[1].rearrange("BAC"))
 
-        for _ in range(3):
+        for _ in range(6):
             self.play(table[2].rearrange("BAC"), table.winner_show("D"))
             self.play(table[2].rearrange("ABC"), table.winner_show("C"))
 
@@ -1216,6 +1276,7 @@ class Proof2(MovingCameraScene):
 class Reasonable(Scene):
     def construct(self):
         default()
+        thm_scale, gs_title, gs_tex, gs_group, gs_new_tex, reasonable1_tex, reasonable2_tex, reasonable_group = init()
 
         line = Line(start=10 * LEFT, end=10 * RIGHT, color=text_color).next_to(
             gs_group, DOWN
@@ -1294,13 +1355,14 @@ class Reasonable(Scene):
 class ArrowThm(Scene):
     def construct(self):
         default()
+        thm_scale, gs_title, gs_tex, gs_group, gs_new_tex, reasonable1_tex, reasonable2_tex, reasonable_group = init()
         # There is one more related theorem I want to mention – Arrow’s theorem.
 
         self.add(gs_group.to_edge(UP, buff=0.5))
         arrow_title = Tex(r"Arrow's Theorem:")
         arrow_tex = Tex(
             r"{{\parbox{1000em}{No reasonable voting system satisfies the }}{{independence of irrelevant alternatives.} }}"
-        ).scale(thm_scale * 0.85)
+        ).scale(thm_scale * 0.9)
         arrow_full = (
             Group(arrow_title, arrow_tex)
             .arrange(DOWN)
@@ -1367,14 +1429,14 @@ class ArrowThm(Scene):
         self.play(FadeIn(ar))
         self.wait()
 
-        for _ in range(2):
+        for _ in range(1):
             l = list(range(len(example_table_str))) + list(
                 range(len(example_table_str) - 2, 0, -1)
             )
             for i in l:
                 anims = []
                 anims.append(table[i].random_change("C"))
-                if random.randint(0, 2) == 0:
+                if random.randint(0, 3) != 0:
                     anims.append(
                         table.results_show(random.choice(["ABC", "ACB", "CAB"]))
                     )
@@ -1443,6 +1505,7 @@ class ArrowThm(Scene):
 class Approval(Scene):
     def construct(self):
         default()
+        thm_scale, gs_title, gs_tex, gs_group, gs_new_tex, reasonable1_tex, reasonable2_tex, reasonable_group = init()
 
         # It turns out that the full story is more complicated; to understand why, let’s look at one popular voting system called approval voting. This is an extremely simple voting system where every voter can give a vote to as many candidates as they want and then you order the candidates by how many votes they got.
 
@@ -1511,8 +1574,14 @@ class Approval(Scene):
             Succession(
                 *[
                     AnimationGroup(*[FadeIn(approval_data[i][j]) for i in range(4)])
-                    for j in range(len(approval_data[0]))
+                    for j in range(len(approval_data[0]) - 1)
                 ]
+            )
+        )
+        self.play(
+            AnimationGroup(
+                *[FadeIn(approval_data[i][len(approval_data[0]) - 1]) for i in range(0, 4, 1)],
+                lag_ratio = 0.8
             )
         )
         self.wait()
@@ -1585,7 +1654,7 @@ class Approval(Scene):
         monkeys_img = (
             Group(*[img_monkey(pref[0], width=1) for pref in example_table_str])
             .arrange()
-            .to_edge(LEFT, buff=1)
+            #.to_edge(LEFT, buff=1)
             .to_edge(DOWN)
             .shift(0.5 * UP)
         )
@@ -1823,6 +1892,7 @@ class Approval(Scene):
 class Debriefing(Scene):
     def construct(self):
         default()
+        thm_scale, gs_title, gs_tex, gs_group, gs_new_tex, reasonable1_tex, reasonable2_tex, reasonable_group = init()
         self.next_section(skip_animations=False)
 
         # But how big of a problem is it, actually? First of all, there are many situations where strategic voting is not really the main concern. For example, when you want to rank movies or entries to a math exposition contest, how well the voting system scales with the number of candidates is probably a bigger issue than strategic voting.
@@ -2056,6 +2126,7 @@ class Debriefing(Scene):
 class Outro(MovingCameraScene):
     def construct(self):
         default()
+        thm_scale, gs_title, gs_tex, gs_group, gs_new_tex, reasonable1_tex, reasonable2_tex, reasonable_group = init()
         self.next_section(skip_animations=False)
         (
             monkeys_img,
@@ -2331,6 +2402,7 @@ class Outro(MovingCameraScene):
 class Thanks(Scene):
     def construct(self):
         default()
+        thm_scale, gs_title, gs_tex, gs_group, gs_new_tex, reasonable1_tex, reasonable2_tex, reasonable_group = init()
         Tex.set_default(color=WHITE)
         background_above = (
             ImageMobject(f"img/background-above.png")
@@ -2373,3 +2445,43 @@ class Thanks(Scene):
         self.wait(2)
         self.play(FadeOut(see_description))
         self.wait()
+
+class Thumb(Scene):
+    def construct(self):
+        default()
+        thm_scale, gs_title, gs_tex, gs_group, gs_new_tex, reasonable1_tex, reasonable2_tex, reasonable_group = init()
+
+        (
+            monkeys_img,
+            monkeys_voting_img,
+            orderings,
+            explorer,
+            background,
+            whiteboard,
+        ) = intro_images()
+        monkey = monkeys_img[0].move_to(ORIGIN).scale(3).shift(0.5 * UP)
+
+        h = 3.5
+        b = 4
+        bubbles = [
+            SVGMobject("img/bubble_think_full.svg")
+            .scale_to_fit_height(h)
+            .next_to(monkey, LEFT, buff=SMALL_BUFF*b)
+            .shift(1 * UP),
+            SVGMobject("img/bubble_say_full.svg")
+            .scale_to_fit_height(h)
+            .next_to(monkey, RIGHT, buff=SMALL_BUFF*b)
+            .shift(1 * UP),
+        ]
+        sc = 3.4
+        bubbles[0] = Group(
+            bubbles[0], FRUITS["A"].copy().scale(sc).move_to(bubbles[0].get_center() + 0.07 * LEFT)
+        )
+        bubbles[1] = Group(bubbles[1], FRUITS["B"].copy().scale(sc).move_to(bubbles[1].get_center()))
+
+        # pro betku
+        coc = FRUITS["C"].copy().scale(sc).to_edge(RIGHT)
+
+
+        txt = Tex("Strategic voting").scale_to_fit_width(config["frame_width"]).scale(0.95).to_edge(DOWN)
+        self.add(monkey, *bubbles, coc, txt)

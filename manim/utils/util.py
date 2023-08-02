@@ -9,43 +9,39 @@ from collections import Counter
 from manim import *
 from .util_general import *
 
-DRAFT = True
-SMALL_PICTURES = True
-
-thm_scale = 0.8
-gs_title = Tex("Gibbard-Satterthwaite Theorem:", color=text_color)
-gs_tex = Tex(
-    "{{Any }}{{reasonable }}{{voting system }}{{sometimes }}{{incentivizes strategic voting. }}",
-    color=text_color,
-).scale(thm_scale)
-gs_tex.to_edge(UP, buff=0.5)
-gs_title.next_to(gs_tex, UP, buff=0.5)
-gs_group = VGroup(gs_title, gs_tex)
-gs_new_tex = Tex(
-    r"{{\raggedright \parbox{1000em}{For any number of voters and any number of candidates, consider any voting system that satisfies:} \\ }}"
-    + r"{{\raggedright \;\;\;\;\; 1) The system is not a dictatorship of one voter. \\}}"
-    + r"{{\raggedright \;\;\;\;\; \parbox{1000em}{2) At least three candidates are elected by the system in at least one scenario. } \\}}"
-    + r"{{\raggedright \parbox{1000em}{Then there is at least one scenario where the system incentivizes strategic voting. } }}",
-    color=text_color,
-).scale(thm_scale * 0.8)
-
-reasonable1_tex = Tex("{{Reasonable system: }}", color=TEXT_COLOR)
-reasonable2_tex = Tex(
-    r"{{\raggedright The candidate which is the first choice for majority\\ is always the winner. }}",
-    color=TEXT_COLOR,
-).scale(0.75)
-reasonable_group = Group(reasonable1_tex, reasonable2_tex).arrange(RIGHT)
+DRAFT = False
+SMALL_PICTURES = False
 
 example_table_str = ["ABC", "ABC", "ABC", "ABC", "BCA", "BCA", "CAB", "CAB", "CAB"]
-
-proof_table_strings = [example_table_str.copy()]
-for i in range(4):
-    new_str = proof_table_strings[-1].copy()
-    new_str[i] = "BAC"
-    proof_table_strings.append(new_str)
-
 majority_table_str = ["BCA", "BAC", "BCA", "BAC", "BCA", "CAB", "CAB", "CAB", "CAB"]
 
+def init():
+    thm_scale = 0.8
+    gs_title = Tex("Gibbard-Satterthwaite Theorem:", color=text_color)
+    gs_tex = Tex(
+        "{{Any }}{{reasonable }}{{voting system }}{{sometimes }}{{incentivizes strategic voting. }}",
+        color=text_color,
+    ).scale(thm_scale)
+    gs_tex.to_edge(UP, buff=0.5)
+    gs_title.next_to(gs_tex, UP, buff=0.5)
+    gs_group = VGroup(gs_title, gs_tex)
+    gs_new_tex = Tex(
+        r"{{\raggedright \parbox{1000em}{For any number of voters and any number of candidates, consider any voting system that satisfies:} \\ }}"
+        + r"{{\raggedright \;\;\;\;\; 1) The system is not a dictatorship of one voter. \\}}"
+        + r"{{\raggedright \;\;\;\;\; \parbox{1000em}{2) At least three candidates are elected by the system in at least one scenario. } \\}}"
+        + r"{{\raggedright \parbox{1000em}{Then there is at least one scenario where the system incentivizes strategic voting. } }}",
+        color=text_color,
+    ).scale(thm_scale * 0.8)
+
+    reasonable1_tex = Tex("{{Reasonable system: }}", color=TEXT_COLOR)
+    reasonable2_tex = Tex(
+        r"{{\raggedright The candidate which is the first choice for majority\\ is always the winner. }}",
+        color=TEXT_COLOR,
+    ).scale(0.75)
+    reasonable_group = Group(reasonable1_tex, reasonable2_tex).arrange(RIGHT)
+
+
+    return thm_scale, gs_title, gs_tex, gs_group, gs_new_tex, reasonable1_tex, reasonable2_tex, reasonable_group
 
 def img_monkey(kind, voting=False, width=2):
     sc = 2.5
@@ -212,7 +208,7 @@ FRUITS = [
         .arrange(RIGHT)
         .scale(2),
     ),
-    Fruit("?", Tex(r"?")),
+    Fruit("?", Tex(r"?", color = BACKGROUND_COLOR_DARK)),
 ]
 
 if DRAFT:
