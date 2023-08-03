@@ -20,6 +20,7 @@ for i in range(4):
     new_str[i] = "BAC"
     proof_table_strings.append(new_str)
 
+
 def init():
     thm_scale = 0.8
     gs_title = Tex("Gibbard-Satterthwaite Theorem:", color=text_color)
@@ -44,9 +45,19 @@ def init():
         color=TEXT_COLOR,
     ).scale(0.75)
     reasonable_group = Group(reasonable1_tex, reasonable2_tex).arrange(RIGHT)
+    reasonable2_tex.shift(0.25 * DOWN)
 
+    return (
+        thm_scale,
+        gs_title,
+        gs_tex,
+        gs_group,
+        gs_new_tex,
+        reasonable1_tex,
+        reasonable2_tex,
+        reasonable_group,
+    )
 
-    return thm_scale, gs_title, gs_tex, gs_group, gs_new_tex, reasonable1_tex, reasonable2_tex, reasonable_group
 
 def img_monkey(kind, voting=False, width=2):
     sc = 2.5
@@ -100,14 +111,10 @@ def intro_images(intro=True):
         for i in range(len(example_table_str))
     ]
 
-    monkeys_img[0].to_corner(DL).shift(0.3 * UP + 0.15 * RIGHT)
-    monkeys_img[1].next_to(monkeys_img[0], RIGHT).shift(0.1 * DOWN)
-    monkeys_img[2].next_to(monkeys_img[1], RIGHT).shift(0.15 * UP)
-    monkeys_img[3].next_to(monkeys_img[0], UR)
-
-    monkeys_img[0].shift(0.5 * DOWN)
-    monkeys_img[1].shift(0.2 * DOWN)
-    monkeys_img[3].shift(0.8 * DOWN + 0.8*LEFT)
+    monkeys_img[0].to_corner(DL).shift(0.5 * UP + 0.15 * RIGHT)
+    monkeys_img[1].next_to(monkeys_img[0], UR).shift(0.2 * LEFT)
+    monkeys_img[2].next_to(monkeys_img[0], RIGHT).shift(0.3 * DOWN + 0.1 * LEFT)
+    monkeys_img[3].next_to(monkeys_img[2], RIGHT).shift(0.25 * UP + 0.1 * LEFT)
 
     monkeys_img[4].to_edge(DOWN).shift(1.5 * LEFT).shift(0.4 * UP)
     monkeys_img[5].next_to(monkeys_img[4], RIGHT).shift(0.1 * DOWN)
@@ -128,8 +135,8 @@ def intro_images(intro=True):
 
     orderings = [
         ordering("ABC", background=BACKGROUND_COLOR)
-        .next_to(monkeys_img[3], RIGHT)
-        .shift(0.9 * UP + 2.1 * LEFT),
+        .next_to(monkeys_img[0], LEFT)
+        .shift(1.5 * UP + 0.3 * RIGHT),
         ordering("BCA", background=BACKGROUND_COLOR)
         .next_to(monkeys_img[5], RIGHT)
         .shift(0.4 * UP),
@@ -191,7 +198,7 @@ class Fruit(VMobject):
     def fadeout(self):
         self.disabled = True
         self.save_state()
-        return self.animate.fade(0.84).scale(0.61)
+        return self.animate.fade(0.85).scale(0.605)
 
     def fadein(self):
         self.disabled = False
@@ -217,7 +224,7 @@ FRUITS = [
         .arrange(RIGHT)
         .scale(2),
     ),
-    Fruit("?", Tex(r"?", color = BACKGROUND_COLOR_DARK)),
+    Fruit("?", Tex(r"?", color=BACKGROUND_COLOR_DARK)),
 ]
 
 if DRAFT:

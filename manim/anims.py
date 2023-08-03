@@ -62,6 +62,7 @@ class Intro(MovingCameraScene):
                 FadeIn(orderings[j]),
             )
             self.wait()
+            return
 
             self.play(*[Wiggle(monkeys_img[i]) for i in ranges[j]])
             self.wait()
@@ -979,15 +980,16 @@ class Proof1(Scene):
         self.play(FadeIn(cycle_group))
         self.wait()
 
-        shift = 3 * LEFT + UP
+        shift = 3.5 * LEFT + UP
         self.play(
             FadeOut(paradox_group, cycle_group, table),
             condorcet_group.animate.shift(shift),
         )
         implies_counterexample = (
-            Tex(r"$\Rightarrow$ \;\; strategic voting")
+            VGroup(MathTex(r"\Rightarrow").scale(1.3), Tex("strategic voting"))
             .scale(1.5)
-            .next_to(condorcet_group, buff=1)
+            .arrange(buff=0.7)
+            .next_to(condorcet_group, buff=0.8)
         )
         self.wait()
         self.play(FadeIn(implies_counterexample), run_time=1.5)
@@ -1052,7 +1054,7 @@ class Proof2(MovingCameraScene):
 
         # But now let’s look at this group of voters for whom the coconut is the bottom choice. Intuitively, these voters have the biggest incentive to try some kind of strategic voting because they are most unhappy with the result.
 
-        border = SurroundingRectangle(Group(*table[:4]), color=HIGHLIGHT)
+        border = SurroundingRectangle(Group(*table[:4]), color=HIGHLIGHT, z_index=1)
         self.play(FadeIn(border))
         self.wait()
 
@@ -1069,7 +1071,7 @@ class Proof2(MovingCameraScene):
 
         border.generate_target()
         border.target = SurroundingRectangle(
-            Group(table[0].group[1], table[5].group[0]), color=HIGHLIGHT
+            Group(table[0].group[1], table[5].group[0]), color=HIGHLIGHT, z_index=1
         )
         border.save_state()
 
@@ -1083,6 +1085,8 @@ class Proof2(MovingCameraScene):
 
         self.play(table.winner_show("B"))
         self.wait()
+
+        return
 
         self.play(border.animate.restore(), FadeOut(reasonable_group))
         self.wait()
@@ -1108,7 +1112,7 @@ class Proof2(MovingCameraScene):
 
         border.generate_target()
         border.save_state()
-        border.target = SurroundingRectangle(table[2], color=HIGHLIGHT)
+        border.target = SurroundingRectangle(table[2], color=HIGHLIGHT, z_index=1)
 
         self.play(MoveToTarget(border))
         self.wait()
@@ -1196,7 +1200,7 @@ class Proof2(MovingCameraScene):
 
         # So let’s look at the two scenarios where the winner changes for the first time, from the coconut to some other candidate.
 
-        border = SurroundingRectangle(Group(*tables[2:4]), color=HIGHLIGHT)
+        border = SurroundingRectangle(Group(*tables[2:4]), color=HIGHLIGHT, z_index=1)
 
         self.play(FadeIn(border))
         self.wait()
@@ -1214,7 +1218,7 @@ class Proof2(MovingCameraScene):
 
         border.generate_target()
         border.target = SurroundingRectangle(
-            Group(*tables.target[2:4]), color=HIGHLIGHT
+            Group(*tables.target[2:4]), color=HIGHLIGHT, z_index=1
         )
 
         winner_groups = []
@@ -1240,8 +1244,8 @@ class Proof2(MovingCameraScene):
         self.play(FadeOut(border))
 
         borders = [
-            SurroundingRectangle(tables[2][2], color=HIGHLIGHT),
-            SurroundingRectangle(tables[3][2], color=HIGHLIGHT),
+            SurroundingRectangle(tables[2][2], color=HIGHLIGHT, z_index=1),
+            SurroundingRectangle(tables[3][2], color=HIGHLIGHT, z_index=1),
         ]
 
         self.play(FadeIn(Group(*borders)))
@@ -1302,7 +1306,7 @@ class Proof2(MovingCameraScene):
         self.play(Circumscribe(tables[3].results.winner, color=HIGHLIGHT))
         self.wait()
 
-        self.play(Circumscribe(tables[2], color=HIGHLIGHT))
+        self.play(Circumscribe(tables[2], color=HIGHLIGHT, run_time=1.5))
         self.wait()
 
         # Let’s also focus on this voter. Do you see how to finish the proof? Well, let’s imagine that the top scenario contains the honest preferences of all the voters. If this voter votes honestly, X is the winner. But what if they vote strategically and cast a ballot with ZYX instead of YZX? Well, we know that then the outcome of the voting system changes from X to some other candidate. But look, X is the worst option for our voter, so whatever the change, the voter will prefer it!
@@ -1344,14 +1348,16 @@ class ArrowThm(Scene):
         ) = init()
         # There is one more related theorem I want to mention – Arrow’s theorem.
 
-        self.add(gs_group.to_edge(UP, buff=0.5))
+        gs_group.arrange(DOWN, buff=0.3).to_edge(UP, buff=0.5)
+        self.play(FadeIn(gs_group))
+        self.wait()
         arrow_title = Tex(r"Arrow's Theorem:")
         arrow_tex = Tex(
             r"{{\parbox{1000em}{No reasonable voting system satisfies the }}{{independence of irrelevant alternatives.} }}"
         ).scale(thm_scale * 0.9)
         arrow_full = (
             Group(arrow_title, arrow_tex)
-            .arrange(DOWN)
+            .arrange(DOWN, buff=0.3)
             .next_to(gs_group, DOWN, buff=0.5)
         )
 
@@ -1411,8 +1417,8 @@ class ArrowThm(Scene):
             angle=-TAU / 4,
         )
         ar = mkarrow()
-        ar.add_updater(lambda obj: obj.become(mkarrow()))
         self.play(FadeIn(ar))
+        ar.add_updater(lambda obj: obj.become(mkarrow()))
         self.wait()
 
         for _ in range(1):
@@ -2025,8 +2031,10 @@ class Debriefing(Scene):
 
         self.play(
             Circumscribe(
-                Group(*[voting_data[i][2] for i in range(1, len(voting_data))]),
+                Group(*[voting_data[i][2] for i in range(1, 11)]),
                 color=HIGHLIGHT,
+                run_time=1.5,
+                rate_func=rate_functions.linear,
             )
         )
         self.wait()
@@ -2117,14 +2125,19 @@ class Debriefing(Scene):
 
         shame_table = Group(
             *[Tex(str).scale(0.7) for str in shame_list]
-        ).arrange_in_grid(cols=5)
+        ).arrange_in_grid(cols=5, cell_alignment=UP)
         Group(*shame_table[20:]).shift(1.2 * DOWN)
         Group(*shame_table[:20]).shift(1.5 * UP)
         shame_tex = Tex("Shame.", font_size=300).shift(0.1 * DOWN)
 
         self.play(
             AnimationGroup(
-                Succession(*[FadeIn(o) for o in shame_table], lag_ratio=0.2),
+                AnimationGroup(
+                    *[FadeIn(o, run_time=2 / 3) for o in shame_table],
+                    group=shame_table,
+                    lag_ratio=0.3,
+                    run_time=11,
+                ),
                 AnimationGroup(FadeIn(shame_tex), run_time=11),
             )
         )
@@ -2359,7 +2372,7 @@ class Outro(MovingCameraScene):
         for it in range(15):
             fruit = random.choice("ABC")
             start = random.choice(monkey_angry_pos) + symrand2d(0.5)
-            v0 = 30 + symrand(5)
+            v0 = 35 + symrand(5)
             g = 50
             target = (explorer.get_center() + 2 * UP + symrand2d(1)) - start
             x, y = target[0], target[1]
