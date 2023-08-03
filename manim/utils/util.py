@@ -10,10 +10,15 @@ from manim import *
 from .util_general import *
 
 DRAFT = False
-SMALL_PICTURES = False
+SMALL_PICTURES = True
 
 example_table_str = ["ABC", "ABC", "ABC", "ABC", "BCA", "BCA", "CAB", "CAB", "CAB"]
 majority_table_str = ["BCA", "BAC", "BCA", "BAC", "BCA", "CAB", "CAB", "CAB", "CAB"]
+proof_table_strings = [example_table_str.copy()]
+for i in range(4):
+    new_str = proof_table_strings[-1].copy()
+    new_str[i] = "BAC"
+    proof_table_strings.append(new_str)
 
 def init():
     thm_scale = 0.8
@@ -100,12 +105,16 @@ def intro_images(intro=True):
     monkeys_img[2].next_to(monkeys_img[1], RIGHT).shift(0.15 * UP)
     monkeys_img[3].next_to(monkeys_img[0], UR)
 
+    monkeys_img[0].shift(0.5 * DOWN)
+    monkeys_img[1].shift(0.2 * DOWN)
+    monkeys_img[3].shift(0.8 * DOWN + 0.8*LEFT)
+
     monkeys_img[4].to_edge(DOWN).shift(1.5 * LEFT).shift(0.4 * UP)
     monkeys_img[5].next_to(monkeys_img[4], RIGHT).shift(0.1 * DOWN)
 
-    monkeys_img[6].shift(5.5 * LEFT + 1.3 * UP)
-    monkeys_img[7].next_to(monkeys_img[6], RIGHT).shift(0.2 * LEFT + 0.4 * UP)
-    monkeys_img[8].next_to(monkeys_img[7], RIGHT).shift(0.2 * LEFT + 0.3 * UP)
+    monkeys_img[6].shift(5.8 * LEFT + 2.9 * UP)
+    monkeys_img[7].shift(4.6 * LEFT + 2.4 * UP)
+    monkeys_img[8].shift(3.2 * LEFT + 2.8 * UP)
 
     monkeys_voting_img = [
         [
@@ -120,13 +129,13 @@ def intro_images(intro=True):
     orderings = [
         ordering("ABC", background=BACKGROUND_COLOR)
         .next_to(monkeys_img[3], RIGHT)
-        .shift(0.3 * UP + 0.5 * RIGHT),
+        .shift(0.9 * UP + 2.1 * LEFT),
         ordering("BCA", background=BACKGROUND_COLOR)
         .next_to(monkeys_img[5], RIGHT)
         .shift(0.4 * UP),
         ordering("CAB", background=BACKGROUND_COLOR)
         .next_to(monkeys_img[8], RIGHT)
-        .shift(0.4 * UP),
+        .shift(0.0 * UP),
     ]
 
     explorer = (
