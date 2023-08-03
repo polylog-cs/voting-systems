@@ -21,7 +21,7 @@ class Intro(MovingCameraScene):
         ) = intro_images()
 
         self.add(background)
-
+        
         self.play(arrive_from(explorer, RIGHT))
         self.wait()
 
@@ -57,6 +57,7 @@ class Intro(MovingCameraScene):
 
             self.play(*[Wiggle(monkeys_img[i]) for i in ranges[j]])
             self.wait()
+        return
 
         # Second group were fond of banana, coconut was their second choice, and avocado was the third.
 
@@ -1855,14 +1856,16 @@ class Approval(Scene):
             .to_edge(LEFT)
         )
 
-        self.play(FadeIn(ar_tex))
-        self.wait()
+        #self.play(FadeIn(ar_tex))
+        #self.wait()
 
         self.play(FadeOut(Group(tex1, tex2)))
         self.wait()
 
         i_like = 3
 
+
+        self.play(Circumscribe(videos_group[i_like][1], color = HIGHLIGHT))
         self.play(videos_group[i_like][1].animate.set_color(HIGHLIGHT))
         self.wait()
 
@@ -1879,14 +1882,13 @@ class Approval(Scene):
                     .next_to(videos_group[i], RIGHT, buff=1)
                 )
                 for i in range(len(videos_group))
-                if videos_group[i].get_center()[1]
-                > videos_group[i_like].get_center()[1]
+                if videos_group[i].get_center()[1] != videos_group[i_like].get_center()[1]
             ]
         )
         self.wait()
 
-        self.play(FadeIn(gs_tex))
-        self.wait(5)
+        #self.play(FadeIn(gs_tex))
+        #self.wait(5)
 
 
 class Debriefing(Scene):
@@ -2150,6 +2152,7 @@ class Outro(MovingCameraScene):
         self.camera.frame.scale(zoom).move_to(where)
         self.play(self.camera.frame.animate.restore())
         self.wait()
+         
 
         # [tady se zase může “oddálit tabule”]
         # So, my dear monkeys, the short answer is that voting is complicated. But, as a practical choice, I would recommend you to use…
@@ -2418,15 +2421,15 @@ class Thanks(Scene):
             Tex(
                 "Big thanks to the organizers of SoME2, the amazing Manim Community, "
             ).scale(0.8),
-            Tex("Jan Petr, Hanka Rozhoňová, ").scale(0.8),
+            Tex("Aranka Hrušková, Matěj Konečný, Jan Petr, Hanka Rozhoňová, ").scale(0.8),
             Tex("and our amazing Patrons: ").scale(0.8),
             Tex(r"sjbtrn and Tomáš Sláma").scale(1),
         ]
         texs = Group(*s).arrange_in_grid(cols=1, cell_alignment=LEFT)
 
         see_description = Tex(
-            r"See video description for links \\ and some more related math."
-        ).scale(1.5)
+            r"We also made a blog post going more in depth. \\ Link in video description. "
+        ).scale(1.2)
 
         Group(texs[3], texs[5]).shift(0.5 * RIGHT)
         see_description.move_to(ORIGIN).to_edge(DOWN, buff=1)
