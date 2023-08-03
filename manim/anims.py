@@ -57,7 +57,6 @@ class Intro(MovingCameraScene):
 
             self.play(*[Wiggle(monkeys_img[i]) for i in ranges[j]])
             self.wait()
-        return
 
         # Second group were fond of banana, coconut was their second choice, and avocado was the third.
 
