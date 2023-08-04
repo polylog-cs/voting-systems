@@ -135,14 +135,14 @@ def intro_images(intro=True):
 
     orderings = [
         ordering("ABC", background=BACKGROUND_COLOR)
-        .next_to(monkeys_img[0], LEFT)
-        .shift(1.5 * UP + 0.3 * RIGHT),
+        .next_to(monkeys_img[3], LEFT)
+        .shift(0.3 * UP + 0.0 * RIGHT),
         ordering("BCA", background=BACKGROUND_COLOR)
         .next_to(monkeys_img[5], RIGHT)
         .shift(0.4 * UP),
         ordering("CAB", background=BACKGROUND_COLOR)
         .next_to(monkeys_img[8], RIGHT)
-        .shift(0.0 * UP),
+        .shift(-0.3 * UP),
     ]
 
     explorer = (
