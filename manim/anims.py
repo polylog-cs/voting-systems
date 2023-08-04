@@ -58,15 +58,24 @@ class Intro(MovingCameraScene):
 
             self.wait()
 
+        
+
+        for j in range(3):
+        
             self.play(
-                FadeIn(orderings[j]),
+                FadeIn(orderings[j][0]),
             )
             self.wait()
-            return
+            for i in range(3):
+                self.play(
+                    FadeIn(orderings[j][1][i])
+                )
+                self.wait()
 
             self.play(*[Wiggle(monkeys_img[i]) for i in ranges[j]])
             self.wait()
 
+        
         # Second group were fond of banana, coconut was their second choice, and avocado was the third.
 
         # “No, banana is better!”
@@ -2393,6 +2402,10 @@ class Outro(MovingCameraScene):
             )
             # self.add(path, Dot(target + start), Dot(start))
             f = FRUITS[fruit].copy().move_to(-10 * LEFT)
+            
+            if it in {7, 9}:
+                f = ImageMobject("img/poo.png").scale_to_fit_width(f.width).scale(1.2).move_to(-10 * LEFT)
+
             if it < 3:
                 time = [0, 1.5, 2.5][it]
             else:
