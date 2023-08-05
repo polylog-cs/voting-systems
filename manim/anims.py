@@ -84,12 +84,13 @@ class Intro(MovingCameraScene):
 
         # Charmed by their antics, I decided to help organize a vote. After all, there are just a few of them, so it can’t be that hard, right?
 
+        self.wait(3)
         self.play(Wiggle(monkeys_img[2]))
         self.wait()
         self.play(Wiggle(monkeys_img[5]))
         self.wait()
         self.play(Wiggle(monkeys_img[8]))
-        self.wait()
+        self.wait(10)
 
         # Ok, let’s try something simple: everybody will vote for exactly one fruit. Who votes for avocado?
         # 4 votes
@@ -105,7 +106,7 @@ class Intro(MovingCameraScene):
             for i in ranges[j]:
                 anims.append(Interpol(monkeys_img[i], monkeys_votes_img[i]))
             self.play(*anims)
-            self.wait()
+            self.wait(5)
 
         # [(bude potřeba upravit předchozí text) ukážou se obrázky všech tří ovocí, opice se rozdělí do tří skupin podle toho, pro které ovoce hlasují.]
 
@@ -115,18 +116,18 @@ class Intro(MovingCameraScene):
         ]
 
         self.play(FadeIn(winner_img[0]))
-        self.wait()
+        self.wait(5)
         self.play(
             *[Interpol(i1, i2) for i1, i2 in zip(monkeys_votes_img, monkeys_img)],
             FadeOut(winner_img[0]),
         )
-        self.wait()
+        self.wait(5)
 
         # Ok, avocado won. You are welcome.
         # monkeys who voted coconut: “But what about the second round? “
 
         self.play(*[Wiggle(monkeys_img[i]) for i in range(4, 6)])
-        self.wait()
+        self.wait(3)
 
         # Ok, I guess a two-round election is fairer because now the coconut fans can also express their opinion on the remaining two fruits. So let’s do a second round: avocado? 4 votes. Banana? 5 votes
 
@@ -139,23 +140,23 @@ class Intro(MovingCameraScene):
         self.play(
             *[Interpol(monkeys_img[i], monkeys_votes_img[i]) for i in ranges[0]],
         )
-        self.wait()
+        self.wait(5)
         self.play(
             *[Interpol(monkeys_img[i], monkeys_votes_img[i]) for i in ranges[1]],
             *[Interpol(monkeys_img[i], monkeys_votes_img[i]) for i in ranges[2]],
         )
-        self.wait()
+        self.wait(5)
 
         # [(upravit předchozí text) opice co by	ly pod banánem se přesunou pod citrón]
 
         # Hm, so now it looks like that banana, and not avocado should be the winner!
         self.play(FadeIn(winner_img[2]))
-        self.wait()
+        self.wait(5)
         self.play(
             *[Interpol(monkeys_votes_img[i], monkeys_img[i]) for i in range(9)],
             FadeOut(winner_img[2]),
         )
-        self.wait()
+        self.wait(5)
 
         # But then it got worse.
         # [opice dělají šepty-šepty]
@@ -175,7 +176,7 @@ class Intro(MovingCameraScene):
             .scale(0.55)
             .move_to(monkeys_voting_img[i][0][0])
             .shift(0.5 * LEFT + 0.38 * UP)
-            for i, str in enumerate(["PRO", "TE", "ST", "WE"])
+            for i, str in enumerate(["PRO", "WE", "TE", "ST"])
         ]
         monkeys_protest = [
             VGroup(monkeys_voting_img[i][0][0], protest_tex[i]) for i in range(4)
@@ -185,15 +186,15 @@ class Intro(MovingCameraScene):
             *[Interpol(monkeys_img[i], monkeys_protest[i][0]) for i in range(4)],
             *[FadeIn(monkeys_protest[i][1]) for i in range(4)],
         )
-        self.wait()
+        self.wait(2)
         self.play(*[Wiggle(monkeys_protest[i]) for i in range(4)])
-        self.wait()
+        self.wait(5)
 
         self.play(
             *[Interpol(monkeys_protest[i][0], monkeys_img[i]) for i in range(4)],
             *[FadeOut(monkeys_protest[i][1].set_z_index(9999)) for i in range(4)],
         )
-        self.wait()
+        self.wait(5)
 
         # Why?
         # We made a mistake in the first round, can we run the election one more time? Please!
@@ -204,33 +205,31 @@ class Intro(MovingCameraScene):
                 *[Interpol(monkeys_img[i], monkeys_votes_img[i]) for i in ranges[0]],
                 *[Interpol(monkeys_img[i], monkeys_votes_img[i]) for i in ranges[1]],
             )
-            self.wait()
-
-            if it == 0:
-                self.play(*[Wiggle(monkeys_votes_img[i]) for i in ranges[0]])
-                self.wait()
+            self.wait(5)
 
             self.play(
                 *[Interpol(monkeys_img[i], monkeys_votes_img[i]) for i in ranges[2]],
             )
-            self.wait()
+            self.wait(5)
 
             if it == 0:
+                self.play(*[Wiggle(monkeys_votes_img[i]) for i in ranges[0]])
+                self.wait(2)
                 self.play(
                     *[Interpol(monkeys_votes_img[i], monkeys_img[i]) for i in range(9)],
                 )
-                self.wait()
+                self.wait(2)
 
         # [(upravit předchozí text) opice co by	ly pod banánem se přesunou pod citrón]
 
         # Hm, so now it looks like that banana, and not avocado should be the winner!
         self.play(FadeIn(winner_img[1]))
-        self.wait()
+        self.wait(5)
         self.play(
             *[Interpol(monkeys_votes_img[i], monkeys_img[i]) for i in range(9)],
             FadeOut(winner_img[1]),
         )
-        self.wait()
+        self.wait(5)
 
         # 2 votes
         # banana?
@@ -254,11 +253,11 @@ class Intro(MovingCameraScene):
             SurroundingRectangle(orderings[0][1][i], color=HIGHLIGHT) for i in range(3)
         ]
         self.play(Transform(rec, rec_other[2]))
-        self.wait()
+        self.wait(2)
         self.play(Transform(rec, rec_other[0]))
-        self.wait()
+        self.wait(2)
         self.play(Transform(rec, rec_other[1]))
-        self.wait()
+        self.wait(2)
         # self.play(Transform(rec, rec_four))
         # self.wait()
         self.play(FadeOut(rec))
@@ -297,15 +296,16 @@ class Intro(MovingCameraScene):
         self.play(FadeOut(Group(bubbles[0], bubbles[1])))
         self.wait()
 
-        self.play(arrive_from(whiteboard, RIGHT), run_time=5)
-        self.wait()
+        self.play(arrive_from(whiteboard, RIGHT), run_time=2)
+        self.wait(5)
 
         self.play(
             self.camera.frame.animate.scale(0.17).move_to(
                 whiteboard.get_center() + 0.5 * UP
-            )
+            ),
+            run_time=2,
         )
-        self.wait()
+        self.wait(10)
 
 
 class Polylogo(Scene):
@@ -356,7 +356,7 @@ class Polylogo(Scene):
             FadeIn(mirek_logo),
             Write(mirek_tex),
         )
-        self.wait()
+        self.wait(5)
 
         self.play(*[FadeOut(o) for o in self.mobjects])
         self.wait()
@@ -380,16 +380,14 @@ class Statement1(Scene):
         # gs_group.move_to(ORIGIN)
         gs_down = gs_group.copy().shift(1.7 * DOWN)
         self.play(
-            FadeIn(gs_down[0]),
+            Write(gs_down[0]),
         )
         self.wait()
-        self.play(
-            FadeIn(gs_down[1]),
-        )
+        self.play(Write(gs_down[1]), run_time=4)
         gs_group[0].fade(1)
-        self.wait()
-        self.play(gs_down.animate.become(gs_group))
-        self.wait()
+        self.wait(3)
+        self.play(gs_down.animate.become(gs_group), run_time=2)
+        self.wait(5)
         # I think that the most challenging aspect of the theorem is to understand what it is actually saying, so let’s try to slowly unpack this sentence.
 
         # First, we need to define what a voting system is.
@@ -431,7 +429,7 @@ class Statement1(Scene):
                 #     special_monkey.saved_state.get_center()
                 # ),
                 *[
-                    FadeIn(Group(table[i], monkeys_img[i]), run_time=0.5)
+                    FadeIn(Group(table[i], monkeys_img[i]), run_time=0.8)
                     for i in range(9)
                 ],
                 lag_ratio=0.6,
@@ -447,17 +445,18 @@ class Statement1(Scene):
                 for col in table.group
             ),
             FadeOut(monkeys_img),
+            run_time=2.5,
         )
         self.wait()
         input_brace = BraceLabel(table, "input", UP)
         self.play(FadeIn(input_brace))
+        self.wait(2)
         self.play(table.winner_show("A"))
         output_brace = BraceLabel(table.results.winner, "output", UP)
         self.play(FadeIn(output_brace))
         self.wait()
-        self.play(FadeOut(input_brace), FadeOut(output_brace))
-        self.play(table.results_hide())
-        self.wait(3)
+        self.play(FadeOut(input_brace), FadeOut(output_brace), table.results_hide())
+        self.wait(5)
 
         two_tex = (
             Tex("Two-round system:").next_to(table, UP, buff=0.5).align_to(table, LEFT)
@@ -466,9 +465,10 @@ class Statement1(Scene):
         self.wait()
 
         table.two_round_system(self)
-        self.wait()
+        self.wait(3)
 
         self.play(FadeOut(two_tex), FadeOut(table), table.results_hide())
+        self.wait(2)
 
         lines = (
             VGroup(
@@ -507,7 +507,16 @@ class Statement1(Scene):
 
         table.group.fade(1)
         self.play(table.winner_show("A"), FadeOut(quest_tex))
-        self.wait()
+        self.wait(5)
+        self.play(
+            *[
+                FadeOut(o)
+                for o in self.mobjects
+                if o not in [gs_tex, gs_group, gs_down, border]
+            ],
+        )
+        self.play(FadeOut(border))
+        self.wait(5)
 
 
 class Statement2(Scene):
@@ -586,7 +595,7 @@ class Statement2(Scene):
         h = 3
         sht = 1.2 * UP  # + 1 * RIGHT
         bubble = (
-            load_svg("img/bubble_think.svg")
+            load_svg("img/bubble_think_full.svg")
             .scale_to_fit_height(h)
             .next_to(voter.target, LEFT)
             .shift(sht)
@@ -620,7 +629,7 @@ class Statement2(Scene):
         # Now it is time for our voter to decide what ranking to put on the ballot. The voter can of course use their true preference - in this case, the voting system elects Y as the winner. But the voter can also vote strategically and write a different ranking on the ballot. For example, if the voter casts this ballot, the voting system now elects Z as the winner.
 
         bubble2 = (
-            load_svg("img/bubble_say.svg")
+            load_svg("img/bubble_say_full.svg")
             .scale_to_fit_height(h)
             .next_to(voter, RIGHT)
             .shift(sht)

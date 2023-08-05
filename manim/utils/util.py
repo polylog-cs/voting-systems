@@ -135,8 +135,8 @@ def intro_images(intro=True):
 
     orderings = [
         ordering("ABC", background=BACKGROUND_COLOR)
-        .next_to(monkeys_img[3], LEFT)
-        .shift(0.3 * UP + 0.0 * RIGHT),
+        .next_to(monkeys_img[0], LEFT)
+        .shift(1.9 * UP + 0.5 * RIGHT),
         ordering("BCA", background=BACKGROUND_COLOR)
         .next_to(monkeys_img[5], RIGHT)
         .shift(0.4 * UP),
@@ -617,6 +617,7 @@ class VotingTable(VMobject):
         top = self.candidates_by_votes()
         top2 = top[:2]
         player.play(AnimationGroup(*self.gray(range(1, self.C))))
+        player.wait(5)
         player.play(
             AnimationGroup(
                 *(
@@ -637,6 +638,7 @@ class VotingTable(VMobject):
         )
         player.play(AnimationGroup(*self.ungray(range(1, self.C))))
         player.play(AnimationGroup(*self.fadeout(top[2:])))
+        player.wait(3)
         winner = Counter(
             [[c for c in col.ordering if c in top2][0] for col in self.group]
         ).most_common()[0][0]
@@ -658,6 +660,7 @@ class VotingTable(VMobject):
         restore_anims += self.fadein(top[2:])
         player.play(AnimationGroup(*anims))
         player.play(AnimationGroup(*winner_anims))
+        player.wait(2)
         player.play(self.results_show(winner))
         player.play(AnimationGroup(*restore_anims))
 
