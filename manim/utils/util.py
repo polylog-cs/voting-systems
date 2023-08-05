@@ -9,8 +9,8 @@ from collections import Counter
 from manim import *
 from .util_general import *
 
-DRAFT = True
-SMALL_PICTURES = True
+DRAFT = False
+SMALL_PICTURES = False
 
 example_table_str = ["ABC", "ABC", "ABC", "ABC", "BCA", "BCA", "CAB", "CAB", "CAB"]
 majority_table_str = ["BCA", "BAC", "BCA", "BAC", "BCA", "CAB", "CAB", "CAB", "CAB"]
