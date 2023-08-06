@@ -346,7 +346,7 @@ class Polylogo(Scene):
         self.remove(channel_name)
 
         mirek_logo = (
-            ImageMobject("img/olsak.jpg").scale(1.5).shift(2 * DOWN + 2 * RIGHT)
+            ImageMobject("img/olsak.png").scale(1.5).shift(2 * DOWN + 2 * RIGHT)
         )
         mirek_tex = Tex(
             r"\raggedleft Based on a short story \\ by Mirek Olšák"
@@ -574,6 +574,10 @@ class Statement2(Scene):
         self.play(FadeIn(voter_border))
         self.wait()
 
+        self.play(FadeOut(voter_border))
+
+        self.wait(5)
+
         self.play(
             *(
                 col.animate.scale(1 / monkey_scale).move_to(col.saved_state)
@@ -582,7 +586,6 @@ class Statement2(Scene):
             ),
             FadeOut(monkeys_img[:i_voter]),
             FadeOut(monkeys_img[i_voter + 1 :]),
-            FadeOut(voter_border),
         )
         self.wait()
 
@@ -660,7 +663,7 @@ class Statement2(Scene):
         )
         self.play(FadeIn(ar))
         self.wait()
-        self.play(ar.animate.next_to(order.group[2], LEFT))
+        self.play(ar.animate(run_time=0.75).next_to(order.group[2], LEFT))
         self.wait()
         self.play(FadeOut(ar))
         self.wait()
@@ -773,7 +776,7 @@ class Statement2(Scene):
             .shift(2 * DOWN + 1 * LEFT)
         )
 
-        self.play(FadeIn(reasonable_group))
+        self.play(Write(reasonable_group))
         self.wait()
         self.play(FadeIn(majority_table))
         self.wait()
@@ -784,7 +787,16 @@ class Statement2(Scene):
         self.wait()
         # Both the plurality voting system and the two-round system satisfy this definition of being reasonable, so the definition makes some sense. We will now prove the theorem and then we will discuss this definition a bit more.
 
-        self.wait(10)
+        self.wait(5)
+
+        self.play(
+            *[FadeOut(o) for o in self.mobjects if o not in [gs_tex, border]],
+        )
+        self.wait()
+        self.play(
+            *[FadeOut(o) for o in self.mobjects if o not in [gs_tex]],
+        )
+        self.wait(5)
 
 
 class Proof1(Scene):
