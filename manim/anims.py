@@ -576,7 +576,7 @@ class Statement2(Scene):
 
         self.play(FadeOut(voter_border))
 
-        self.wait(5)
+        self.wait(7.5)
 
         self.play(
             *(
@@ -586,8 +586,9 @@ class Statement2(Scene):
             ),
             FadeOut(monkeys_img[:i_voter]),
             FadeOut(monkeys_img[i_voter + 1 :]),
+            run_time=1.5,
         )
-        self.wait()
+        self.wait(5)
 
         voter = monkeys_img[i_voter]
         voter.generate_target()
@@ -598,7 +599,7 @@ class Statement2(Scene):
         h = 3
         sht = 1.2 * UP  # + 1 * RIGHT
         bubble = (
-            load_svg("img/bubble_think_full.svg")
+            load_svg("img/bubble_think.svg")
             .scale_to_fit_height(h)
             .next_to(voter.target, LEFT)
             .shift(sht)
@@ -612,27 +613,28 @@ class Statement2(Scene):
             order.animate.scale(1 / monkey_scale).move_to(
                 bubble.get_center() + bubble.width / 10 * LEFT + bubble.height / 20 * UP
             ),
+            run_time=1.5,
         )
-        self.play(FadeIn(bubble))
-        self.wait()
+        self.play(FadeIn(bubble), run_time=1.5)
+        self.wait(9)
 
         order_copy = order.copy()
         sc = 1.5
         self.play(order_copy.animate.move_to(table[i_voter]))
         self.wait()
         self.play(table.results_show("C"))
-        self.wait()
+        self.wait(2)
 
         self.play(
             FadeOut(order_copy),
             table.winner_hide(),
         )
-        self.wait()
+        self.wait(2)
 
         # Now it is time for our voter to decide what ranking to put on the ballot. The voter can of course use their true preference - in this case, the voting system elects Y as the winner. But the voter can also vote strategically and write a different ranking on the ballot. For example, if the voter casts this ballot, the voting system now elects Z as the winner.
 
         bubble2 = (
-            load_svg("img/bubble_say_full.svg")
+            load_svg("img/bubble_say.svg")
             .scale_to_fit_height(h)
             .next_to(voter, RIGHT)
             .shift(sht)
@@ -645,16 +647,16 @@ class Statement2(Scene):
             .align_to(order, UP)
         )
         self.play(FadeIn(bubble2), FadeIn(order2))
-        self.wait()
+        self.wait(5)
         order2_copy = order2.copy()
         self.play(
             order2_copy.animate.move_to(table[i_voter]),
         )
-        self.wait()
+        self.wait(3)
         self.play(
             table.results_show("A"),  # TODO problikne predchozi winner
         )
-        self.wait()
+        self.wait(3)
 
         ar = (
             load_svg("img/arrow.svg")
@@ -672,9 +674,9 @@ class Statement2(Scene):
 
         for _ in range(2):
             self.play(order2_copy.rearrange("ABC"), table.results_show("C"))
-            self.wait()
+            self.wait(0.3)
             self.play(order2_copy.rearrange("BAC"), table.results_show("A", DOWN))
-            self.wait()
+            self.wait(0.3)
 
         # self.play(FadeOut(order2_copy))
         # self.wait()
@@ -754,8 +756,11 @@ class Statement2(Scene):
             [2, "CBA", "C"],
             [6, "BAC", "C"],
             [7, "BCA", "C"],
+            [3, "CBA", "C"],
+            [2, "ABC", "A"],
+            [1, "BCA", "A"],
         ]:
-            self.play(table[pos].rearrange(new), table.winner_show(win))
+            self.play(table[pos].rearrange(new), table.winner_show(win), run_time=1.2)
         self.wait()
 
         self.play(
@@ -776,7 +781,7 @@ class Statement2(Scene):
             .shift(2 * DOWN + 1 * LEFT)
         )
 
-        self.play(Write(reasonable_group))
+        self.play(Write(reasonable_group), run_time=5)
         self.wait()
         self.play(FadeIn(majority_table))
         self.wait()
@@ -904,12 +909,16 @@ class Proof1(Scene):
                     alpha = np.linalg.norm(
                         start.get_center() - target
                     ) / np.linalg.norm(orig - target)
+                    fade = (1 - alpha) ** 2
+                    s = start.get_center()
+                    e = end.get_center()
+                    buff = 0.8 * w
+                    if np.linalg.norm(s - e) < 2 * buff:
+                        fade = 1
                     arrow.become(
-                        Arrow(
-                            start=start.get_center(), end=end.get_center(), buff=0.8 * w
-                        )
+                        Arrow(start=s, end=e, buff=buff)
                         .set_z_index(arrow.z_index)
-                        .fade((1 - alpha) ** 2)
+                        .fade(fade)
                     )
 
                 return updater
@@ -943,16 +952,22 @@ class Proof1(Scene):
         for i, o in enumerate(table.group):
             for arrow in o.arrowed.arrows:
                 arrow.set_z_index(2000 - i)
+        fade_duration = 0.8
+        prev = None
         for l, r, f in [(0, 4, 2), (4, 6, 0), (6, 9, 1)]:
             f = 2 * f + 3
-            self.play(FadeOut(condorcet_group[f]))
+            anims = [FadeOut(condorcet_group[f])]
+            if prev is not None:
+                anims.append(FadeIn(prev))
+            self.play(*anims, run_time=fade_duration)
+            prev = condorcet_group[f]
             self.play(
                 AnimationGroup(
                     *(
-                        AnimationGroup(*wind_around(o.arrowed), run_time=1.5)
+                        AnimationGroup(*wind_around(o.arrowed), run_time=1.6)
                         for o in table.group[l:r]
                     ),
-                    lag_ratio=1,
+                    lag_ratio=0.5,
                 )
             )
             for mobj in self.mobjects:
@@ -962,22 +977,25 @@ class Proof1(Scene):
             for o in trash:
                 self.remove(o)
             self.remove(self.mobjects[-1])
-            self.play(FadeIn(condorcet_group[f]))
+        self.play(FadeIn(prev), run_time=fade_duration)
 
+        self.wait(5)
         for a in range(3):
             b = (a + 1) % 3
             c = (b + 1) % 3
             abc = "ABC"
             self.play(
                 *table.fadeout(abc[c]),
+                run_time=1,
+            )
+            update_label(arrows[a])
+            self.play(
                 condorcet_group[a].indicate(),
                 condorcet_group[b].indicate(),
+                *table.indicate("#"),
+                FadeIn(arrows[a].label),
                 run_time=2,
             )
-            self.wait()
-            update_label(arrows[a])
-            self.play(*table.indicate("#"), FadeIn(arrows[a].label), run_time=2)
-            self.wait()
             self.play(*table.fadein(abc[c]))
             self.wait()
 
@@ -1002,7 +1020,21 @@ class Proof1(Scene):
         self.wait()
 
         self.play(FadeIn(cycle_group))
-        self.wait()
+        self.wait(5)
+
+        border = SurroundingRectangle(Group(gs_tex[0:3]), color=HIGHLIGHT)
+        self.play(FadeIn(border))
+        self.wait(3)
+
+        border2 = SurroundingRectangle(gs_tex[3], color=HIGHLIGHT)
+        self.play(Transform(border, border2))
+        self.wait(2)
+
+        border2 = SurroundingRectangle(gs_tex[4], color=HIGHLIGHT)
+        self.play(Transform(border, border2))
+        self.wait(3)
+
+        self.play(FadeOut(border))
 
         shift = 3.5 * LEFT + UP
         self.play(
@@ -1022,21 +1054,6 @@ class Proof1(Scene):
         # Ultimately, condorcet paradox is the reason why voting is straightforward with two candidates, but becomes very tricky if you have at least three of them.
 
         # TODO animace kde se ztratí kokos a cyklus změní na šipku?
-
-        border = SurroundingRectangle(Group(gs_tex[0:3]), color=HIGHLIGHT)
-        self.play(FadeIn(border))
-        self.wait()
-
-        border2 = SurroundingRectangle(gs_tex[3], color=HIGHLIGHT)
-        self.play(Transform(border, border2))
-        self.wait()
-
-        border2 = SurroundingRectangle(gs_tex[4], color=HIGHLIGHT)
-        self.play(Transform(border, border2))
-        self.wait()
-
-        self.play(Circumscribe(condorcet_group, color=HIGHLIGHT))
-        self.wait()
 
         self.play(*[FadeOut(o) for o in self.mobjects if o != gs_tex])
         self.wait()
@@ -1072,22 +1089,20 @@ class Proof2(MovingCameraScene):
         # Let me explain. Let’s consider an arbitrary reasonable voting system like plurality voting or the two-round system. The system needs to elect a winner in this Condorcet cycle. Without loss of generality, let’s say that it elects the coconut.
 
         self.play(FadeIn(table))
-        self.wait()
+        self.wait(10)
         self.play(table.winner_show("C"))
-        self.wait()
+        self.wait(5)
 
         # But now let’s look at this group of voters for whom the coconut is the bottom choice. Intuitively, these voters have the biggest incentive to try some kind of strategic voting because they are most unhappy with the result.
 
         border = SurroundingRectangle(Group(*table[:4]), color=HIGHLIGHT, z_index=1)
         self.play(FadeIn(border))
-        self.wait()
+        self.wait(10)
 
         # What if all these voters simultaneously cast a ballot that swaps avocado and banana?
 
-        self.play(
-            *table.rearrange("BAC", indexes=range(4)),
-        )
-        self.wait()
+        self.play(*table.rearrange("BAC", indexes=range(4)), run_time=2)
+        self.wait(3)
         # self.play(FadeOut(border))
         # self.wait()
 
@@ -1099,36 +1114,40 @@ class Proof2(MovingCameraScene):
         )
         border.save_state()
 
-        self.play(MoveToTarget(border))
-        self.wait()
+        self.play(MoveToTarget(border), run_time=1.5)
+        self.wait(5)
 
         reasonable_group.next_to(gs_tex, DOWN, buff=0.5)
 
         self.play(FadeIn(reasonable_group))
-        self.wait()
+        self.wait(5)
 
         self.play(table.winner_show("B"))
-        self.wait()
+        self.wait(3)
 
-        return
-
-        self.play(border.animate.restore(), FadeOut(reasonable_group))
-        self.wait()
+        self.play(border.animate.restore(), FadeOut(reasonable_group), run_time=1.5)
+        self.wait(3)
 
         for x in range(3):
-            self.play(*table.rearrange("ABC", indexes=range(4)), table.winner_show("C"))
-            self.wait(0.2)
+            self.play(
+                *table.rearrange("ABC", indexes=range(4)),
+                table.winner_show("C"),
+                run_time=1.2,
+            )
+            self.wait(0.3)
 
             if x == 2:
                 break
 
             self.play(
-                *table.rearrange("BAC", indexes=range(4)), table.winner_show("B", DOWN)
+                *table.rearrange("BAC", indexes=range(4)),
+                table.winner_show("B", DOWN),
+                run_time=1.2,
             )
-            self.wait(0.2)
+            self.wait(0.3)
 
         # self.play(table.results_hide())
-        self.wait()
+        self.wait(5)
 
         # So, if all of these voters coordinate and vote strategically, they can achieve a result that they like more than what happens when they tell the truth. This is by the way exactly what the four sly monkeys did at the beginning when we tried to use the two-round system to elect the winner.
 
@@ -1142,24 +1161,24 @@ class Proof2(MovingCameraScene):
         self.wait()
 
         for x in range(3):
-            self.play(*table.rearrange("ABC", indexes=[2]), table.winner_show("C"))
-            self.wait(0.2)
+            self.play(
+                *table.rearrange("ABC", indexes=[2]),
+                table.winner_show("C"),
+                run_time=1.2,
+            )
+            self.wait(0.3)
 
             if x == 2:
                 break
 
             self.play(
-                *table.rearrange("BAC", indexes=[2]), table.winner_show("B", DOWN)
+                *table.rearrange("BAC", indexes=[2]),
+                table.winner_show("B", DOWN),
+                run_time=1.2,
             )
-            self.wait(0.2)
+            self.wait(0.3)
 
         self.play(table.results_hide())
-        self.wait()
-
-        self.play(border.animate.restore())
-        self.wait()
-
-        self.play(Indicate(border, color=HIGHLIGHT))
         self.wait()
 
         self.play(FadeOut(border), FadeOut(gs_tex))
@@ -1193,32 +1212,32 @@ class Proof2(MovingCameraScene):
             self.remove(table)
 
         self.play(self.camera.frame.animate.move_to(tables).scale(scale))
-        self.wait()
+        self.wait(3)
 
         self.play(
             tables[0].winner_show("C"),
         )
-        self.wait()
+        self.wait(3)
         self.play(
             tables[-1].winner_show("B"),
         )
-        self.wait()
+        self.wait(3)
 
         self.add(tables[0].results)
         # self.play(Circumscribe(tables[0], color=HIGHLIGHT))
         # self.wait()
 
         self.play(*[t.winner_show("?") for t in tables[1:-1]])
-        self.wait()
+        self.wait(3)
 
         self.play(
             Succession(
                 tables[1].winner_show("C"),
-                Wait(),
+                Wait(2),
                 tables[2].winner_show("C"),
-                Wait(),
+                Wait(2),
                 tables[3].winner_show("D"),
-                Wait(),
+                Wait(2),
             )
         )
 
@@ -1273,7 +1292,7 @@ class Proof2(MovingCameraScene):
         ]
 
         self.play(FadeIn(Group(*borders)))
-        self.wait()
+        self.wait(5)
 
         # self.play(
         #     FadeOut(Group(tables[2][2], tables[3][2]))
@@ -1304,10 +1323,10 @@ class Proof2(MovingCameraScene):
                 tables[2][3:], tables[2].results.winner, tables[2].arrow
             ).animate.shift(1 * RIGHT),
         )
-        self.wait()
+        self.wait(3)
 
         self.play(Circumscribe(tables[2].results.winner, color=HIGHLIGHT))
-        self.wait()
+        self.wait(5)
 
         bubble2 = (
             load_svg("img/bubble_say.svg")
@@ -1325,13 +1344,13 @@ class Proof2(MovingCameraScene):
                 tables[3][3:], tables[3].results.winner, tables[3].arrow
             ).animate.shift(1 * RIGHT),
         )
-        self.wait()
+        self.wait(5)
 
         self.play(Circumscribe(tables[3].results.winner, color=HIGHLIGHT))
-        self.wait()
+        self.wait(3)
 
         self.play(Circumscribe(tables[2], color=HIGHLIGHT, run_time=1.5))
-        self.wait()
+        self.wait(5)
 
         # Let’s also focus on this voter. Do you see how to finish the proof? Well, let’s imagine that the top scenario contains the honest preferences of all the voters. If this voter votes honestly, X is the winner. But what if they vote strategically and cast a ballot with ZYX instead of YZX? Well, we know that then the outcome of the voting system changes from X to some other candidate. But look, X is the worst option for our voter, so whatever the change, the voter will prefer it!
 
@@ -1348,9 +1367,9 @@ class Proof2(MovingCameraScene):
         self.play(table[0].rearrange("BAC"))
         self.play(table[1].rearrange("BAC"))
 
-        for _ in range(6):
+        for _ in range(3):
             self.play(table[2].rearrange("BAC"), table.winner_show("D"))
-            self.play(table[2].rearrange("ABC"), table.winner_show("C"))
+            self.play(table[2].rearrange("ABC"), table.winner_show("C", DOWN))
 
         self.wait(5)
 
@@ -1404,10 +1423,9 @@ class ArrowThm(Scene):
 
         # This is a condition that says that if you look at how the voting system orders any two candidates, for example here it decides that banana is above coconut
 
-        self.play(*table.results.highlight("A"))
-        self.wait()
-        self.play(*table.results.highlight("B"))
-        self.wait()
+        self.play(*table.results.highlight("A", scale_factor=1.5), run_time=1.3)
+        self.play(*table.results.highlight("B", scale_factor=1.5), run_time=1.3)
+        self.wait(5.9)
         # (vyznačí se že outcome je banana lepší než coconut nebo naopak)
 
         # this decision should not depend on whatever the voters’ opinion on the avocado is.
@@ -1481,8 +1499,9 @@ class ArrowThm(Scene):
         self.play(
             Succession(
                 FadeIn(fermat_tex),
+                Wait(3),
                 FadeIn(pnp_tex),
-                Wait(),
+                Wait(3),
             )
         )
         self.play(FadeOut(thm_group))
@@ -1603,13 +1622,11 @@ class Approval(Scene):
                 ]
             )
         )
+        self.wait(3)
         self.play(
             AnimationGroup(
-                *[
-                    FadeIn(approval_data[i][len(approval_data[0]) - 1])
-                    for i in range(0, 4, 1)
-                ],
-                lag_ratio=0.8,
+                *[FadeIn(approval_data[i][-1]) for i in range(0, 4)],
+                lag_ratio=0.2,
             )
         )
         self.wait()
@@ -1626,10 +1643,11 @@ class Approval(Scene):
                 MoveToTarget(lines[i]),
                 MoveToTarget(lines[j]),
             )
-            self.wait()
+
+        self.wait(3)
 
         self.play(FadeOut(approval_table))
-        self.wait()
+        self.wait(3)
 
         # For example, if you order the videos of your favorite YouTuber by popularity, one way you can do it is by sorting them by how many likes they got, and that is basically approval voting, with the addition of negative votes.
 
@@ -1656,10 +1674,12 @@ class Approval(Scene):
         videos_group_table = Group(*videos_data).arrange_in_grid(cols=2, buff=0.8)
 
         self.play(*[FadeIn(v) for v in videos_group_table])
-        self.wait()
+        self.wait(2)
 
         videos_group = Group(*[videos_group_table[i] for i in [3, 0, 2, 1]])
-        self.play(videos_group.animate.arrange(DOWN, buff=0.5).shift(5 * LEFT))
+        self.play(
+            videos_group.animate.arrange(DOWN, buff=0.5).shift(5 * LEFT), run_time=2
+        )
         self.wait()
 
         # The way we order movies by their average rating is also similar to approval voting.
@@ -1671,8 +1691,8 @@ class Approval(Scene):
             .shift(1 * RIGHT)
             .to_edge(DOWN, buff=0.5)
         )
-        self.play(FadeIn(movies_img))
-        self.wait()
+        self.play(FadeIn(movies_img), run_time=1.5)
+        self.wait(3)
 
         self.play(FadeOut(videos_group), FadeOut(movies_img))
         self.wait()
@@ -1708,6 +1728,7 @@ class Approval(Scene):
                 for col in table.group
             ),
             FadeOut(monkeys_img),
+            run_time=2,
         )
         self.wait()
         input_brace = BraceLabel(table, "input", UP)
@@ -2548,11 +2569,11 @@ class Thumb(Scene):
         h = 3.5
         b = 4
         bubbles = [
-            SVGMobject("img/bubble_think_full.svg")
+            SVGMobject("img/bubble_think.svg")
             .scale_to_fit_height(h)
             .next_to(monkey, LEFT, buff=SMALL_BUFF * b)
             .shift(1 * UP),
-            SVGMobject("img/bubble_say_full.svg")
+            SVGMobject("img/bubble_say.svg")
             .scale_to_fit_height(h)
             .next_to(monkey, RIGHT, buff=SMALL_BUFF * b)
             .shift(1 * UP),

@@ -44,7 +44,7 @@ def init():
         r"{{\raggedright The candidate which is the first choice for majority\\ is always the winner. }}",
         color=TEXT_COLOR,
     ).scale(0.75)
-    reasonable_group = Group(reasonable1_tex, reasonable2_tex).arrange(RIGHT)
+    reasonable_group = VGroup(reasonable1_tex, reasonable2_tex).arrange(RIGHT)
     reasonable2_tex.shift(0.25 * DOWN)
 
     return (
@@ -207,8 +207,8 @@ class Fruit(VMobject):
     def indicate(self, scale_factor=1.3):
         return Indicate(self, color=None, scale_factor=scale_factor)
 
-    def highlight(self):
-        return self.indicate()
+    def highlight(self, scale_factor=1.3):
+        return self.indicate(scale_factor)
 
 
 FRUITS = [
@@ -499,16 +499,16 @@ class VotingOrdering(VotingResults):
             l.append((self.ordering[0][ix], self.ordering[1][ix]))
         return l
 
-    def highlight(self, ixs):
+    def highlight(self, ixs, **kwargs):
         anims = []
         for _, f in self.at(ixs):
-            anims.append(f.highlight())
+            anims.append(f.highlight(**kwargs))
         return anims
 
-    def fadeout(self, ixs):
+    def fadeout(self, ixs, **kwargs):
         anims = []
         for _, f in self.at(ixs):
-            anims.append(f.fadeout())
+            anims.append(f.fadeout(**kwargs))
         return anims
 
 
