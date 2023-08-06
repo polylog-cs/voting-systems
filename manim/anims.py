@@ -1898,6 +1898,7 @@ class Approval(Scene):
         self.wait()
         input_brace = BraceLabel(table, "input", UP)
         self.play(FadeIn(input_brace))
+        self.wait(2)
 
         # table = VotingTable(example_table_str).scale(0.5)  # .to_edge(RIGHT, buff = 2)
 
@@ -2072,7 +2073,7 @@ class Approval(Scene):
         # self.play(FadeIn(ar_tex))
         # self.wait()
 
-        self.play(FadeOut(Group(tex1, tex2)))
+        self.play(FadeOut(Group(tex1, tex2)), videos_group.animate.shift(2 * RIGHT))
         self.wait()
 
         i_like = 3
@@ -2082,7 +2083,7 @@ class Approval(Scene):
         self.wait()
 
         self.play(
-            FadeIn(thumbsup_img.copy().next_to(videos_group[i_like], RIGHT, buff=1))
+            FadeIn(thumbsup_img.copy().next_to(videos_group[i_like], RIGHT, buff=0.5))
         )
         self.wait()
 
@@ -2091,7 +2092,7 @@ class Approval(Scene):
                 FadeIn(
                     thumbsup_img.copy()
                     .rotate(PI)
-                    .next_to(videos_group[i], RIGHT, buff=1)
+                    .next_to(videos_group[i], RIGHT, buff=0.5)
                 )
                 for i in range(len(videos_group))
                 if videos_group[i].get_center()[1]
@@ -2266,7 +2267,7 @@ class Debriefing(Scene):
             voting_group.animate.shift(
                 voting_data[5][0].get_center() - voting_data[-1][0].get_center()
             ),
-            run_time=2,
+            run_time=4,
         )
         self.wait()
 
@@ -2346,9 +2347,9 @@ class Debriefing(Scene):
                     *[FadeIn(o, run_time=2 / 3) for o in shame_table],
                     group=shame_table,
                     lag_ratio=0.3,
-                    run_time=11,
+                    run_time=8,
                 ),
-                AnimationGroup(FadeIn(shame_tex), run_time=11),
+                AnimationGroup(FadeIn(shame_tex), run_time=8),
             )
         )
         self.wait(5)
@@ -2388,7 +2389,7 @@ class Outro(MovingCameraScene):
         self.add(shame_img)
         self.camera.frame.save_state()
         self.camera.frame.scale(zoom).move_to(where)
-        self.play(self.camera.frame.animate.restore())
+        self.play(self.camera.frame.animate.restore(), run_time=4)
         self.wait()
 
         # [tady se zase může “oddálit tabule”]
@@ -2398,7 +2399,8 @@ class Outro(MovingCameraScene):
         self.play(
             self.camera.frame.animate.scale(0.4).move_to(
                 explorer.get_center() + 1.5 * UP
-            )
+            ),
+            run_time=1,
         )
         self.wait()
 
@@ -2427,7 +2429,7 @@ class Outro(MovingCameraScene):
                 for i in range(len(monkeys_img))
             ]
         )
-        self.wait()
+        self.wait(3)
 
         anims = []
         for i in range(len(monkeys_img)):
@@ -2495,10 +2497,11 @@ class Outro(MovingCameraScene):
                     scale_value=1,
                 )
             )
+            self.wait(1)
         self.wait()
 
         self.add_sound("audio/drum_roll.mp3")
-        self.wait(4)
+        self.wait(4.5)
         self.add_sound("audio/polylog_success.wav")
 
         # Clearly, strategic voting does not help in this voting system because if your ballot is chosen, you definitely want your most preferred candidate to be on it!  Also, the more monkeys vote for a candidate, the more likely the candidate is to be elected – I think it’s really amazing actually!
