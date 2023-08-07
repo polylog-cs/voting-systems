@@ -1059,6 +1059,171 @@ class Proof1(Scene):
         self.wait()
 
 
+
+class VasekIsHorrible(Scene):
+    def construct(self):
+        default()
+        (
+            thm_scale,
+            gs_title,
+            gs_tex,
+            gs_group,
+            gs_new_tex,
+            reasonable1_tex,
+            reasonable2_tex,
+            reasonable_group,
+        ) = init()
+        self.add(gs_tex)
+        self.next_section(skip_animations=False)
+        # Remember, our goal is to demonstrate that for any reasonable voting system, there exists a scenario where a certain voter has an incentive to vote strategically. It turns out that any Condorcet cycle is almost, but not quite, such a scenario.
+
+        # self.play(Circumscribe(gs_tex, color=HIGHLIGHT))
+        # self.wait()
+
+        tables = VGroup(*[VotingTable(str).shift(LEFT) for str in proof_table_strings])
+        table = tables[0].copy()
+
+        # self.play(FadeIn(tables[2]))  # TODO
+
+        # self.play(FadeOut(tables[2]))
+
+        # Let me explain. Let’s consider an arbitrary reasonable voting system like plurality voting or the two-round system. The system needs to elect a winner in this Condorcet cycle. Without loss of generality, let’s say that it elects the coconut.
+
+        self.play(FadeIn(table))
+        self.wait(10)
+        self.play(table.winner_show("C"))
+        self.wait(5)
+
+        # But now let’s look at this group of voters for whom the coconut is the bottom choice. Intuitively, these voters have the biggest incentive to try some kind of strategic voting because they are most unhappy with the result.
+
+        border = SurroundingRectangle(Group(*table[:4]), color=HIGHLIGHT, z_index=1)
+        self.play(FadeIn(border))
+        self.wait(10)
+
+        # What if all these voters simultaneously cast a ballot that swaps avocado and banana?
+
+        self.play(*table.rearrange("BAC", indexes=range(4)), run_time=2)
+        self.wait(3)
+        # self.play(FadeOut(border))
+        # self.wait()
+
+        # In this case, you can see that by the properties of the Condorcet cycle, a majority of voters have the banana as their first choice. But wait a minute, our definition of a reasonable voting system says that in this case, the voting system has to elect the banana as the winner.
+
+        border.generate_target()
+        border.target = SurroundingRectangle(
+            Group(table[0].group[1], table[5].group[0]), color=HIGHLIGHT, z_index=1
+        )
+        border.save_state()
+
+        self.play(MoveToTarget(border), run_time=1.5)
+        self.wait(5)
+
+        reasonable_group.next_to(gs_tex, DOWN, buff=0.5)
+
+        self.play(FadeIn(reasonable_group))
+        self.wait(5)
+
+        self.play(table.winner_show("B"))
+        self.wait(3)
+
+        self.play(border.animate.restore(), FadeOut(reasonable_group), run_time=1.5)
+        self.wait(3)
+
+        for x in range(3):
+            self.play(
+                *table.rearrange("ABC", indexes=range(4)),
+                table.winner_show("C"),
+                run_time=1.2,
+            )
+            self.wait(0.3)
+
+            if x == 2:
+                break
+
+            self.play(
+                *table.rearrange("BAC", indexes=range(4)),
+                table.winner_show("B", DOWN),
+                run_time=1.2,
+            )
+            self.wait(0.3)
+
+        # self.play(table.results_hide())
+        self.wait(5)
+
+        table2 = VotingTable(["BAC", "BAC", "BAC", "ACB", "CBA", "CBA", "CBA"]).next_to(table, DOWN).shift(0.5 * UP)
+
+        gr = Group(*[o for o in self.mobjects if o != gs_tex])
+        self.play(FadeIn(table2), gr.animate.shift(1.5*UP), )
+        self.wait()
+        self.play(table2.winner_show("A"))
+        self.wait()
+        border2 = SurroundingRectangle(Group(*table2[4:]), color=HIGHLIGHT, z_index=1)
+        self.play(FadeIn(border2))
+
+        for x in range(2):
+            self.play(
+                *table2.rearrange("BCA", indexes=range(4, 7)),
+                table2.winner_show("B"),
+                run_time=1.2,
+            )
+            self.wait(0.3)
+
+            self.play(
+                *table2.rearrange("CBA", indexes=range(4, 7)),
+                table2.winner_show("A", DOWN),
+                run_time=1.2,
+            )
+            self.wait(0.3)
+
+        self.play(
+            AnimationGroup(
+                table2.results_hide(),
+                FadeOut(table2),
+                gr.animate.shift(1.5*DOWN),
+                FadeOut(border2), 
+            )
+        )
+        self.wait()
+
+        # So, if all of these voters coordinate and vote strategically, they can achieve a result that they like more than what happens when they tell the truth. This is by the way exactly what the four sly monkeys did at the beginning when we tried to use the two-round system to elect the winner.
+
+        # We are already very close to proving the theorem. The only problem is that we want to find a scenario where only one voter has the incentive to vote strategically. Right now, that is not the case. Only if this whole group can coordinate, it pays off.
+
+        border.generate_target()
+        border.save_state()
+        border.target = SurroundingRectangle(table[2], color=HIGHLIGHT, z_index=1)
+
+        self.play(MoveToTarget(border))
+        self.wait()
+
+        for x in range(3):
+            self.play(
+                *table.rearrange("ABC", indexes=[2]),
+                table.winner_show("C"),
+                run_time=1.2,
+            )
+            self.wait(0.3)
+
+            if x == 2:
+                break
+
+            self.play(
+                *table.rearrange("BAC", indexes=[2]),
+                table.winner_show("B", DOWN),
+                run_time=1.2,
+            )
+            self.wait(0.3)
+
+        self.play(table.results_hide())
+        self.wait()
+
+        self.play(border.animate.restore())
+        self.wait()
+
+        self.play(FadeOut(border), FadeOut(gs_tex))
+        self.wait()
+
+
 class Proof2(MovingCameraScene):
     def construct(self):
         default()
