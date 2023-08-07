@@ -67,8 +67,8 @@ class Intro(MovingCameraScene):
                 self.play(FadeIn(orderings[j][1][i]))
                 self.wait()
 
-            self.play(*[Wiggle(monkeys_img[i]) for i in ranges[j]])
-            self.wait()
+            self.play(*[Wiggle(monkeys_img[i], run_time=3) for i in ranges[j]])
+            self.wait(0.5)
 
         # Second group were fond of banana, coconut was their second choice, and avocado was the third.
 
@@ -84,13 +84,13 @@ class Intro(MovingCameraScene):
 
         # Charmed by their antics, I decided to help organize a vote. After all, there are just a few of them, so it can’t be that hard, right?
 
-        self.wait(3)
-        self.play(Wiggle(monkeys_img[2]))
-        self.wait()
-        self.play(Wiggle(monkeys_img[5]))
-        self.wait()
-        self.play(Wiggle(monkeys_img[8]))
-        self.wait(10)
+        self.wait(1.5)
+        self.play(Wiggle(monkeys_img[2], run_time=3))
+        self.wait(0.5)
+        self.play(Wiggle(monkeys_img[5], run_time=3))
+        self.wait(0.5)
+        self.play(Wiggle(monkeys_img[8], run_time=3))
+        self.wait(8)
 
         # Ok, let’s try something simple: everybody will vote for exactly one fruit. Who votes for avocado?
         # 4 votes
@@ -126,8 +126,8 @@ class Intro(MovingCameraScene):
         # Ok, avocado won. You are welcome.
         # monkeys who voted coconut: “But what about the second round? “
 
-        self.play(*[Wiggle(monkeys_img[i]) for i in range(4, 6)])
-        self.wait(3)
+        self.play(*[Wiggle(monkeys_img[i], run_time=3) for i in range(4, 6)])
+        self.wait(2)
 
         # Ok, I guess a two-round election is fairer because now the coconut fans can also express their opinion on the remaining two fruits. So let’s do a second round: avocado? 4 votes. Banana? 5 votes
 
@@ -213,8 +213,10 @@ class Intro(MovingCameraScene):
             self.wait(5)
 
             if it == 0:
-                self.play(*[Wiggle(monkeys_votes_img[i]) for i in ranges[0]])
-                self.wait(2)
+                self.play(
+                    *[Wiggle(monkeys_votes_img[i], run_time=3) for i in ranges[0]]
+                )
+                self.wait(1)
                 self.play(
                     *[Interpol(monkeys_votes_img[i], monkeys_img[i]) for i in range(9)],
                 )
@@ -672,7 +674,7 @@ class Statement2(Scene):
 
         # TODO other monkeys
 
-        for _ in range(2):
+        for _ in range(3):
             self.play(order2_copy.rearrange("ABC"), table.results_show("C"))
             self.wait(0.3)
             self.play(order2_copy.rearrange("BAC"), table.results_show("A", DOWN))
@@ -1059,7 +1061,6 @@ class Proof1(Scene):
         self.wait()
 
 
-
 class VasekIsHorrible(Scene):
     def construct(self):
         default()
@@ -1150,10 +1151,17 @@ class VasekIsHorrible(Scene):
         # self.play(table.results_hide())
         self.wait(5)
 
-        table2 = VotingTable(["BAC", "BAC", "BAC", "ACB", "CBA", "CBA", "CBA"]).next_to(table, DOWN).shift(0.5 * UP)
+        table2 = (
+            VotingTable(["BAC", "BAC", "BAC", "ACB", "CBA", "CBA", "CBA"])
+            .next_to(table, DOWN)
+            .shift(0.5 * UP)
+        )
 
         gr = Group(*[o for o in self.mobjects if o != gs_tex])
-        self.play(FadeIn(table2), gr.animate.shift(1.5*UP), )
+        self.play(
+            FadeIn(table2),
+            gr.animate.shift(1.5 * UP),
+        )
         self.wait()
         self.play(table2.winner_show("A"))
         self.wait()
@@ -1179,8 +1187,8 @@ class VasekIsHorrible(Scene):
             AnimationGroup(
                 table2.results_hide(),
                 FadeOut(table2),
-                gr.animate.shift(1.5*DOWN),
-                FadeOut(border2), 
+                gr.animate.shift(1.5 * DOWN),
+                FadeOut(border2),
             )
         )
         self.wait()
@@ -2573,10 +2581,7 @@ class Outro(MovingCameraScene):
 
         indices = [0, 8, 2, 7]
         for i in indices:
-            self.play(Wiggle(monkeys_img[i]))
-            self.wait()
-
-        # TODO risa podivat se jestli zbude cas
+            self.play(Wiggle(monkeys_img[i], run_time=4))
 
         anims = []
         monkey_angry_pos = [monkeys_img[i].get_center() for i in [0, 1, 2, 3, 6, 7, 8]]
@@ -2699,8 +2704,13 @@ class Thanks(Scene):
 
         thanks = texs[2:]
         thanks.move_to(2.3 * DOWN)
-        add_tex = Tex(r"Narrated by Václav Volhejn and Alžběta Volhejnová").scale(0.8).next_to(texs[1], DOWN).align_to(texs[1], LEFT).shift(0.0*RIGHT)
-
+        add_tex = (
+            Tex(r"Narrated by Václav Volhejn and Alžběta Volhejnová")
+            .scale(0.8)
+            .next_to(texs[1], DOWN)
+            .align_to(texs[1], LEFT)
+            .shift(0.0 * RIGHT)
+        )
 
         self.play(FadeIn(Group(texs, add_tex)))
         self.wait(2)
