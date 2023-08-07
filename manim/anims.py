@@ -2696,10 +2696,12 @@ class Thanks(Scene):
 
         thanks = texs[2:]
         thanks.move_to(2.3 * DOWN)
+        add_tex = Tex(r"Narrated by Václav Volhejn and Alžběta Volhejnová").scale(0.8).next_to(texs[1], DOWN).align_to(texs[1], LEFT).shift(0.0*RIGHT)
 
-        self.play(FadeIn(texs))
+
+        self.play(FadeIn(Group(texs, add_tex)))
         self.wait(2)
-        self.play(FadeOut(texs))
+        self.play(FadeOut(Group(texs, add_tex)))
         self.wait(0.5)
         self.play(FadeIn(see_description))
         self.wait(2)
