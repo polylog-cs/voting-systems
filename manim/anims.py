@@ -2205,7 +2205,7 @@ class Debriefing(Scene):
             [Tex("13"), Tex("Uncovered set method"), Tex("1")],
             [Tex("16"), Tex("Fishburn's method"), Tex("0")],
             [Tex("16"), Tex("Untrapped set"), Tex("0")],
-            [Tex("16"), Tex("Plurality voting"), Tex("0")],
+            [Tex("16"), Tex(r"Plurality voting\\ (First past the post)"), Tex("0")],
         ]
 
         voting_group = (
