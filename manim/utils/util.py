@@ -41,7 +41,7 @@ def init():
 
     reasonable1_tex = Tex("{{Reasonable system: }}", color=TEXT_COLOR)
     reasonable2_tex = Tex(
-        r"{{\raggedright The candidate which is the first choice for majority\\ is always the winner. }}",
+        r"{{\raggedright The candidate that is the first choice for majority\\ is always the winner. }}",
         color=TEXT_COLOR,
     ).scale(0.75)
     reasonable_group = VGroup(reasonable1_tex, reasonable2_tex).arrange(RIGHT)

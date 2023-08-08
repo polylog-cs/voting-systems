@@ -1530,19 +1530,23 @@ class Proof2(MovingCameraScene):
         self.play(*[FadeOut(o) for o in self.mobjects])
         self.wait()
 
-        table = VotingTable(example_table_str).shift(1 * LEFT)
+        table = VotingTable(example_table_str).scale(1.3).shift(1.5 * LEFT)
         self.play(FadeIn(table))
         self.wait()
 
         self.play(table.winner_show("C"))
         self.wait()
 
-        self.play(table[0].rearrange("BAC"))
-        self.play(table[1].rearrange("BAC"))
+        rt = 1.5
+
+        self.play(table[0].rearrange("BAC"), run_time=rt)
+        self.play(table[1].rearrange("BAC"), run_time=rt)
 
         for _ in range(3):
-            self.play(table[2].rearrange("BAC"), table.winner_show("D"))
-            self.play(table[2].rearrange("ABC"), table.winner_show("C", DOWN))
+            self.play(table[2].rearrange("BAC"), table.winner_show("D"), run_time=rt)
+            self.play(
+                table[2].rearrange("ABC"), table.winner_show("C", DOWN), run_time=rt
+            )
 
         self.wait(5)
 
