@@ -30,8 +30,8 @@ class Intro(MovingCameraScene):
 
         self.add(background)
 
-        self.play(arrive_from(explorer, RIGHT))
-        self.wait()
+        self.play(arrive_from(explorer, RIGHT), run_time=1.5)
+        self.wait(0.5)
 
         # Throughout my expeditions, I've visited many beautiful places, but none struck me as much as this faraway tropical island.
 
@@ -674,7 +674,7 @@ class Statement2(Scene):
 
         # TODO other monkeys
 
-        for _ in range(3):
+        for _ in range(2):
             self.play(order2_copy.rearrange("ABC"), table.results_show("C"))
             self.wait(0.3)
             self.play(order2_copy.rearrange("BAC"), table.results_show("A", DOWN))
@@ -1640,6 +1640,7 @@ class ArrowThm(Scene):
         ar.add_updater(lambda obj: obj.become(mkarrow()))
         self.wait()
 
+        random.seed(5187237)
         for _ in range(1):
             l = list(range(len(example_table_str))) + list(
                 range(len(example_table_str) - 2, 0, -1)
