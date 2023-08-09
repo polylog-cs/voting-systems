@@ -295,6 +295,58 @@
   <property name="kdenlive:file_hash">490d06eda379a948437356af8f3f11b8</property>
   <property name="kdenlive:folderid">17</property>
  </chain>
+ <chain id="chain42" out="00:02:06.850">
+  <property name="length">7612</property>
+  <property name="eof">pause</property>
+  <property name="resource">/home/rihl/q/poly/voting-systems/postproduction/manim-clips/4k/Statement2.mp4</property>
+  <property name="mlt_service">avformat-novalidate</property>
+  <property name="meta.media.nb_streams">1</property>
+  <property name="meta.media.0.stream.type">video</property>
+  <property name="meta.media.0.stream.frame_rate">60</property>
+  <property name="meta.media.0.stream.sample_aspect_ratio">0</property>
+  <property name="meta.media.0.codec.width">3840</property>
+  <property name="meta.media.0.codec.height">2160</property>
+  <property name="meta.media.0.codec.rotate">0</property>
+  <property name="meta.media.0.codec.pix_fmt">yuv420p</property>
+  <property name="meta.media.0.codec.sample_aspect_ratio">0</property>
+  <property name="meta.media.0.codec.colorspace">709</property>
+  <property name="meta.media.0.codec.name">h264</property>
+  <property name="meta.media.0.codec.long_name">H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10</property>
+  <property name="meta.media.0.codec.bit_rate">2018106</property>
+  <property name="meta.attr.0.stream.handler_name.markup">VideoHandler</property>
+  <property name="meta.attr.0.stream.vendor_id.markup">[0][0][0][0]</property>
+  <property name="meta.attr.0.stream.encoder.markup">Lavc60.3.100 libx264</property>
+  <property name="meta.attr.major_brand.markup">isom</property>
+  <property name="meta.attr.minor_version.markup">512</property>
+  <property name="meta.attr.compatible_brands.markup">isomiso2avc1mp41</property>
+  <property name="meta.attr.encoder.markup">Lavf60.3.100</property>
+  <property name="meta.attr.comment.markup">Rendered with Manim Community v0.17.3</property>
+  <property name="seekable">1</property>
+  <property name="meta.media.sample_aspect_num">1</property>
+  <property name="meta.media.sample_aspect_den">1</property>
+  <property name="format">3</property>
+  <property name="audio_index">-1</property>
+  <property name="video_index">0</property>
+  <property name="meta.media.frame_rate_num">60</property>
+  <property name="meta.media.frame_rate_den">1</property>
+  <property name="meta.media.colorspace">709</property>
+  <property name="meta.media.color_trc">2</property>
+  <property name="meta.media.has_b_frames">2</property>
+  <property name="meta.media.width">3840</property>
+  <property name="meta.media.height">2160</property>
+  <property name="meta.media.color_range">mpeg</property>
+  <property name="kdenlive:clipname">Statement2.mp4</property>
+  <property name="kdenlive:clip_type">2</property>
+  <property name="kdenlive:proxy">-</property>
+  <property name="kdenlive:originalurl">/home/rihl/q/poly/voting-systems/postproduction/manim-clips/4k/Statement2.mp4</property>
+  <property name="kdenlive:id">15</property>
+  <property name="mute_on_pause">0</property>
+  <property name="kdenlive:file_size">32095697</property>
+  <property name="kdenlive:file_hash">c8e718086ec507796667e7768c190c0d</property>
+  <property name="kdenlive:folderid">17</property>
+  <property name="meta.media.top_field_first">0</property>
+  <property name="meta.media.progressive">1</property>
+ </chain>
  <chain id="chain19" out="00:01:09.300">
   <property name="length">4159</property>
   <property name="eof">pause</property>
@@ -395,6 +447,58 @@
   <property name="mute_on_pause">0</property>
   <property name="kdenlive:file_size">59565336</property>
   <property name="kdenlive:file_hash">a40fc74b32b2c927bf02382be6f280f5</property>
+  <property name="kdenlive:folderid">17</property>
+  <property name="meta.media.top_field_first">0</property>
+  <property name="meta.media.progressive">1</property>
+ </chain>
+ <chain id="chain40" out="00:00:59.483">
+  <property name="length">3570</property>
+  <property name="eof">pause</property>
+  <property name="resource">/home/rihl/q/poly/voting-systems/postproduction/manim-clips/4k/ArrowThm.mp4</property>
+  <property name="mlt_service">avformat-novalidate</property>
+  <property name="meta.media.nb_streams">1</property>
+  <property name="meta.media.0.stream.type">video</property>
+  <property name="meta.media.0.stream.frame_rate">60</property>
+  <property name="meta.media.0.stream.sample_aspect_ratio">0</property>
+  <property name="meta.media.0.codec.width">3840</property>
+  <property name="meta.media.0.codec.height">2160</property>
+  <property name="meta.media.0.codec.rotate">0</property>
+  <property name="meta.media.0.codec.pix_fmt">yuv420p</property>
+  <property name="meta.media.0.codec.sample_aspect_ratio">0</property>
+  <property name="meta.media.0.codec.colorspace">709</property>
+  <property name="meta.media.0.codec.name">h264</property>
+  <property name="meta.media.0.codec.long_name">H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10</property>
+  <property name="meta.media.0.codec.bit_rate">1990123</property>
+  <property name="meta.attr.0.stream.handler_name.markup">VideoHandler</property>
+  <property name="meta.attr.0.stream.vendor_id.markup">[0][0][0][0]</property>
+  <property name="meta.attr.0.stream.encoder.markup">Lavc60.3.100 libx264</property>
+  <property name="meta.attr.major_brand.markup">isom</property>
+  <property name="meta.attr.minor_version.markup">512</property>
+  <property name="meta.attr.compatible_brands.markup">isomiso2avc1mp41</property>
+  <property name="meta.attr.encoder.markup">Lavf60.3.100</property>
+  <property name="meta.attr.comment.markup">Rendered with Manim Community v0.17.3</property>
+  <property name="seekable">1</property>
+  <property name="meta.media.sample_aspect_num">1</property>
+  <property name="meta.media.sample_aspect_den">1</property>
+  <property name="format">3</property>
+  <property name="audio_index">-1</property>
+  <property name="video_index">0</property>
+  <property name="meta.media.frame_rate_num">60</property>
+  <property name="meta.media.frame_rate_den">1</property>
+  <property name="meta.media.colorspace">709</property>
+  <property name="meta.media.color_trc">2</property>
+  <property name="meta.media.has_b_frames">2</property>
+  <property name="meta.media.width">3840</property>
+  <property name="meta.media.height">2160</property>
+  <property name="meta.media.color_range">mpeg</property>
+  <property name="kdenlive:clipname">ArrowThm.mp4</property>
+  <property name="kdenlive:clip_type">2</property>
+  <property name="kdenlive:proxy">-</property>
+  <property name="kdenlive:originalurl">/home/rihl/q/poly/voting-systems/postproduction/manim-clips/4k/ArrowThm.mp4</property>
+  <property name="kdenlive:id">19</property>
+  <property name="mute_on_pause">0</property>
+  <property name="kdenlive:file_size">14844982</property>
+  <property name="kdenlive:file_hash">dea7bb42b7ec960bb47fda138171c7db</property>
   <property name="kdenlive:folderid">17</property>
   <property name="meta.media.top_field_first">0</property>
   <property name="meta.media.progressive">1</property>
@@ -1106,7 +1210,6 @@
   </entry>
   <entry producer="chain0" in="00:00:00.000" out="00:03:00.400">
    <property name="kdenlive:id">6</property>
-   <property name="kdenlive:activeeffect">0</property>
    <filter id="filter2">
     <property name="window">75</property>
     <property name="max_gain">20dB</property>
@@ -1118,7 +1221,6 @@
   </entry>
   <entry producer="chain0" in="00:00:00.000" out="00:03:00.400">
    <property name="kdenlive:id">6</property>
-   <property name="kdenlive:activeeffect">0</property>
    <filter id="filter3">
     <property name="window">75</property>
     <property name="max_gain">20dB</property>
@@ -1130,7 +1232,6 @@
   </entry>
   <entry producer="chain0" in="00:00:00.000" out="00:01:11.733">
    <property name="kdenlive:id">6</property>
-   <property name="kdenlive:activeeffect">1</property>
    <filter id="filter4" in="00:01:10.233" out="00:01:11.733">
     <property name="window">75</property>
     <property name="max_gain">20dB</property>
@@ -1152,7 +1253,6 @@
   <blank length="00:00:03.150"/>
   <entry producer="chain0" in="00:00:00.000" out="00:03:00.400">
    <property name="kdenlive:id">6</property>
-   <property name="kdenlive:activeeffect">0</property>
    <filter id="filter6">
     <property name="window">75</property>
     <property name="max_gain">20dB</property>
@@ -1164,7 +1264,6 @@
   </entry>
   <entry producer="chain0" in="00:00:00.000" out="00:00:39.933">
    <property name="kdenlive:id">6</property>
-   <property name="kdenlive:activeeffect">1</property>
    <filter id="filter7" in="00:00:36.600" out="00:00:39.933">
     <property name="window">75</property>
     <property name="max_gain">20dB</property>
@@ -1286,7 +1385,6 @@
   <blank length="00:14:00.267"/>
   <entry producer="chain1" in="00:00:00.000" out="00:01:21.550">
    <property name="kdenlive:id">5</property>
-   <property name="kdenlive:activeeffect">0</property>
    <filter id="filter15" out="00:00:02.883">
     <property name="window">75</property>
     <property name="max_gain">20dB</property>
@@ -1978,7 +2076,6 @@
   </entry>
   <entry producer="chain8" in="00:02:55.950" out="00:03:00.317">
    <property name="kdenlive:id">8</property>
-   <property name="kdenlive:activeeffect">-1</property>
   </entry>
   <entry producer="chain8" in="00:03:00.333" out="00:03:03.600">
    <property name="kdenlive:id">8</property>
@@ -1990,7 +2087,7 @@
     <property name="kdenlive_id">volume</property>
     <property name="kdenlive:collapsed">0</property>
    </filter>
-   <filter id="filter36" in="00:03:02.800" out="00:03:03.617">
+   <filter id="filter36" in="00:03:02.783" out="00:03:03.600">
     <property name="window">75</property>
     <property name="max_gain">20dB</property>
     <property name="mlt_service">volume</property>
@@ -2228,7 +2325,6 @@
   <blank length="00:00:02.867"/>
   <entry producer="chain8" in="00:12:48.800" out="00:13:08.667">
    <property name="kdenlive:id">8</property>
-   <property name="kdenlive:activeeffect">0</property>
    <filter id="filter57" in="00:12:48.800" out="00:12:49.500">
     <property name="window">75</property>
     <property name="max_gain">20dB</property>
@@ -2241,7 +2337,6 @@
   <blank length="00:00:01.967"/>
   <entry producer="chain8" in="00:13:08.350" out="00:13:36.050">
    <property name="kdenlive:id">8</property>
-   <property name="kdenlive:activeeffect">-1</property>
   </entry>
   <entry producer="chain12" in="00:00:38.150" out="00:00:40.917">
    <property name="kdenlive:id">30</property>
@@ -7173,7 +7268,57 @@
   <property name="set.test_audio">1</property>
   <property name="set.test_image">0</property>
  </chain>
- <producer id="producer69" in="00:00:00.000" out="00:59:58.467">
+ <producer id="producer69" in="00:00:00.000" out="00:32:55.033">
+  <property name="length">118503</property>
+  <property name="eof">pause</property>
+  <property name="resource">0.048100:/home/rihl/q/poly/voting-systems/postproduction/manim-clips/4k/VasekIsHorrible.mp4</property>
+  <property name="aspect_ratio">1</property>
+  <property name="meta.media.nb_streams">1</property>
+  <property name="meta.media.0.stream.type">video</property>
+  <property name="meta.media.0.stream.frame_rate">60</property>
+  <property name="meta.media.0.stream.sample_aspect_ratio">0</property>
+  <property name="meta.media.0.codec.width">3840</property>
+  <property name="meta.media.0.codec.height">2160</property>
+  <property name="meta.media.0.codec.rotate">0</property>
+  <property name="meta.media.0.codec.pix_fmt">yuv420p</property>
+  <property name="meta.media.0.codec.sample_aspect_ratio">0</property>
+  <property name="meta.media.0.codec.colorspace">709</property>
+  <property name="meta.media.0.codec.name">h264</property>
+  <property name="meta.media.0.codec.long_name">H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10</property>
+  <property name="meta.media.0.codec.bit_rate">1947174</property>
+  <property name="meta.attr.0.stream.handler_name.markup">VideoHandler</property>
+  <property name="meta.attr.0.stream.vendor_id.markup">[0][0][0][0]</property>
+  <property name="meta.attr.0.stream.encoder.markup">Lavc60.3.100 libx264</property>
+  <property name="meta.attr.major_brand.markup">isom</property>
+  <property name="meta.attr.minor_version.markup">512</property>
+  <property name="meta.attr.compatible_brands.markup">isomiso2avc1mp41</property>
+  <property name="meta.attr.encoder.markup">Lavf60.3.100</property>
+  <property name="meta.attr.comment.markup">Rendered with Manim Community v0.17.3</property>
+  <property name="seekable">1</property>
+  <property name="meta.media.sample_aspect_num">1</property>
+  <property name="meta.media.sample_aspect_den">1</property>
+  <property name="format">3</property>
+  <property name="audio_index">-1</property>
+  <property name="video_index">0</property>
+  <property name="warp_speed">0.0481</property>
+  <property name="warp_resource">/home/rihl/q/poly/voting-systems/postproduction/manim-clips/4k/VasekIsHorrible.mp4</property>
+  <property name="mlt_service">timewarp</property>
+  <property name="set.test_audio">1</property>
+  <property name="set.test_image">0</property>
+  <property name="kdenlive:id">32</property>
+  <property name="warp_pitch">0</property>
+  <property name="meta.media.frame_rate_num">60</property>
+  <property name="meta.media.frame_rate_den">1</property>
+  <property name="meta.media.colorspace">709</property>
+  <property name="meta.media.color_trc">2</property>
+  <property name="meta.media.has_b_frames">2</property>
+  <property name="meta.media.width">3840</property>
+  <property name="meta.media.height">2160</property>
+  <property name="meta.media.color_range">mpeg</property>
+  <property name="meta.media.top_field_first">0</property>
+  <property name="meta.media.progressive">1</property>
+ </producer>
+ <producer id="producer70" in="00:00:00.000" out="00:59:58.467">
   <property name="length">215909</property>
   <property name="eof">pause</property>
   <property name="resource">0.026400:/home/rihl/q/poly/voting-systems/postproduction/manim-clips/4k/VasekIsHorrible.mp4</property>
@@ -7223,7 +7368,7 @@
   <property name="meta.media.top_field_first">0</property>
   <property name="meta.media.progressive">1</property>
  </producer>
- <producer id="producer70" in="00:00:00.000" out="00:18:08.183">
+ <producer id="producer71" in="00:00:00.000" out="00:18:08.183">
   <property name="length">65292</property>
   <property name="eof">pause</property>
   <property name="resource">0.087300:/home/rihl/q/poly/voting-systems/postproduction/manim-clips/4k/VasekIsHorrible.mp4</property>
@@ -7273,7 +7418,7 @@
   <property name="meta.media.top_field_first">0</property>
   <property name="meta.media.progressive">1</property>
  </producer>
- <producer id="producer71" in="00:00:00.000" out="00:00:08.300">
+ <producer id="producer72" in="00:00:00.000" out="00:00:08.300">
   <property name="length">499</property>
   <property name="eof">pause</property>
   <property name="resource">2.000000:/home/rihl/q/poly/voting-systems/postproduction/other-clips/dislike1.mkv</property>
@@ -7318,7 +7463,7 @@
   <property name="meta.media.top_field_first">0</property>
   <property name="meta.media.progressive">1</property>
  </producer>
- <producer id="producer72" in="00:00:00.000" out="00:00:08.300">
+ <producer id="producer73" in="00:00:00.000" out="00:00:08.300">
   <property name="length">499</property>
   <property name="eof">pause</property>
   <property name="resource">2.000000:/home/rihl/q/poly/voting-systems/postproduction/other-clips/dislike2.mkv</property>
@@ -7363,7 +7508,7 @@
   <property name="meta.media.top_field_first">0</property>
   <property name="meta.media.progressive">1</property>
  </producer>
- <producer id="producer73" in="00:00:00.000" out="00:00:08.933">
+ <producer id="producer74" in="00:00:00.000" out="00:00:08.933">
   <property name="length">537</property>
   <property name="eof">pause</property>
   <property name="resource">2.000000:/home/rihl/q/poly/voting-systems/postproduction/other-clips/dislike4.mkv</property>
@@ -7408,7 +7553,7 @@
   <property name="meta.media.top_field_first">0</property>
   <property name="meta.media.progressive">1</property>
  </producer>
- <producer id="producer74" in="00:00:00.000" out="00:00:09.117">
+ <producer id="producer75" in="00:00:00.000" out="00:00:09.117">
   <property name="length">548</property>
   <property name="eof">pause</property>
   <property name="resource">2.000000:/home/rihl/q/poly/voting-systems/postproduction/other-clips/dislike3.mkv</property>
@@ -7454,24 +7599,30 @@
   <property name="meta.media.progressive">1</property>
  </producer>
  <playlist id="playlist16">
-  <blank length="00:08:55.267"/>
-  <entry producer="chain30" in="00:00:48.600" out="00:00:58.600">
+  <blank length="00:08:51.783"/>
+  <entry producer="chain30" in="00:00:49.117" out="00:00:51.467">
+   <property name="kdenlive:id">32</property>
+  </entry>
+  <entry producer="producer69" in="00:17:50.333" out="00:17:54.483">
+   <property name="kdenlive:id">32</property>
+  </entry>
+  <entry producer="chain30" in="00:00:51.650" out="00:00:58.600">
    <property name="kdenlive:id">32</property>
   </entry>
   <entry producer="chain30" in="00:01:06.283" out="00:01:18.983">
    <property name="kdenlive:id">32</property>
   </entry>
-  <entry producer="producer69" in="00:49:52.383" out="00:49:58.767">
+  <entry producer="producer70" in="00:49:52.383" out="00:49:58.767">
    <property name="kdenlive:id">32</property>
   </entry>
   <entry producer="chain30" in="00:01:19.350" out="00:01:28.817">
    <property name="kdenlive:id">32</property>
   </entry>
-  <entry producer="producer70" in="00:16:57.550" out="00:16:58.483">
+  <entry producer="producer71" in="00:16:57.550" out="00:16:58.483">
    <property name="kdenlive:id">32</property>
   </entry>
   <blank length="00:05:34.383"/>
-  <entry producer="producer71" in="00:00:01.717" out="00:00:06.717">
+  <entry producer="producer72" in="00:00:01.717" out="00:00:06.717">
    <property name="kdenlive:id">21</property>
    <filter id="filter74" in="00:00:01.717" out="00:00:02.217">
     <property name="start">1</property>
@@ -7492,7 +7643,7 @@
     <property name="kdenlive:collapsed">0</property>
    </filter>
   </entry>
-  <entry producer="producer72" in="00:00:03.050" out="00:00:07.533">
+  <entry producer="producer73" in="00:00:03.050" out="00:00:07.533">
    <property name="kdenlive:id">22</property>
    <filter id="filter76">
     <property name="rotate_center">1</property>
@@ -7505,7 +7656,7 @@
     <property name="kdenlive:collapsed">0</property>
    </filter>
   </entry>
-  <entry producer="producer73" in="00:00:01.867" out="00:00:07.500">
+  <entry producer="producer74" in="00:00:01.867" out="00:00:07.500">
    <property name="kdenlive:id">35</property>
    <filter id="filter77">
     <property name="rotate_center">1</property>
@@ -7518,7 +7669,7 @@
     <property name="kdenlive:collapsed">0</property>
    </filter>
   </entry>
-  <entry producer="producer74" in="00:00:01.600" out="00:00:07.983">
+  <entry producer="producer75" in="00:00:01.600" out="00:00:07.983">
    <property name="kdenlive:id">34</property>
    <property name="kdenlive:activeeffect">1</property>
    <filter id="filter78" in="00:00:07.017" out="00:00:07.983">
@@ -7573,22 +7724,22 @@
   <property name="kdenlive:clip_type">0</property>
   <property name="kdenlive:file_hash">17468c689305b253cd793122d8cd15d3</property>
   <property name="kdenlive:folderid">2</property>
-  <property name="kdenlive:sequenceproperties.activeTrack">7</property>
+  <property name="kdenlive:sequenceproperties.activeTrack">8</property>
   <property name="kdenlive:sequenceproperties.audioChannels">2</property>
   <property name="kdenlive:sequenceproperties.audioTarget">3</property>
   <property name="kdenlive:sequenceproperties.disablepreview">0</property>
   <property name="kdenlive:sequenceproperties.documentuuid">{3bfb53f3-1ac1-444f-8155-7d0f61e70497}</property>
   <property name="kdenlive:sequenceproperties.hasAudio">1</property>
   <property name="kdenlive:sequenceproperties.hasVideo">1</property>
-  <property name="kdenlive:sequenceproperties.position">66304</property>
-  <property name="kdenlive:sequenceproperties.scrollPos">8548</property>
+  <property name="kdenlive:sequenceproperties.position">32466</property>
+  <property name="kdenlive:sequenceproperties.scrollPos">46226</property>
   <property name="kdenlive:sequenceproperties.tracks">4</property>
   <property name="kdenlive:sequenceproperties.tracksCount">10</property>
   <property name="kdenlive:sequenceproperties.verticalzoom">1</property>
   <property name="kdenlive:sequenceproperties.videoTarget">4</property>
   <property name="kdenlive:sequenceproperties.zonein">0</property>
   <property name="kdenlive:sequenceproperties.zoneout">75</property>
-  <property name="kdenlive:sequenceproperties.zoom">11</property>
+  <property name="kdenlive:sequenceproperties.zoom">5</property>
   <property name="kdenlive:sequenceproperties.groups">[
     {
         "children": [
@@ -7768,10 +7919,9 @@
   <filter id="filter80">
    <property name="window">75</property>
    <property name="max_gain">20dB</property>
-   <property name="level">-0</property>
    <property name="mlt_service">volume</property>
    <property name="internal_added">237</property>
-   <property name="disable">0</property>
+   <property name="disable">1</property>
   </filter>
   <filter id="filter81">
    <property name="channel">-1</property>
@@ -7783,7 +7933,7 @@
   <filter id="filter82">
    <property name="window">75</property>
    <property name="max_gain">20dB</property>
-   <property name="level">-2.34961</property>
+   <property name="level">-0</property>
    <property name="mlt_service">volume</property>
    <property name="internal_added">237</property>
    <property name="disable">0</property>
@@ -7798,9 +7948,10 @@
   <filter id="filter84">
    <property name="window">75</property>
    <property name="max_gain">20dB</property>
+   <property name="level">-2.34961</property>
    <property name="mlt_service">volume</property>
    <property name="internal_added">237</property>
-   <property name="disable">1</property>
+   <property name="disable">0</property>
   </filter>
   <filter id="filter85">
    <property name="channel">-1</property>
@@ -8047,111 +8198,21 @@
    <property name="start">0.5</property>
    <property name="disable">1</property>
   </filter>
+  <filter id="filter120">
+   <property name="window">75</property>
+   <property name="max_gain">20dB</property>
+   <property name="mlt_service">volume</property>
+   <property name="internal_added">237</property>
+   <property name="disable">1</property>
+  </filter>
+  <filter id="filter121">
+   <property name="channel">-1</property>
+   <property name="mlt_service">panner</property>
+   <property name="internal_added">237</property>
+   <property name="start">0.5</property>
+   <property name="disable">1</property>
+  </filter>
  </tractor>
- <chain id="chain40" out="00:00:59.483">
-  <property name="length">3570</property>
-  <property name="eof">pause</property>
-  <property name="resource">/home/rihl/q/poly/voting-systems/postproduction/manim-clips/4k/ArrowThm.mp4</property>
-  <property name="mlt_service">avformat</property>
-  <property name="meta.media.nb_streams">1</property>
-  <property name="meta.media.0.stream.type">video</property>
-  <property name="meta.media.0.stream.frame_rate">60</property>
-  <property name="meta.media.0.stream.sample_aspect_ratio">0</property>
-  <property name="meta.media.0.codec.width">3840</property>
-  <property name="meta.media.0.codec.height">2160</property>
-  <property name="meta.media.0.codec.rotate">0</property>
-  <property name="meta.media.0.codec.pix_fmt">yuv420p</property>
-  <property name="meta.media.0.codec.sample_aspect_ratio">0</property>
-  <property name="meta.media.0.codec.colorspace">709</property>
-  <property name="meta.media.0.codec.name">h264</property>
-  <property name="meta.media.0.codec.long_name">H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10</property>
-  <property name="meta.media.0.codec.bit_rate">1990123</property>
-  <property name="meta.attr.0.stream.handler_name.markup">VideoHandler</property>
-  <property name="meta.attr.0.stream.vendor_id.markup">[0][0][0][0]</property>
-  <property name="meta.attr.0.stream.encoder.markup">Lavc60.3.100 libx264</property>
-  <property name="meta.attr.major_brand.markup">isom</property>
-  <property name="meta.attr.minor_version.markup">512</property>
-  <property name="meta.attr.compatible_brands.markup">isomiso2avc1mp41</property>
-  <property name="meta.attr.encoder.markup">Lavf60.3.100</property>
-  <property name="meta.attr.comment.markup">Rendered with Manim Community v0.17.3</property>
-  <property name="seekable">1</property>
-  <property name="meta.media.sample_aspect_num">1</property>
-  <property name="meta.media.sample_aspect_den">1</property>
-  <property name="format">3</property>
-  <property name="audio_index">-1</property>
-  <property name="video_index">0</property>
-  <property name="meta.media.frame_rate_num">60</property>
-  <property name="meta.media.frame_rate_den">1</property>
-  <property name="meta.media.colorspace">709</property>
-  <property name="meta.media.color_trc">2</property>
-  <property name="meta.media.has_b_frames">2</property>
-  <property name="meta.media.width">3840</property>
-  <property name="meta.media.height">2160</property>
-  <property name="meta.media.color_range">mpeg</property>
-  <property name="kdenlive:clipname">ArrowThm.mp4</property>
-  <property name="kdenlive:clip_type">2</property>
-  <property name="kdenlive:proxy">-</property>
-  <property name="kdenlive:originalurl">/home/rihl/q/poly/voting-systems/postproduction/manim-clips/4k/ArrowThm.mp4</property>
-  <property name="kdenlive:id">19</property>
-  <property name="mute_on_pause">0</property>
-  <property name="kdenlive:file_size">14844982</property>
-  <property name="kdenlive:file_hash">dea7bb42b7ec960bb47fda138171c7db</property>
-  <property name="kdenlive:folderid">17</property>
-  <property name="meta.media.top_field_first">0</property>
-  <property name="meta.media.progressive">1</property>
- </chain>
- <chain id="chain42" out="00:02:06.850">
-  <property name="length">7612</property>
-  <property name="eof">pause</property>
-  <property name="resource">/home/rihl/q/poly/voting-systems/postproduction/manim-clips/4k/Statement2.mp4</property>
-  <property name="mlt_service">avformat</property>
-  <property name="meta.media.nb_streams">1</property>
-  <property name="meta.media.0.stream.type">video</property>
-  <property name="meta.media.0.stream.frame_rate">60</property>
-  <property name="meta.media.0.stream.sample_aspect_ratio">0</property>
-  <property name="meta.media.0.codec.width">3840</property>
-  <property name="meta.media.0.codec.height">2160</property>
-  <property name="meta.media.0.codec.rotate">0</property>
-  <property name="meta.media.0.codec.pix_fmt">yuv420p</property>
-  <property name="meta.media.0.codec.sample_aspect_ratio">0</property>
-  <property name="meta.media.0.codec.colorspace">709</property>
-  <property name="meta.media.0.codec.name">h264</property>
-  <property name="meta.media.0.codec.long_name">H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10</property>
-  <property name="meta.media.0.codec.bit_rate">2018106</property>
-  <property name="meta.attr.0.stream.handler_name.markup">VideoHandler</property>
-  <property name="meta.attr.0.stream.vendor_id.markup">[0][0][0][0]</property>
-  <property name="meta.attr.0.stream.encoder.markup">Lavc60.3.100 libx264</property>
-  <property name="meta.attr.major_brand.markup">isom</property>
-  <property name="meta.attr.minor_version.markup">512</property>
-  <property name="meta.attr.compatible_brands.markup">isomiso2avc1mp41</property>
-  <property name="meta.attr.encoder.markup">Lavf60.3.100</property>
-  <property name="meta.attr.comment.markup">Rendered with Manim Community v0.17.3</property>
-  <property name="seekable">1</property>
-  <property name="meta.media.sample_aspect_num">1</property>
-  <property name="meta.media.sample_aspect_den">1</property>
-  <property name="format">3</property>
-  <property name="audio_index">-1</property>
-  <property name="video_index">0</property>
-  <property name="meta.media.frame_rate_num">60</property>
-  <property name="meta.media.frame_rate_den">1</property>
-  <property name="meta.media.colorspace">709</property>
-  <property name="meta.media.color_trc">2</property>
-  <property name="meta.media.has_b_frames">2</property>
-  <property name="meta.media.width">3840</property>
-  <property name="meta.media.height">2160</property>
-  <property name="meta.media.color_range">mpeg</property>
-  <property name="kdenlive:clipname">Statement2.mp4</property>
-  <property name="kdenlive:clip_type">2</property>
-  <property name="kdenlive:proxy">-</property>
-  <property name="kdenlive:originalurl">/home/rihl/q/poly/voting-systems/postproduction/manim-clips/4k/Statement2.mp4</property>
-  <property name="kdenlive:id">15</property>
-  <property name="mute_on_pause">0</property>
-  <property name="kdenlive:file_size">32095697</property>
-  <property name="kdenlive:file_hash">c8e718086ec507796667e7768c190c0d</property>
-  <property name="kdenlive:folderid">17</property>
-  <property name="meta.media.top_field_first">0</property>
-  <property name="meta.media.progressive">1</property>
- </chain>
  <playlist id="main_bin">
   <property name="kdenlive:folder.-1.2">Sequenzen</property>
   <property name="kdenlive:folder.-1.4">Audio</property>
@@ -8264,8 +8325,10 @@
   <entry producer="chain13" in="00:00:00.000" out="00:00:10.983"/>
   <entry producer="producer1" in="00:00:00.000" out="04:17:24.367"/>
   <entry producer="chain14" in="00:00:00.000" out="00:01:24.133"/>
+  <entry producer="chain42" in="00:00:00.000" out="00:02:06.850"/>
   <entry producer="chain19" in="00:00:00.000" out="00:01:09.300"/>
   <entry producer="chain39" in="00:00:00.000" out="00:03:00.483"/>
+  <entry producer="chain40" in="00:00:00.000" out="00:00:59.483"/>
   <entry producer="chain27" in="00:00:00.000" out="00:01:21.583"/>
   <entry producer="chain23" in="00:00:00.000" out="00:00:16.617"/>
   <entry producer="chain24" in="00:00:00.000" out="00:00:16.617"/>
@@ -8282,9 +8345,7 @@
   <entry producer="producer32" in="00:00:00.000" out="00:00:04.983"/>
   <entry producer="chain47" in="00:00:00.000" out="00:00:18.250"/>
   <entry producer="chain48" in="00:00:00.000" out="00:00:17.883"/>
-  <entry producer="tractor10" in="00:00:00.000" out="00:18:23.417"/>
-  <entry producer="chain40" in="00:00:00.000" out="00:00:59.483"/>
-  <entry producer="chain42" in="00:00:00.000" out="00:02:06.850"/>
+  <entry producer="tractor10" in="00:00:00.000" out="00:18:25.067"/>
  </playlist>
  <tractor id="tractor11" in="00:00:00.000" out="00:18:25.083">
   <property name="kdenlive:projectTractor">1</property>
